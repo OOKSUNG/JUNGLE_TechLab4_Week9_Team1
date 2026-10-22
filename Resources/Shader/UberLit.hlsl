@@ -686,6 +686,13 @@ float3 GetHeatmapColor(uint LightCount)
     return saturate(float3(t * 2 - 0.5, 1 - abs(t * 2 - 1), 1.5 - t * 2));
 }
 
+// 노멀맵 N은 정점 노멀이 빛을 등진 면에서도 빛 쪽을 향할 수 있어, 뒷면이 밝아지는 빛 번짐이 생긴다.
+// 정점(기하) 노멀 기준으로 빛을 등지면 0, 경계 근처는 부드럽게 줄여 계단 없이 끊는다.
+float GetGeometryLightMask(float3 VertexN, float3 L)
+{
+    return saturate(dot(VertexN, L) * 4.0f);
+}
+
 // Directional + 로컬 라이트의 Diffuse/Specular를 모두 더한다. Ambient는 포함하지 않는다.
 // bUseLightGrid = true면 SvPosition이 속한 셀의 라이트만, false면 전체 로컬 라이트를 순회한다.
 // VS(Gouraud)는 픽셀 위치가 없어 셀을 쓸 수 없으므로 false로 호출한다.
@@ -694,6 +701,9 @@ bool bUseLightGrid, bool bReceiveShadow)
 {
     // Directional Light는 처음에 한 번만 계산
     FLightContribution Total = CalcDirectionalLight(N, V, InShininess);
+    const float DirectionalGeoMask = GetGeometryLightMask(VertexN, -normalize(Directional.Direction));
+    Total.Diffuse *= DirectionalGeoMask;
+    Total.Specular *= DirectionalGeoMask;
 
 #if defined(LIGHTING_MODEL_LAMBERT) || defined(LIGHTING_MODEL_BLINN_PHONG)
     if (bReceiveShadow)
@@ -728,6 +738,14 @@ bool bUseLightGrid, bool bReceiveShadow)
         const FLightRenderParameters Light = LocalLights[LightIndex];
         FLightContribution LightContribution = CalcLocalLight(Light, N, V, WorldPos, InShininess);
         const float3 L = normalize(Light.Position - WorldPos);
+
+        // Rect는 발광면의 가장 가까운 점 기준으로 비추므로, 중심 방향 L로 자르면 넓은 면광원의 빛이 잘못 잘린다.
+        if (Light.Type != LIGHT_TYPE_RECT)
+        {
+            const float GeoMask = GetGeometryLightMask(VertexN, L);
+            LightContribution.Diffuse *= GeoMask;
+            LightContribution.Specular *= GeoMask;
+        }
 
 #if defined(LIGHTING_MODEL_LAMBERT) || defined(LIGHTING_MODEL_BLINN_PHONG)
         if (bReceiveShadow)

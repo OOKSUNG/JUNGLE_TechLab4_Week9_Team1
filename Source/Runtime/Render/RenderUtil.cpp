@@ -1,8 +1,17 @@
 #include "EnginePCH.h"
 #include "RenderUtil.h"
 
+#include <set>
+
 namespace
 {
+	// Debug는 최적화 없이 디버그 정보를 넣어 컴파일하므로, Release와 같은 .cso를 나눠 쓰지 않도록 폴더를 나눈다.
+#ifdef _DEBUG
+	constexpr const char* ShaderCacheDir = "Intermediate/Shaders/Debug";
+#else
+	constexpr const char* ShaderCacheDir = "Intermediate/Shaders/Release";
+#endif
+
 	const char* GetShaderTarget(EShaderType Type)
 	{
 		switch (Type)
@@ -112,29 +121,60 @@ FString RenderUtil::GetCsoPath(const FString& ShaderPath, EShaderType ShaderType
 		Macros++;
 	}
 
-	fs::path Out = fs::path("Intermediate/Shaders") / Rel.parent_path();
+	fs::path Out = fs::path(ShaderCacheDir) / Rel.parent_path();
 	Out /= Rel.stem().generic_string() + MacroSuffix.c_str() + Suffix;
 	return Out.generic_string();
 }
 
-// .cso 파일이 최신 컴파일인지 비교한다.
+namespace
+{
+	// 셰이더와 그 셰이더가 #include "..."로 끌어오는 파일(중첩 포함) 중 가장 최근 수정 시각을 구한다.
+	// D3D_COMPILE_STANDARD_FILE_INCLUDE처럼 include 경로는 포함하는 파일의 폴더 기준이다.
+	// 찾을 수 없는 파일이 있으면 false를 돌려 재컴파일하게 한다.
+	bool GetNewestSourceTime(const fs::path& Path, std::set<fs::path>& Visited, fs::file_time_type& InOutNewest)
+	{
+		std::error_code Ec;
+		const fs::path Normalized = fs::weakly_canonical(Path, Ec);
+		if (Ec) return false;
+		if (!Visited.insert(Normalized).second) return true;   // 이미 본 파일 (중복·순환 include)
+
+		const fs::file_time_type Time = fs::last_write_time(Normalized, Ec);
+		if (Ec) return false;
+		InOutNewest = std::max(InOutNewest, Time);
+
+		std::ifstream SourceFile{ Normalized };
+		if (!SourceFile) return false;
+
+		std::string Line;
+		while (std::getline(SourceFile, Line))
+		{
+			const size_t Directive = Line.find("#include");
+			if (Directive == std::string::npos) continue;
+			const size_t Open = Line.find('"', Directive);
+			const size_t Close = Open == std::string::npos ? std::string::npos : Line.find('"', Open + 1);
+			if (Close == std::string::npos) continue;   // <...> 형식은 엔진 셰이더에서 쓰지 않는다
+
+			const fs::path Included = Normalized.parent_path() / Line.substr(Open + 1, Close - Open - 1);
+			if (!GetNewestSourceTime(Included, Visited, InOutNewest)) return false;
+		}
+		return true;
+	}
+}
+
+// .cso 파일이 셰이더와 그 include 파일들보다 나중에 만들어졌는지 비교한다.
 bool RenderUtil::IsCsoUpToDate(const FString& ShaderPath, const FString& CsoPath)
 {
-	std::ifstream SourceFile{ ShaderPath };
-	const std::string Source{ std::istreambuf_iterator<char>{ SourceFile }, std::istreambuf_iterator<char>{} };
-	if (Source.find("#include") != std::string::npos) {
-		return false;
-	}
-
 	std::error_code Ec;
 	if (!fs::exists(CsoPath, Ec)) return false;
 
-	const auto SrcTime = fs::last_write_time(ShaderPath, Ec);
-	if (Ec) return false;
 	const auto CsoTime = fs::last_write_time(CsoPath, Ec);
 	if (Ec) return false;
 
-	return CsoTime > SrcTime;
+	std::set<fs::path> Visited;
+	fs::file_time_type NewestSourceTime = fs::file_time_type::min();
+	if (!GetNewestSourceTime(ShaderPath, Visited, NewestSourceTime)) return false;
+
+	return CsoTime > NewestSourceTime;
 }
 
 FShaderByteCode RenderUtil::GetOrCompile(const FString& ShaderPath, const char* EntryPoint, EShaderType ShaderType, FString& OutCSOPath, const D3D_SHADER_MACRO* Macros)

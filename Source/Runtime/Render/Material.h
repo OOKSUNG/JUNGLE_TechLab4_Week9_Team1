@@ -46,6 +46,10 @@ public:
 
 	bool bIsInstance = false;
 
+	// 블렌드를 바꿀 때는 이 함수를 거친다. 스태틱 메시는 깊이 상태도 함께 맞춘다.
+	// (반투명은 깊이를 쓰면 뒤의 반투명을 가리고, 불투명은 깊이를 안 쓰면 정렬이 깨진다)
+	void SetBlendState(EBlendState InBlendState);
+
 	// 인스턴스가 복제된 원본. 인스턴스는 경로가 없어서, 저장할 때 원본을 따라가 기준 에셋을 찾는다
 	const UMaterial* Parent = nullptr;
 

@@ -58,8 +58,7 @@ void FSettingsPanel::OnRender()
 	ImGui::Dummy(ImVec2(0.0f, SectionGap));
 	ImGui::SeparatorText("Grid");
 
-	ShowFlagUI::DrawFlags(Settings.ShowFlags, EShowFlagScope::Global, EShowFlagGroup::Grid);
-
+	// 언리얼처럼 그리기 방식은 투영으로 정해진다: 원근 = PS 그리드, 직교 = 배치 라인 그리드.
 	ImGui::SetNextItemWidth(200.0f);
 	ImGui::SliderInt("Grid Spacing", &Settings.GridSpacing, 1, 100);
 
@@ -232,16 +231,26 @@ bool FSettingsPanel::LoadSettings()
                         RotationComponentMasks[Index] |= 1 << 3;
                     }
                 }
-				if (Key == "LightingModel") Settings.LightingModel = std::stoi(ValueStr);
-				else if (Key == "CameraMoveSpeed") Settings.CameraSpeed = std::stof(ValueStr);
-				else if (Key == "CameraRotateSensitivity") Settings.MouseSensitivity = std::stof(ValueStr);
-				else if (Key == "GridSpacing") Settings.GridSpacing = std::stof(ValueStr);
-				else if (Key == "Horizontal") Settings.MultipleViewportsHorizontal = std::stof(ValueStr);
-				else if (Key == "Vertical") Settings.MultipleViewportsVertical = std::stof(ValueStr);
-				else if (Key == "Layout") Settings.bMultipleViewportsSingle = ValueStr == "Single";
+				if (Key == "Layout")
+				{
+					Settings.bMultipleViewportsSingle = ValueStr == "Single";
+					continue;
+				}
+
+				// 손으로 고친 파일의 빈 값·글자·NaN에서 std::stoi/stof 예외로 죽지 않도록, 읽지 못한 값은 기본값을 유지한다.
+				std::istringstream Number(ValueStr);
+				float Value = 0;
+				if (!(Number >> Value) || !std::isfinite(Value)) continue;
+
+				if (Key == "LightingModel") Settings.LightingModel = FMath::Clamp(static_cast<int32>(Value), 0, 2);
+				else if (Key == "CameraMoveSpeed") Settings.CameraSpeed = Value;
+				else if (Key == "CameraRotateSensitivity") Settings.MouseSensitivity = Value;
+				else if (Key == "GridSpacing") Settings.GridSpacing = std::max(1, static_cast<int32>(Value));
+				else if (Key == "Horizontal") Settings.MultipleViewportsHorizontal = Value;
+				else if (Key == "Vertical") Settings.MultipleViewportsVertical = Value;
 				else if (Key == "SingleViewIndex")
 				{
-					const int32 ViewIndex = std::stoi(ValueStr);
+					const int32 ViewIndex = static_cast<int32>(Value);
 					Settings.MultipleViewportsSingleViewIndex = ViewIndex >= 0 && ViewIndex < 4 ? ViewIndex : 0;
 				}
 			}

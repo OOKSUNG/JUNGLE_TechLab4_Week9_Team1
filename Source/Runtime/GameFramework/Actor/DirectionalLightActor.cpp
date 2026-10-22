@@ -1,11 +1,12 @@
 #include "EnginePCH.h"
 #include "DirectionalLightActor.h"
+#include "Core/ResourcePaths.h"
 #include "Asset/AssetManager.h"
 
 ADirectionalLightActor::ADirectionalLightActor()
 {
     DirectionalLightComponent = CreateDefaultSubobject<UDirectionalLightComponent>("UDirectionalLightComponent");
-	SetupLightRoot(DirectionalLightComponent, "Assets/Icons/Directional.png");
+	SetupLightRoot(DirectionalLightComponent, ResourcePaths::DirectionalLightIcon);
     DirectionalLightComponent->SetRelativeRotation(FRotator(45.0f, 0.0f, 0.0f));
 
     // Icon 옆에 붙어서 빛의 방향을 알려주는 기즈모 arrow (로컬 x축)

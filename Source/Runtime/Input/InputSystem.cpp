@@ -93,7 +93,8 @@ void FInputSystem::OnMouseMove(int32 x, int32 y)
 
 void FInputSystem::OnMouseWheelDelta(int32 Wheel)
 {
-    WheelDelta = Wheel;
+    // 터치패드·고해상도 휠은 한 프레임에 메시지를 여러 번 보내므로 덮어쓰지 않고 누적한다. 읽을 때(GetWheelDelta) 비운다.
+    WheelDelta += Wheel;
 }
 
 void FInputSystem::SyncMousePosition(int32 x, int32 y)

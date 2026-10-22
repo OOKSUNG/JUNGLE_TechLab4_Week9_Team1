@@ -238,6 +238,12 @@ FVector FMultipleViewportsAdapter::GetEngineCameraForward(const int32 ViewIndex)
 	return FEditorViewportClient::NormalizedOrZero(GetEffectiveCamera(ViewIndex).Transform.Rotation.GetForwardVector());
 }
 
+// Native 회전에서 정규화한 Up(화면 위쪽)을 엔진 FVector로 반환한다.
+FVector FMultipleViewportsAdapter::GetEngineCameraUp(const int32 ViewIndex) const
+{
+	return FEditorViewportClient::NormalizedOrZero(GetEffectiveCamera(ViewIndex).Transform.Rotation.GetUpVector());
+}
+
 // 지정 View의 논리 카메라로 렌더·피킹에 공통인 Billboard 계산을 호출한다.
 FMatrix FMultipleViewportsAdapter::BuildEngineBillboardMatrix(const int32 ViewIndex, const FVector& WorldPosition, const float Width, const float Height) const
 {

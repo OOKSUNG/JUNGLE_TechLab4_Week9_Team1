@@ -143,7 +143,7 @@
                                     "SamplerState": "LinearClamp",
                                     "Shininess": 32.0,
                                     "Textures": [
-                                        "Assets/Icons/Directional.png"
+                                        "Resources/Icons/Directional.png"
                                     ],
                                     "UVScrollSpeed": [
                                         0.0,
@@ -644,7 +644,7 @@
                                     "SamplerState": "LinearClamp",
                                     "Shininess": 32.0,
                                     "Textures": [
-                                        "Assets/Icons/Point.png"
+                                        "Resources/Icons/Point.png"
                                     ],
                                     "UVScrollSpeed": [
                                         0.0,
@@ -1468,7 +1468,7 @@
                                     "SamplerState": "LinearClamp",
                                     "Shininess": 32.0,
                                     "Textures": [
-                                        "Assets/Icons/Spot.png"
+                                        "Resources/Icons/Spot.png"
                                     ],
                                     "UVScrollSpeed": [
                                         0.0,

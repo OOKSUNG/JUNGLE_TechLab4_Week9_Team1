@@ -12,8 +12,8 @@ newmtl Mauser98K_Dielectric
 	Kd 1.0000 1.0000 1.0000
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka textures/Mauser98K_Glossiness.dds
-	map_Kd textures/Mauser98K_Diffuse.dds
-	map_Ks textures/Mauser98K_Specular.dds
-	map_bump textures/Mauser98K_Normal.dds
-	bump textures/Mauser98K_Normal.dds
+	map_Ka 98K_Glossiness.dds
+	map_Kd 98K_Diffuse.dds
+	map_Ks 98K_Specular.dds
+	map_bump 98K_Normal.dds
+	bump 98K_Normal.dds

@@ -3,6 +3,7 @@
 
 #include "imgui_internal.h"
 #include "Editor/HitoriEd/EditorDragDrop.h"
+#include "Editor/HitoriEd/EditorResourcePaths.h"
 #include "Components/PrimitiveComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/TextRenderComponent.h"
@@ -243,13 +244,15 @@ namespace
 
 				ImGui::PushID(*Itr);
 
-				if (ImGui::Selectable(ItemFileName.c_str(), bSelected))
+				const bool bClicked = ImGui::Selectable(ItemFileName.c_str(), bSelected);
+				// 클릭한 프레임이 아니라 올려 둔 동안 계속 경로를 보여준다
+				if (ImGui::IsItemHovered())
 				{
-					if (ImGui::IsItemHovered())
-					{
-						ImGui::SetTooltip("%s", ItemPath.c_str());
-					}
+					ImGui::SetTooltip("%s", ItemPath.c_str());
+				}
 
+				if (bClicked)
+				{
 					// 메모리를 직접 바꾸지 않고 SetFont를 거친다
 					if (UTextRenderComponent* TextComponent = Cast<UTextRenderComponent>(Owner))
 						TextComponent->SetFont(*Itr);
@@ -281,27 +284,45 @@ namespace
 
 		if (bOpen)
 		{
+			struct FMeshItem
+			{
+				FString DisplayName;
+				FString Path;
+				UStaticMesh* Mesh;
+			};
+
+			// 객체 생성 순서가 아니라 표시 이름의 알파벳 순(대소문자 무시)으로 보여준다.
+			TArray<FMeshItem> Items;
 			for (TObjectIterator<UStaticMesh> Itr; Itr; ++Itr)
 			{
-				bool bSelected = (*Itr == Current);
-
 				FString ItemPath = Itr->GetPath();
-				FString ItemFileName = GetAssetDisplayName(ItemPath);
+				Items.Add({ GetAssetDisplayName(ItemPath), ItemPath, *Itr });
+			}
+			std::sort(Items.begin(), Items.end(), [](const FMeshItem& A, const FMeshItem& B)
+			{
+				return _stricmp(A.DisplayName.c_str(), B.DisplayName.c_str()) < 0;
+			});
 
-				ImGui::PushID(*Itr);
+			for (const FMeshItem& Item : Items)
+			{
+				bool bSelected = (Item.Mesh == Current);
 
-				if (ImGui::Selectable(ItemFileName.c_str(), bSelected))
+				ImGui::PushID(Item.Mesh);
+
+				const bool bClicked = ImGui::Selectable(Item.DisplayName.c_str(), bSelected);
+				// 클릭한 프레임이 아니라 올려 둔 동안 계속 경로를 보여준다
+				if (ImGui::IsItemHovered())
 				{
-					if (ImGui::IsItemHovered())
-					{
-						ImGui::SetTooltip("%s", ItemPath.c_str());
-					}
+					ImGui::SetTooltip("%s", Item.Path.c_str());
+				}
 
-					// 메모리를 직접 바꾸지 않고 SetFont를 거친다
+				if (bClicked)
+				{
+					// 메모리를 직접 바꾸지 않고 SetStaticMesh를 거친다
 					if (UStaticMeshComponent* MeshComponent = Cast<UStaticMeshComponent>(Owner))
-						MeshComponent->SetStaticMesh(*Itr);
+						MeshComponent->SetStaticMesh(Item.Mesh);
 					else
-						*StaticMeshPtr = *Itr;
+						*StaticMeshPtr = Item.Mesh;
 				}
 				ImGui::PopID();
 				if (bSelected)
@@ -578,7 +599,7 @@ namespace
 								Override = EnsureMaterialOverride(MeshComponent, Slot, Effective, Override);
 								if (Override)
 								{
-									Override->BlendState = static_cast<EBlendState>(i);
+									Override->SetBlendState(static_cast<EBlendState>(i));
 									Effective = Override;
 								}
 							}
@@ -1056,7 +1077,7 @@ bool FDetailsPanel::Init()
 
 	io.Fonts->AddFontDefault();
 
-	const char* fontPath = "HMKMRHD.ttf";
+	const char* fontPath = EditorResourcePaths::UIFont;
 	float fontSize = 15.0f;
 	const ImWchar* koreanRanges = io.Fonts->GetGlyphRangesKorean();
 

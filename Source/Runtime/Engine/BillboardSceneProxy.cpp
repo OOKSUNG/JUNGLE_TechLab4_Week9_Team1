@@ -8,8 +8,7 @@ void FBillboardSceneProxy::UpdateDynamicData()
     QuadMesh = Billboard.QuadMesh;
     Material = Billboard.Material;
     WorldPosition = Billboard.GetWorldLocation();
-    const FVector Scale = Billboard.GetWorldScale3D();
-    Size = { Scale.Y, Scale.Z };
+    Size = Billboard.GetRenderSize();
     bEditorIcon = Billboard.bEditorIcon;
     Parameters = Billboard.IconParams;
     Parameters.Tint = Billboard.TintSource ? Billboard.TintSource->GetLightColor().ToVector4() : FVector4(1, 1, 1, 1);

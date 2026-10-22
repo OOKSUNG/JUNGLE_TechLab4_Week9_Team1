@@ -94,7 +94,8 @@ void FContentDrawerPanel::OnRender()
 				// 폴더 또는 파일 아이콘 표시
 				if (bIsDirectory)
 				{
-					Thumbnail = UAssetManager::GetAssetByPath<UTexture2D>(FolderIconPath);
+					// Resources는 스캔하지 않으므로 경로로 불러온다. 한 번 불러오면 AssetMap에 캐시된다.
+					Thumbnail = UAssetManager::Get().LoadTexture(EditorResourcePaths::FolderIcon);
 				}
 				else // 파일인 경우
 				{
@@ -114,7 +115,7 @@ void FContentDrawerPanel::OnRender()
 
 					if (Thumbnail == nullptr)
 					{
-						Thumbnail = UAssetManager::GetAssetByPath<UTexture2D>(FileIconPath);
+						Thumbnail = UAssetManager::Get().LoadTexture(EditorResourcePaths::FileIcon);
 					}
 				}
 				if (Thumbnail)

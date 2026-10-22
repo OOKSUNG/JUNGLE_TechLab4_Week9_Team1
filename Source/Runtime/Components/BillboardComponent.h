@@ -46,6 +46,8 @@ public:
 	void SetTintSource(const ULightComponentBase* InSource) { TintSource = InSource; }
 
 	virtual const FStaticMeshData* GetMeshData() const override { return QuadMesh ? &QuadMesh->GetMeshData() : nullptr; }
+	// View마다 카메라 쪽으로 돌아가므로 어느 방향으로 돌아도 쿼드를 감싸는 상자를 BVH에 넘긴다.
+	virtual FBox CalcLocalBounds() const override;
 
 	void GetWorldTransformedMatrix(FMatrix* OutWorldMatrix) const;
 	// 기본 카메라 기준 월드 행렬로 Billboard 렌더 패킷을 제출한다.
@@ -60,7 +62,15 @@ public:
 
 	bool IsEditorIcon() const { return bEditorIcon; }
 	void SetEditorIcon(bool IsEditorIcon) { bEditorIcon = IsEditorIcon; }
-	void SetIconSize(float S) { IconSize = S; }
+	void SetIconSize(float S) { IconSize = S; MarkRenderStateDirty(); }
+	// 화면에 그릴 쿼드의 폭·높이. 에디터 아이콘은 IconSize, 그 외에는 월드 스케일 Y·Z다.
+	// 렌더(Proxy)·피킹·바운드가 모두 이 값을 써야 보이는 크기와 클릭 영역이 맞는다.
+	FVector2 GetRenderSize() const
+	{
+		if (IsEditorIcon()) return FVector2(IconSize, IconSize);
+		const FVector Scale = GetWorldScale3D();
+		return FVector2(Scale.Y, Scale.Z);
+	}
 
 protected:
 	UMaterial* Material = nullptr;

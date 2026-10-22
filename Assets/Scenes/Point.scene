@@ -374,7 +374,7 @@
                                     "SamplerState": "LinearClamp",
                                     "Shininess": 32.0,
                                     "Textures": [
-                                        "Assets/Icons/Point.png"
+                                        "Resources/Icons/Point.png"
                                     ],
                                     "UVScrollSpeed": [
                                         0.0,
@@ -561,7 +561,7 @@
                             "OverrideMaterials": [],
                             "Parent": "DefaultSceneRoot",
                             "Properties": {
-                                "StaticMesh": "Models/Rocket/rocket.obj",
+                                "StaticMesh": "Models/Rocket/Rocket.obj",
                                 "Transform": {
                                     "Location": {
                                         "X": 0.0,

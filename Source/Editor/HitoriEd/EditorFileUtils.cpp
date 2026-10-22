@@ -4,8 +4,20 @@
 #include "Core/EngineLog.h"
 #include <commdlg.h>
 #include "Serialization/JsonArchive.h"
- 
+#include "Editor/HitoriEd/EditorResourcePaths.h"
+
 FString FEditorFileUtils::CurrentScenePath = "";
+
+namespace
+{
+	// 파일 대화상자는 상대 경로를 무시할 수 있어 절대 경로로 넘긴다. 폴더가 없으면 만들어 둔다.
+	FString GetSceneFolderAbsolute()
+	{
+		std::error_code Ec;
+		std::filesystem::create_directories(EditorResourcePaths::SceneFolder, Ec);
+		return std::filesystem::absolute(EditorResourcePaths::SceneFolder, Ec).lexically_normal().string();
+	}
+}
 
 bool FEditorFileUtils::NewScene(UWorld* World)
 {
@@ -118,7 +130,8 @@ FString FEditorFileUtils::OpenSaveSceneDialog()
 
 	ofn.lpstrFilter = "Scene Files (*.scene)\0*.scene\0";
 	ofn.lpstrDefExt = "scene";
-	ofn.lpstrInitialDir = "Scene/";
+	const FString InitialDir = GetSceneFolderAbsolute();
+	ofn.lpstrInitialDir = InitialDir.c_str();
 
 	ofn.Flags =
 		OFN_PATHMUSTEXIST |
@@ -149,7 +162,8 @@ FString FEditorFileUtils::OpenLoadSceneDialog()
 		"All Files (*.*)\0*.*\0";
 
 	ofn.lpstrDefExt = "scene";
-	ofn.lpstrInitialDir = "Scene/";
+	const FString InitialDir = GetSceneFolderAbsolute();
+	ofn.lpstrInitialDir = InitialDir.c_str();
 
 	ofn.Flags =
 		OFN_FILEMUSTEXIST |

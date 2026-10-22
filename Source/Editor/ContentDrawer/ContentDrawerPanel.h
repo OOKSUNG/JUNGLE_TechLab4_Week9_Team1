@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Editor/EditorUI/EditorPanel.h"
+#include "Editor/HitoriEd/EditorResourcePaths.h"
 
 #include <filesystem>
 
@@ -16,10 +17,8 @@ public:
 	void RenderFolderTree(const fs::path& Path, fs::path& SelectedPath);
 
 private:
-	fs::path AssetRootPath = "Assets";
-	fs::path CurrentPath = "Assets";
+	// 사용자 콘텐츠(Assets)만 보여준다. 엔진 내장 파일(Resources)은 여기서 다루지 않는다.
+	fs::path AssetRootPath = EditorResourcePaths::AssetRoot;
+	fs::path CurrentPath = EditorResourcePaths::AssetRoot;
 
-	const FString FolderIconPath = "Assets/Icons/Folder.png";
-	const FString FileIconPath = "Assets/Icons/File.png";
-	
 };

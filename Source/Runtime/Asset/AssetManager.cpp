@@ -15,6 +15,7 @@
 #include "UObject/UObjectGlobals.h"
 
 #include "Render/ImageLoader.h"
+#include "Core/ResourcePaths.h"
 #include <cctype>
 
 
@@ -84,11 +85,7 @@ namespace
 				return nullptr;
 			}
 			Material->BaseColor = Slot.BaseColor;
-			if (Material->BaseColor.W < 1.0f)
-			{
-				Material->BlendState = EBlendState::AlphaBlend;
-				Material->DepthStencilState = EDepthStencilState::ReadOnly;
-			}
+			Material->SetBlendState(Material->BaseColor.W < 1.0f ? EBlendState::AlphaBlend : EBlendState::Opaque);
 
 			if (!Slot.DiffuseTexturePath.empty())
 			{
@@ -133,6 +130,8 @@ void UAssetManager::Init(const FAssetLoadProgress& OnProgress)
 	// 머티리얼이 참조하므로 반드시 먼저 만든다
 	Get().CreateDefaultTextures();
 	Get().CreateDefaultMaterial();
+	// Resources는 스캔하지 않으므로 엔진이 쓰는 기본 폰트는 경로로 직접 등록한다.
+	Get().LoadFontAtlas(ResourcePaths::DefaultFont, ResourcePaths::DefaultFontAtlas);
 	Get().ScanAssets("Assets", OnProgress);
 	Get().CreateDefaultMeshes();
 	Get().CreateParticleMaterial();
@@ -313,7 +312,7 @@ void UAssetManager::CreateParticleMaterial()
 {
 	UMaterial* ParticleMat = NewObject<UMaterial>();
 	ParticleMat->Shader = FRenderResourceManager::GetShaderProgram("Resources/Shader/ParticleSubUVShader.hlsl");
-	ParticleMat->Textures.Add(GetAssetByPath<UTexture2D>("Assets/SubUV/StarParticle.png"));
+	ParticleMat->Textures.Add(LoadTexture(ResourcePaths::DefaultParticleTexture));
 	ParticleMat->BlendState = EBlendState::AlphaBlend;
 	ParticleMat->DepthStencilState = EDepthStencilState::ReadOnly;
 	ParticleMat->ParamLayout = EMaterialParamLayout::ParticleSubUV;

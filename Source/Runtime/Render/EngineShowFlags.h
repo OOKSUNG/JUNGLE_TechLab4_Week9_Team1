@@ -14,7 +14,6 @@ enum class EShowFlagScope : uint8
 enum class EShowFlagGroup : uint8
 {
     Rendering,
-    Grid,
     Viewport
 };
 

@@ -205,7 +205,7 @@
                                 "SamplerState": "LinearClamp",
                                 "BlendState": "Opaque",
                                 "Textures": [
-                                    "Assets/Checker.png"
+                                    "Assets/Sprites/Checker.png"
                                 ]
                             }
                         ]

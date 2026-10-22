@@ -1,8 +1,9 @@
 #include "EnginePCH.h"
 #include "SkyLightActor.h"
+#include "Core/ResourcePaths.h"
 
 ASkyLightActor::ASkyLightActor()
 {
     SkyLightComponent = CreateDefaultSubobject<USkyLightComponent>("USkyLightComponent");
-	SetupLightRoot(SkyLightComponent, "Assets/Icons/Sky.png");
+	SetupLightRoot(SkyLightComponent, ResourcePaths::SkyLightIcon);
 }

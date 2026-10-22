@@ -29,6 +29,8 @@
 #include "Render/RenderCommand.h"
 #include "Editor/Outliner/OutlinerPanel.h"
 #include "Editor/HitoriEd/EditorFileUtils.h"
+#include "Editor/HitoriEd/EditorResourcePaths.h"
+#include "Core/ResourcePaths.h"
 #include "UObject/UObjectIterator.h"
 
 #include "Core/EngineLog.h"
@@ -68,7 +70,7 @@ FEngineConfig UEditorEngine::GetConfig() const
 	Desc.bCreateDepthBuffer = false;
 	Desc.bExitOnEscape = false;
 	// 파일이 없으면 검은 배경에 상태 텍스트만 표시된다.
-	Desc.SplashImage = "Resources/Splash.png";
+	Desc.SplashImage = ResourcePaths::SplashImage;
 	return Desc;
 }
 
@@ -185,7 +187,7 @@ bool UEditorEngine::Init()
 
 	Outline = MakeUnique<FOutline>();
 
-	SystemFont = UAssetManager::GetAssetByPath<UFont>("Assets/Fonts/Pretendard.json");
+	SystemFont = UAssetManager::GetAssetByPath<UFont>(ResourcePaths::DefaultFont);
 
 	TextRenderer = MakeUnique<FTextRenderer>();
 	TextRenderer->Init();
@@ -276,36 +278,38 @@ bool UEditorEngine::Init()
 	ViewportsPanel->SetViewportAdapter(&MultipleViewportsAdapter);
 
 	SkyboxRenderer = MakeUnique<FSkyboxRenderer>();
-	SkyboxRenderer->Init("Assets/SkySphere/Sky.hdr");
+	SkyboxRenderer->Init(ResourcePaths::DefaultSkyPanorama);
 
 	const ImVec4 White = { 1, 1, 1, 1 };
 	const ImVec4 Green = { 0.40f, 0.80f, 0.30f, 1.0f };
 
-	Save = { "Save",   "Save Current Scene",UAssetManager::GetAssetByPath<UTexture2D>("Assets/Icons/Toolbar/Save.png"),  White, { EKeyCode::S, true } };
+	// Resources는 시작할 때 스캔하지 않으므로 툴바 아이콘은 경로로 직접 불러온다.
+	// Save 아이콘 파일은 아직 없어서 아이콘 없이 둔다 (이전에도 찾지 못해 nullptr였다).
+	Save = { "Save",   "Save Current Scene",nullptr,  White, { EKeyCode::S, true } };
 
-	Play = { "Play",   "Play World",        UAssetManager::GetAssetByPath<UTexture2D>("Assets/Icons/Toolbar/Play.png"),  Green, { EKeyCode::P, false, true } };
+	Play = { "Play",   "Play World",        UAssetManager::Get().LoadTexture(EditorResourcePaths::ToolbarPlayIcon),  Green, { EKeyCode::P, false, true } };
 
 	Play.CanExecute = [this]()->bool {return !PlayWorld; };
 	Play.Execute = [this]() { RequestPlaySession(); };
 
-	Pause = { "Pause",  "Pause",			UAssetManager::GetAssetByPath<UTexture2D>("Assets/Icons/Toolbar/Pause.png"), White, { EKeyCode::Pause } };
+	Pause = { "Pause",  "Pause",			UAssetManager::Get().LoadTexture(EditorResourcePaths::ToolbarPauseIcon), White, { EKeyCode::Pause } };
 
 	Pause.CanExecute = [this]()->bool {return !bIsPaused && PlayWorld; };
 	Pause.Execute = [this]() { bIsPaused = true; };
 
 
-	Resume = { "Resume", "Resume",          UAssetManager::GetAssetByPath<UTexture2D>("Assets/Icons/Toolbar/Play.png"),  White, { EKeyCode::Pause } };
+	Resume = { "Resume", "Resume",          UAssetManager::Get().LoadTexture(EditorResourcePaths::ToolbarPlayIcon),  White, { EKeyCode::Pause } };
 
 	Resume.CanExecute = [this]()->bool {return bIsPaused && PlayWorld; };
 	Resume.Execute = [this]() { bIsPaused = false; };
 
-	StepFrame = { "Step", "Step One Frame", UAssetManager::GetAssetByPath<UTexture2D>("Assets/Icons/Toolbar/Step.png"),  White, {} };
+	StepFrame = { "Step", "Step One Frame", UAssetManager::Get().LoadTexture(EditorResourcePaths::ToolbarStepIcon),  White, {} };
 
 	StepFrame.CanExecute = [this]()->bool {return bIsPaused && PlayWorld; };
 	StepFrame.Execute = [this]() { bStepRequested= true; };
 
 
-	Stop = { "Stop",   "Stop",				UAssetManager::GetAssetByPath<UTexture2D>("Assets/Icons/Toolbar/Stop.png"),  White, { EKeyCode::Escape } };
+	Stop = { "Stop",   "Stop",				UAssetManager::Get().LoadTexture(EditorResourcePaths::ToolbarStopIcon),  White, { EKeyCode::Escape } };
 
 	Stop.CanExecute = [this]()->bool {return PlayWorld; };
 	Stop.Execute = [this]() { RequestEndPlayMap(); };
@@ -872,7 +876,9 @@ void UEditorEngine::RenderOpaquePass(int32 ViewIndex, const FRenderingInfo& View
 	Renderer->SetViewMode(MultipleViewportsAdapter.GetViewMode(ViewIndex));
 
 	// 렌더 루프 — 반드시 RenderAll보다 먼저
-	SkyboxRenderer->OnRender(ViewProjection, ViewCameraLocation);
+	// 직교는 시선이 모두 평행해 파노라마의 한 점만 확대되므로 하늘을 그리지 않고 지우기 색을 배경으로 쓴다.
+	if (!MultipleViewportsAdapter.IsOrthographic(ViewIndex))
+		SkyboxRenderer->OnRender(ViewProjection, ViewCameraLocation);
 	if (bDrawPrimitives)
 	{
 		RenderCommand::SetRasterizerState(SceneRasterizerState);
@@ -972,7 +978,7 @@ void UEditorEngine::RenderOverlayPass(const int32 ViewIndex, UWorld& ViewWorld, 
 
 	RenderCommand::BeginRenderPass(PassInfo);
 
-	if (bShowEditorOverlay && ShowFlags.IsEnabled(EEngineShowFlag::Grid) && !ShowFlags.IsEnabled(EEngineShowFlag::DepthView))
+	if (bShowEditorOverlay && !ShowFlags.IsEnabled(EEngineShowFlag::DepthView))
 	{
 		// 라인 배처는 매 프레임 한 번만 비우고 한 번만 그린다.
 		// 바운딩박스는 그 안에 쌓이는 여러 항목 중 하나일 뿐이다.
@@ -998,11 +1004,12 @@ void UEditorEngine::RenderOverlayPass(const int32 ViewIndex, UWorld& ViewWorld, 
 
 	//그리드
 	//TODO : 그리드도 안개가 적용되어야하나..?
-	if (bShowEditorOverlay && ShowFlags.IsEnabled(EEngineShowFlag::Grid))
+	// 언리얼처럼 투영에 따라 방식을 고정한다. 원근은 PS 그리드, 직교는 보는 평면에 맞춘 배치 라인 그리드다.
+	if (bShowEditorOverlay)
 	{
 		const EGridPlane GridPlane = MultipleViewportsAdapter.GetGridPlane(ViewIndex);
 
-		if (ShowFlags.IsEnabled(EEngineShowFlag::PSGrid) && !MultipleViewportsAdapter.IsOrthographic(ViewIndex))
+		if (!MultipleViewportsAdapter.IsOrthographic(ViewIndex))
 		{
 			GridRenderer->OnRenderPSGrid(ViewProjection, ViewCameraLocation, SettingsPanel->GetSettings(), PassInfo.ViewportSetting);
 		}
@@ -1014,7 +1021,7 @@ void UEditorEngine::RenderOverlayPass(const int32 ViewIndex, UWorld& ViewWorld, 
 				ViewCameraForward,
 				GridPlane,
 				static_cast<float>(SettingsPanel->GetSettings().GridSpacing),
-				!MultipleViewportsAdapter.IsOrthographic(ViewIndex) ||
+				// 이 분기는 항상 직교다. 자유 직교 View만 세 축을 모두 그린다.
 				MultipleViewportsAdapter.GetCameraPreset(ViewIndex) == EMultipleViewportsCameraPreset::OrthographicView,
 				PassInfo.ViewportSetting
 			);
@@ -1090,16 +1097,29 @@ void UEditorEngine::RenderOverlayPass(const int32 ViewIndex, UWorld& ViewWorld, 
 
 	if (ShowFlags.IsEnabled(EEngineShowFlag::UUID))
 	{
+		// 월드 +Z가 아니라 화면 위쪽으로 띄워야 Top·Bottom처럼 Z축을 따라 보는 View에서도 물체를 가리지 않는다.
+		const FVector ScreenUp = MultipleViewportsAdapter.GetEngineCameraUp(ViewIndex);
+
 		for (AActor* Actor : ViewWorld.GetPersistentLevel()->GetActors())
 		{
 			if (!Actor)
 				continue;
 
 			FBox ActorBounds;
-			Actor->TryGetActorBounds(ActorBounds);
-			UUIDLocation.X = (ActorBounds.Min.X + ActorBounds.Max.X) * 0.5f;
-			UUIDLocation.Y = (ActorBounds.Min.Y + ActorBounds.Max.Y) * 0.5f;
-			UUIDLocation.Z = ActorBounds.Max.Z + 0.5f;
+			if (!Actor->TryGetActorBounds(ActorBounds))
+			{
+				const FVector ActorLocation = Actor->GetActorLocation();
+				ActorBounds.Min = ActorLocation;
+				ActorBounds.Max = ActorLocation;
+			}
+
+			const FVector Center = (ActorBounds.Min + ActorBounds.Max) * 0.5f;
+			const FVector HalfExtent = (ActorBounds.Max - ActorBounds.Min) * 0.5f;
+			// 바운드 박스가 화면 위쪽으로 뻗은 길이만큼 올린 뒤 여백을 더한다.
+			const float ExtentAlongUp = std::fabs(ScreenUp.X) * HalfExtent.X
+				+ std::fabs(ScreenUp.Y) * HalfExtent.Y
+				+ std::fabs(ScreenUp.Z) * HalfExtent.Z;
+			UUIDLocation = Center + ScreenUp * (ExtentAlongUp + 0.5f);
 
 			FString Text =
 				"UUID : " + std::to_string(Actor->GetUUID());
@@ -1246,9 +1266,9 @@ void UEditorEngine::UpdateGizmoAndPicking()
 		const auto ResolveBillboardTransform = [](const UBillboardComponent& Billboard, const void* Context) -> FMatrix
 		{
 			const auto& Adapter = *static_cast<const FMultipleViewportsAdapter*>(Context);
-			const FVector Scale = Billboard.GetWorldScale3D();
+			const FVector2 Size = Billboard.GetRenderSize();
 			return Adapter.BuildEngineBillboardMatrix(Adapter.GetActiveViewIndex(),
-				Billboard.GetWorldLocation(), Scale.Y, Scale.Z);
+				Billboard.GetWorldLocation(), Size.X, Size.Y);
 		};
 
 		// Gizmo에 사용한 Ray를 재사용하고, 월드의 피킹 결과를 선택에 직접 반영한다.
@@ -1421,6 +1441,22 @@ void UEditorEngine::StartPlayInEditorSession()
 
 	FWorldContext& PIEContext = CreateNewWorldContext(EWorldType::PIE);
 	PlayWorld = CreatePIEWorldByDuplication(PIEContext, EditorWorld);
+
+	// 게임 카메라는 월드마다 고정 위치에 새로 생기므로, 지금 편집 중인 View의 시점에서 시작하게 맞춘다.
+	if (PlayWorld && PlayWorld->GetMainCamera())
+	{
+		const FViewCamera& EditorCam = MultipleViewportsAdapter.GetViewCamera(MultipleViewportsAdapter.GetEditorViewIndex());
+		if (UCameraComponent* GameCam = PlayWorld->GetMainCamera()->GetCameraComponent())
+		{
+			GameCam->SetRelativeLocation(EditorCam.Transform.Location);
+			GameCam->SetRelativeRotation(EditorCam.Transform.Rotation.ToFRotator());
+			GameCam->SetFieldOfView(EditorCam.Projection.FovDegrees);
+			GameCam->SetNearZ(EditorCam.Projection.NearClip);
+			GameCam->SetFarZ(EditorCam.Projection.FarClip);
+			GameCam->SetIsOrthogonal(EditorCam.Projection.Mode == EProjectionMode::Orthographic);
+			GameCam->SetOrthoWidth(EditorCam.Projection.OrthoWidth);
+		}
+	}
 
 	OnActiveWorldChanged();
 }

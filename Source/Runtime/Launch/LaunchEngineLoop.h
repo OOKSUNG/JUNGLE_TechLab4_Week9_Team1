@@ -66,6 +66,8 @@ private:
 	FEngineConfig Config;
 
 	bool bIsRunning = false;
+	// GEngine->Init까지 성공했는지. 실패한 채 Exit하면 PreExit를 건너뛴다.
+	bool bEngineInitialized = false;
 
 	FFrameStats FrameStats;
 	uint64 PrevFrameCycles = 0;

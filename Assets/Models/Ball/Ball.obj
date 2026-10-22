@@ -1,6 +1,6 @@
 # Blender 5.2.1 LTS
 # www.blender.org
-mtllib CompareNormal.mtl
+mtllib Ball.mtl
 o Sphere002
 v -0.295736 0.267582 0.295735
 v -0.273757 0.289397 0.295932

@@ -20,8 +20,17 @@ FFogInfo UExponentialHeightFogComponent::GetFogInfo() const
 void UExponentialHeightFogComponent::PostEditChangeProperty(const FProperty& Property)
 {
 	Super::PostEditChangeProperty(Property);
-	
+	UpdateSceneFogInfo();
+}
 
+void UExponentialHeightFogComponent::OnTransformDirty()
+{
+	Super::OnTransformDirty();
+	UpdateSceneFogInfo();
+}
+
+void UExponentialHeightFogComponent::UpdateSceneFogInfo()
+{
 	AActor* OwnerActor = GetOwner();
 	if (!OwnerActor) return;
 

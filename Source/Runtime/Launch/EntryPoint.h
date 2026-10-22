@@ -10,7 +10,12 @@ extern UClass* GetEngineClass();
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	FEngineLoop EngineLoop;
-	if (!EngineLoop.PreInit(hInstance, GetEngineClass())) return -1;
+	if (!EngineLoop.PreInit(hInstance, GetEngineClass()))
+	{
+		// 실패 전까지 만든 GPU 자원·UObject를 정리하고 끝낸다.
+		EngineLoop.Exit();
+		return -1;
+	}
 
 	while (EngineLoop.Tick())
 	{

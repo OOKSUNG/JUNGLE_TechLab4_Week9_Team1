@@ -36,7 +36,7 @@
                             "OverrideMaterials": [],
                             "Parent": "DefaultSceneRoot",
                             "Properties": {
-                                "StaticMesh": "Models/Hitori/Hitori.obj",
+                                "StaticMesh": "Models/98K/98K.obj",
                                 "Transform": {
                                     "Location": {
                                         "X": 0.0,
@@ -54,8 +54,6 @@
                                         "Z": 1.0
                                     }
                                 },
-                                "bCastShadow": true,
-                                "bReceiveShadow": true,
                                 "bVisible": true
                             }
                         }
@@ -63,7 +61,7 @@
                     "Properties": {}
                 },
                 {
-                    "Class": "ADirectionalLightActor",
+                    "Class": "AActor",
                     "Components": [
                         {
                             "Class": "USceneComponent",
@@ -77,9 +75,9 @@
                                         "Z": 0.0
                                     },
                                     "Rotation": {
-                                        "Pitch": 0.0,
-                                        "Roll": 0.0,
-                                        "Yaw": 0.0
+                                        "Pitch": 27.898637771606445,
+                                        "Roll": -108.13107299804688,
+                                        "Yaw": -38.733821868896484
                                     },
                                     "Scale": {
                                         "X": 1.0,
@@ -91,61 +89,11 @@
                         },
                         {
                             "Class": "UDirectionalLightComponent",
-                            "Name": "UDirectionalLightComponent",
-                            "Parent": "",
+                            "Name": "UDirectionalLightComponent_0",
+                            "Parent": "DefaultSceneRoot",
                             "Properties": {
-                                "Intensity": 1.0,
+                                "Intensity": 2.5999999046325684,
                                 "LightColor": 4294967295,
-                                "ShadowBias": 0.0010000000474974513,
-                                "ShadowMapResolution": 1024,
-                                "Transform": {
-                                    "Location": {
-                                        "X": 0.0,
-                                        "Y": 2.3791987895965576,
-                                        "Z": 2.0032217502593994
-                                    },
-                                    "Rotation": {
-                                        "Pitch": 21.183658599853516,
-                                        "Roll": -3.361572742462158,
-                                        "Yaw": -56.425533294677734
-                                    },
-                                    "Scale": {
-                                        "X": 1.0,
-                                        "Y": 1.0,
-                                        "Z": 1.0
-                                    }
-                                },
-                                "bCastShadows": true,
-                                "bVisible": true
-                            }
-                        },
-                        {
-                            "Class": "UBillboardComponent",
-                            "Material": {
-                                "Base": "SubUVMaterial",
-                                "Instance": {
-                                    "BaseColor": {
-                                        "W": 1.0,
-                                        "X": 1.0,
-                                        "Y": 1.0,
-                                        "Z": 1.0
-                                    },
-                                    "BlendState": "AlphaBlend",
-                                    "Properties": {},
-                                    "SamplerState": "LinearClamp",
-                                    "Shininess": 32.0,
-                                    "Textures": [
-                                        "Assets/Icons/Directional.png"
-                                    ],
-                                    "UVScrollSpeed": [
-                                        0.0,
-                                        0.0
-                                    ]
-                                }
-                            },
-                            "Name": "UBillboardComponent",
-                            "Parent": "UDirectionalLightComponent",
-                            "Properties": {
                                 "Transform": {
                                     "Location": {
                                         "X": 0.0,
@@ -163,41 +111,6 @@
                                         "Z": 1.0
                                     }
                                 },
-                                "bCastShadow": true,
-                                "bReceiveShadow": true,
-                                "bVisible": true
-                            }
-                        },
-                        {
-                            "Class": "UStaticMeshComponent",
-                            "Name": "UArrowComponent",
-                            "OverrideMaterials": [
-                                {
-                                    "Asset": "EditorArrowMaterial"
-                                }
-                            ],
-                            "Parent": "UDirectionalLightComponent",
-                            "Properties": {
-                                "StaticMesh": "Arrow",
-                                "Transform": {
-                                    "Location": {
-                                        "X": 0.0,
-                                        "Y": 0.0,
-                                        "Z": 0.0
-                                    },
-                                    "Rotation": {
-                                        "Pitch": 90.0,
-                                        "Roll": 0.0,
-                                        "Yaw": 0.0
-                                    },
-                                    "Scale": {
-                                        "X": 0.30000001192092896,
-                                        "Y": 0.30000001192092896,
-                                        "Z": 0.5
-                                    }
-                                },
-                                "bCastShadow": true,
-                                "bReceiveShadow": true,
                                 "bVisible": true
                             }
                         }
@@ -224,9 +137,9 @@
                                         "Yaw": 0.0
                                     },
                                     "Scale": {
-                                        "X": 32.170005798339844,
-                                        "Y": 55.758358001708984,
-                                        "Z": 0.0004897056496702135
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
                                     }
                                 }
                             }
@@ -237,7 +150,7 @@
                             "OverrideMaterials": [],
                             "Parent": "DefaultSceneRoot",
                             "Properties": {
-                                "StaticMesh": "Cube",
+                                "StaticMesh": "Models/Ball/Ball.obj",
                                 "Transform": {
                                     "Location": {
                                         "X": 0.0,
@@ -255,8 +168,6 @@
                                         "Z": 1.0
                                     }
                                 },
-                                "bCastShadow": true,
-                                "bReceiveShadow": true,
                                 "bVisible": true
                             }
                         }
