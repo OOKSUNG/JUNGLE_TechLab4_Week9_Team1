@@ -39,6 +39,13 @@ public:
 		}
 	}
 
+	// Handlers 목록에서 HandleNum을 기반으로 해당 Number의 함수만 호출
+	void Execute(uint32 HandleNum, Args... args)
+	{
+		Handlers[HandleNum](args...);
+	}
+
+	// Handlers 목록에서 HandleNum을 기반으로 해당 Number의 함수 삭제
 	void Remove(uint32 HandleNumber)
 	{
 		Handlers.Remove(HandleNumber);
