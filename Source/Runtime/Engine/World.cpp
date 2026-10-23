@@ -133,9 +133,11 @@ void UWorld::Tick(float DeltaTime)
 				PathTracker.Tick(Level->GetActors(), DeltaTime);
 			}
 		}
+
+		GatherOverlap(); // 게임 중에만 충돌처리
 	}
 
-
+	
 }
 
 void UWorld::ClearWorld()
@@ -1131,4 +1133,90 @@ bool UWorld::HasVisibleShadowReceiver(const TArray<FFrustumPlanes>& ActiveViewFr
 			bHasReceiver = true;
 		});
 	return bHasReceiver;
+}
+
+void UWorld::GatherOverlap()
+{
+	LastFrameOverlapInfo = OverlapInfo;	// 이전 FrameOverlapInfo에 OverlapInfo 저장
+	ResetOverlap(); // 현재 FrameOverlapInfo를 리셋
+	for (int i = 0;i < GetScene().PrimitiveSceneProxies.Num();i++)
+	{
+		UPrimitiveComponent* PrimComp = GetScene().PrimitiveSceneProxies[i]->GetComponent();
+		if (PrimComp->IsEnableCollision())
+		{
+			FBox AABBfst = PrimComp->CalcBounds();
+			for (int j = i+1;j < GetScene().PrimitiveSceneProxies.Num();j++)
+			{
+				UPrimitiveComponent* SecondComp = GetScene().PrimitiveSceneProxies[j]->GetComponent();
+				if (SecondComp->IsEnableCollision()) {
+					FBox AABBsec = SecondComp->CalcBounds();
+					if ((AABBfst.Min.X <= AABBsec.Max.X && AABBfst.Max.X >= AABBsec.Min.X) &&	// AABB 간단 충돌 판정
+						(AABBfst.Min.Y <= AABBsec.Max.Y && AABBfst.Max.Y >= AABBsec.Min.Y) &&
+						(AABBfst.Min.Z <= AABBsec.Max.Z && AABBfst.Max.Z >= AABBsec.Min.Z))
+					{
+						AddOverlap(std::min(PrimComp->GetUUID(), SecondComp->GetUUID()), std::max(PrimComp->GetUUID(), SecondComp->GetUUID()));	// 작은 UUID -> 큰 UUID 순 정렬
+						// 프레임 사이에 순서만 반대인 쌍이 중복계산 되는것을 방지하기 위함
+					}
+				}
+			}		
+		}
+	}
+
+	// To-Do : 정밀 판정 부분 추가, OverlapInfo 정보에 담아서 처리
+
+
+	for (int i = 0; i < OverlapInfo.Num();i++)
+	{
+		if (LastFrameOverlapInfo.Find(OverlapInfo[i]) == -1)
+		{
+			if (FindPrimitiveByUUID(OverlapInfo[i].OverlapFirst))
+			{
+				FindPrimitiveByUUID(OverlapInfo[i].OverlapFirst)->OnBeginOverlap();	// 새로운 OverlapInfo의 요소를 이전 OverlapInfo에서 찾지 못함 => BeginOverlap()
+			}
+			if (FindPrimitiveByUUID(OverlapInfo[i].OverlapSecond))
+			{
+				FindPrimitiveByUUID(OverlapInfo[i].OverlapSecond)->OnBeginOverlap();
+			}
+		}
+	}
+
+	for (int i = 0; i < LastFrameOverlapInfo.Num();i++)
+	{
+		if (OverlapInfo.Find(LastFrameOverlapInfo[i]) == -1)
+		{
+			if (FindPrimitiveByUUID(LastFrameOverlapInfo[i].OverlapFirst))
+			{
+				FindPrimitiveByUUID(LastFrameOverlapInfo[i].OverlapFirst)->OnEndOverlap(); // 이전 OverlapInfo의 요소를 새로운 OverlapInfo에서 찾지 못함 => EndOverlap()
+			}
+			if (FindPrimitiveByUUID(LastFrameOverlapInfo[i].OverlapSecond))
+			{
+				FindPrimitiveByUUID(LastFrameOverlapInfo[i].OverlapSecond)->OnEndOverlap();
+			}
+		}
+	}
+}
+
+void UWorld::AddOverlap(uint32 OverlapFirst, uint32 OverlapSecond)
+{
+	FOverlapInfo OverlapInf;
+	OverlapInf.OverlapFirst = OverlapFirst;
+	OverlapInf.OverlapSecond = OverlapSecond;
+	OverlapInfo.Add(OverlapInf);
+}
+
+void UWorld::ResetOverlap()
+{
+	OverlapInfo.Reset();
+}
+
+UPrimitiveComponent* UWorld::FindPrimitiveByUUID(uint32 UUID)
+{
+	for (int i = 0;i < GetScene().PrimitiveSceneProxies.Num();i++)
+	{
+		if (GetScene().PrimitiveSceneProxies[i]->GetComponent()->GetUUID() == UUID)
+		{
+			return GetScene().PrimitiveSceneProxies[i]->GetComponent();
+		}
+	}
+	return nullptr;
 }

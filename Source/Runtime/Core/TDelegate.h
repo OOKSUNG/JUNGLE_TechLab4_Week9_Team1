@@ -32,29 +32,29 @@ public:
 	}
 
 	// Handlers 목록에 있는 함수들 전부 실행
+	// Todo : Instance가 중간에 Null이 된 경우 등 예외처리
 	void Broadcast(Args... args)
 	{
 		for (auto it = Handlers.begin();it != Handlers.end();it++)
 		{
-			if (it->first == nullptr) continue;
 			it->second(args...);
 		}
 	}
 
 	// Handlers 목록에서 HandleNum을 기반으로 해당 Number의 함수만 호출
+	// Todo : Instance가 중간에 Null이 된 경우 등 예외처리
 	void Execute(uint32 HandleNum, Args... args)
 	{
 		if (auto* Handler = Handlers.Find(HandleNum))
 		{
-			if (*Handler->first == nullptr) continue;
 			(*Handler)(args...);
 		}
 	}
 
 	// Handlers 목록에서 HandleNum을 기반으로 해당 Number의 함수 삭제
-	void Remove(uint32 HandleNumber)
+	void RemoveHandler(uint32 HandleNumber)
 	{
-		if (Handlers.Num() == 0) return;
+		if (Handlers.Num() == 0 || Handlers.Find(HandleNumber)==nullptr) return;
 		Handlers.Remove(HandleNumber);
 	}
 

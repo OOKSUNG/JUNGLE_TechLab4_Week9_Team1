@@ -168,3 +168,18 @@ bool UPrimitiveComponent::TraceMeshLocal(const FRay& LocalRay, const FStaticMesh
 {
 	return RayIntersectsMesh(LocalRay, Mesh, OutT);
 }
+
+void UPrimitiveComponent::OnBeginOverlap()
+{
+	//DelegateWhenBeginOverlap.Broadcast();
+}
+
+void UPrimitiveComponent::OnEndOverlap()
+{
+	//DelegateWhenEndOverlap.Broadcast();
+}
+
+void UPrimitiveComponent::OnHit()
+{
+	//DelegateWhenHit.Broadcast();
+}
