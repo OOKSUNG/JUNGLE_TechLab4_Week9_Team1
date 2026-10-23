@@ -1,6 +1,8 @@
 #include "EnginePCH.h"
 #include "ShapeComponent.h"
 
+   
+
 bool UShapeComponent::ShouldCreateRenderState() const
 {
 	return false;

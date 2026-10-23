@@ -1,5 +1,9 @@
 #pragma once
 
+#include "Core/Types.h"
+#include "Math/Vector.h"
+#include "Math/Quat.h"
+
 enum class ECollisionShape : uint8
 {
 	None,
