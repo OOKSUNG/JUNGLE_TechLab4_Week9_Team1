@@ -81,7 +81,7 @@ void UProjectileMovementComponent::TickComponent(float DeltaTime)
 		Hit.Time = 1.0f;
 		const FVector OldVelocity = Velocity;
 		const FVector MoveDelta = ComputeMoveDelta(OldVelocity, TimeTick);
-		FRotator NewRotation = bRotationFollowsVelocity ? FRotator(OldVelocity) : UpdatedComponent->GetRelativeRotation();
+		FRotator NewRotation = bRotationFollowsVelocity ? FRotator(OldVelocity) : UpdatedComponent->GetWorldRotation();
 		
 		// Rotation
 		if (bRotationFollowsVelocity)

@@ -10,7 +10,7 @@ void URotatingMovementComponent::TickComponent(float DeltaTime)
 		return;
 	}
 
-	const FQuat OldRotation = UpdatedComponent->GetRelativeRotationQuat();
+	const FQuat OldRotation = UpdatedComponent->GetWorldRotation().Quaternion();
 	const FQuat DeltaRotation = (RotationRate * DeltaTime).Quaternion();
 	const FQuat NewRotation = bRotaionInLocalSpace ? (OldRotation * DeltaRotation) : (DeltaRotation * OldRotation);
 

@@ -231,16 +231,17 @@ void USceneComponent::SetWorldLocationAndRotation(FVector NewLocation, FRotator 
 		NewRelRotation = NewRelQuat.ToFRotator();
 	}
 
-	SetRelativeLocationAndRotation(NewLocation, NewRelRotation);
+	SetRelativeLocationAndRotation(NewRelLocation, NewRelRotation);
 }
 
 void USceneComponent::SetWorldScale3D(FVector NewScale)
 {
 }
 
+// Delta와 NewRotation은 월드 기준이다. 부모에 붙어 있으면 Transform.Location은 상대 좌표라 월드 위치에서 출발해야 한다.
 bool USceneComponent::MoveComponent(const FVector& Delta, const FRotator& NewRotation, bool bSweep, FHitResult* Hit)
-{		
-	SetWorldLocationAndRotation(Transform.Location + Delta, NewRotation, bSweep);
+{
+	SetWorldLocationAndRotation(GetWorldLocation() + Delta, NewRotation, bSweep);
 
 	return true;
 }
