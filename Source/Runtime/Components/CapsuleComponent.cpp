@@ -4,7 +4,7 @@
 
 FCollisionShape UCapsuleComponent::GetCollisionShape() const
 {
-	return {};
+	return FCollisionShape::MakeCapsule(GetScaledCapsuleRadius(), GetScaledCapsuleHalfHeight());
 }
 
 FBox UCapsuleComponent::CalcLocalBounds() const

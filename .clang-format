@@ -18,3 +18,4 @@ MacroBlockBegin: "^REFLECT_START"
 MacroBlockEnd: "^REFLECT_END"
 Cpp11BracedListStyle: false
 MaxEmptyLinesToKeep: 3
+FixNamespaceComments: false

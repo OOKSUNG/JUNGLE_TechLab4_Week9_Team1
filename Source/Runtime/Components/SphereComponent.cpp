@@ -4,7 +4,7 @@
 
 FCollisionShape USphereComponent::GetCollisionShape() const
 {
-	return {};
+	return FCollisionShape::MakeSphere(GetScaledSphereRadius());
 }
 
 FBox USphereComponent::CalcLocalBounds() const

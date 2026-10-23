@@ -4,7 +4,7 @@
 
 FCollisionShape UBoxComponent::GetCollisionShape() const
 {
-	return {};
+	return FCollisionShape::MakeBox(GetScaledBoxExtent());
 }
 
 FBox UBoxComponent::CalcLocalBounds() const
