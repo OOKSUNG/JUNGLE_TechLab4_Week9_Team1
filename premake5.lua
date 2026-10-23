@@ -147,13 +147,8 @@ project "HitoriEngine"
 		"%{IncludeDir.DDSLoader}",
 	}
 
-	links
-	{
-		"d3d11.lib",
-		"dxgi.lib",
-		"dxguid.lib",
-		"d3dcompiler.lib",
-	}
+	-- D3D 시스템 lib는 exe(HitoriEditor)에서 링크한다. 정적 lib에 넣으면 import lib가 엔진 lib 안에 합쳐져
+	-- /WHOLEARCHIVE로 강제 링크할 때 __NULL_IMPORT_DESCRIPTOR가 중복 정의된다.
 
 	filter "files:Source/ThirdParty/DDSLoader/**.cpp"
 		enablepch "Off"
@@ -169,6 +164,10 @@ project "HitoriEditor"
 	pchsource "Source/Editor/EditorPCH.cpp"
 
 	links { "HitoriEngine", "ImGui" }
+
+	-- 엔진은 정적 라이브러리라 exe가 참조하지 않는 .obj는 링크에서 빠지고,
+	-- 그 안의 클래스 자동 등록(DECLARE_CLASS의 FAutoRegister)도 실행되지 않는다. 엔진 전체를 강제로 링크한다.
+	linkoptions { "/WHOLEARCHIVE:HitoriEngine.lib" }
 
 	files
 	{
