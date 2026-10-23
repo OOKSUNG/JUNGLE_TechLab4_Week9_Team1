@@ -12,8 +12,6 @@ USceneComponent::~USceneComponent()
 		Child->AttachParent = nullptr;
 	}
 	AttachChildren.Reset();
-
-	DetachFromParent();
 }
 
 void USceneComponent::SetRelativeLocationAndRotation(const FVector& NewLocation, const FRotator& NewRotation)
@@ -236,6 +234,18 @@ void USceneComponent::SetWorldLocationAndRotation(FVector NewLocation, FRotator 
 
 void USceneComponent::SetWorldScale3D(FVector NewScale)
 {
+	FVector NewRelScale = NewScale;
+
+	// GetWorldScale3D가 부모 스케일을 축별로 곱하므로 반대로 나눈다.
+	if (AttachParent)
+	{
+		const FVector ParentScale = AttachParent->GetWorldScale3D();
+		NewRelScale.X = ParentScale.X != 0.0f ? NewScale.X / ParentScale.X : 0.0f;
+		NewRelScale.Y = ParentScale.Y != 0.0f ? NewScale.Y / ParentScale.Y : 0.0f;
+		NewRelScale.Z = ParentScale.Z != 0.0f ? NewScale.Z / ParentScale.Z : 0.0f;
+	}
+
+	SetRelativeScale3D(NewRelScale);
 }
 
 // Delta와 NewRotation은 월드 기준이다. 부모에 붙어 있으면 Transform.Location은 상대 좌표라 월드 위치에서 출발해야 한다.

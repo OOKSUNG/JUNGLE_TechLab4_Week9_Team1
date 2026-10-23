@@ -20,6 +20,7 @@ public:
 
 	virtual void InitializeComponent() {};
 	virtual void BeginPlay() {};
+	virtual void EndPlay() {};
 	virtual void TickComponent(float DeltaTime)
 	{
 	};

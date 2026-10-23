@@ -95,7 +95,6 @@ bool FRenderer::Init()
 	bUsePerObjectSlots = RenderCommand::SupportsConstantBufferOffsets();
 	PerObjectCB = RenderCommand::CreateConstantBuffer(sizeof(FPerObjectConstants));
 	ViewCB = RenderCommand::CreateConstantBuffer(sizeof(FViewConstants));
-	// FireBallLightCB = RenderCommand::CreateConstantBuffer(sizeof(FFireBallLightConstants));
 	LightingCB = RenderCommand::CreateConstantBuffer(sizeof(FLightingConstants));
 	LightCullingCB = RenderCommand::CreateConstantBuffer(sizeof(FLightCullingConstants));
 	GridLightingCB = RenderCommand::CreateConstantBuffer(sizeof(FLightGridConstants));

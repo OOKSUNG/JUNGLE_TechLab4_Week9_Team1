@@ -191,13 +191,6 @@ struct FOcclusionMeasureResult
 	uint32 FalseCulls = 0;        // 그중 실제로는 픽셀이 보인 드로우 수. 0이어야 한다
 };
 
-struct alignas(16) FFireBallLight
-{
-	FVector4 PositionRadius; // xyz: 위치, w: 반경
-	FVector4 ColorIntensity; // rgb: 색상, w: 강도
-	FVector4 FalloffEnabled; // x: 반경 감쇠, y: 사용 여부, zw: 패딩
-};
-
 struct alignas(16) FLightCullingConstants
 {
 	FMatrix View;
@@ -308,7 +301,6 @@ public:
 	uint8* BeginObjectConstants(uint32 MaxSlots);
 	void EndObjectConstants();
 
-	//void SetFireBallLight(const FFireBallLightConstants& LightConstants);
 	void SetLighting(FLightingConstants& LightingConstants, const TArray<FLightRenderParameters>& InLocalLights);
 
 	// 이후 그리는 UberLit 머티리얼이 쓸 조명 모델. View마다 RenderOpaque 전에 설정한다.
@@ -409,10 +401,7 @@ private:
 
 	TArray<FSortEntry> SortEntries;
 
-	// TUniquePtr<FConstantBuffer> FireBallLightCB;
-	// FFireBallLightConstants FireBallLightData{};
-
-	// UberLit의 b4. FireBall이 b3를 쓰는 동안은 슬롯을 나눠 둔다.
+	// UberLit의 b4. b3는 쓰지 않는다.
 	TUniquePtr<FConstantBuffer> LightingCB;
 	TUniquePtr<FConstantBuffer> LightCullingCB{};
 

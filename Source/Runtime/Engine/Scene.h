@@ -19,12 +19,6 @@ struct FExponentialHeightFogSceneInfo
 	FFogInfo FogInfo;
 };
 
-struct FLightSceneInfo
-{
-	uint32 Id;
-	
-};
-
 class FScene
 {
 public:

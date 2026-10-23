@@ -106,7 +106,7 @@ cbuffer PerObjectConstants : register(b2)
     uint3 ObjectPadding;
 };
 
-// b3는 FireBall이 쓰는 동안 비워 둔다.
+// b3는 쓰지 않는다.
 
 cbuffer Lighting : register(b4)
 {
