@@ -13,7 +13,7 @@ class TDelegate
 public:
 	using HandlerType = std::function<void(Args...)>;
 
-	// 일반 함수나 람다 등록, 등록 후 해당 Handle에 대한 번호 return
+	// 일반 함수나 람다 바인딩, 등록 후 해당 Handle에 대한 번호 return
 	uint32 Add(const HandlerType& handler)
 	{
 		CurrentHandleNum++;
@@ -21,13 +21,14 @@ public:
 		return CurrentHandleNum;
 	}
 
-	// 클래스 멤버 함수 등록, 람다로 handler 생성후 목록에 저장, 등록 후 해당 Handle에 대한 번호 return
+	// 클래스 멤버 함수 바인딩, 람다로 handler 생성후 목록에 저장, 등록 후 해당 Handle에 대한 번호 return
 	template<typename T>
 	uint32 AddDynamic(T* Instance, void (T::* Func)(Args...))
 	{
-		HandlerType handler = [Instance, Func](Args... args) -> void {(Instance->*Func)(args);};
+		HandlerType handler = [Instance, Func](Args... args) -> void {(Instance->*Func)(args...);};
 		CurrentHandleNum++;
 		Handlers.Add(CurrentHandleNum, handler);
+		return CurrentHandleNum;
 	}
 
 	// Handlers 목록에 있는 함수들 전부 실행
@@ -35,6 +36,7 @@ public:
 	{
 		for (auto it = Handlers.begin();it != Handlers.end();it++)
 		{
+			if (it->first == nullptr) continue;
 			it->second(args...);
 		}
 	}
@@ -44,13 +46,15 @@ public:
 	{
 		if (auto* Handler = Handlers.Find(HandleNum))
 		{
-			(*Handlers)(args...);
+			if (*Handler->first == nullptr) continue;
+			(*Handler)(args...);
 		}
 	}
 
 	// Handlers 목록에서 HandleNum을 기반으로 해당 Number의 함수 삭제
 	void Remove(uint32 HandleNumber)
 	{
+		if (Handlers.Num() == 0) return;
 		Handlers.Remove(HandleNumber);
 	}
 
