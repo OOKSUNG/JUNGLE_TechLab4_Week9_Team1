@@ -17,7 +17,7 @@ public:
 	uint32 Add(const HandlerType& handler)
 	{
 		CurrentHandleNum++;
-		Handlers.Add(handler);
+		Handlers.Add(CurrentHandleNum, handler);
 		return CurrentHandleNum;
 	}
 
@@ -27,22 +27,25 @@ public:
 	{
 		HandlerType handler = [Instance, Func](Args... args) -> void {(Instance->*Func)(args);};
 		CurrentHandleNum++;
-		Handlers.Add(CurrentHandleNum,handler);
+		Handlers.Add(CurrentHandleNum, handler);
 	}
 
 	// Handlers 목록에 있는 함수들 전부 실행
 	void Broadcast(Args... args)
 	{
-		for (int i = 0; i < Handlers.Num();i++)
+		for (auto it = Handlers.begin();it != Handlers.end();it++)
 		{
-			Handlers[i](args...);
+			it->second(args...);
 		}
 	}
 
 	// Handlers 목록에서 HandleNum을 기반으로 해당 Number의 함수만 호출
 	void Execute(uint32 HandleNum, Args... args)
 	{
-		Handlers[HandleNum](args...);
+		if (auto* Handler = Handlers.Find(HandleNum))
+		{
+			(*Handlers)(args...);
+		}
 	}
 
 	// Handlers 목록에서 HandleNum을 기반으로 해당 Number의 함수 삭제
