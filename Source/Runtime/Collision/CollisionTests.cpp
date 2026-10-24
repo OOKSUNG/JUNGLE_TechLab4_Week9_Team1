@@ -229,6 +229,31 @@ namespace
 		delete A;
 		delete B;
 	}
+
+	void TestBoxOverlap()
+	{
+		const FCollisionShape Unit = FCollisionShape::MakeBox(FVector(1.0f, 1.0f, 1.0f));
+		const FQuat Identity;
+		const FQuat Yaw45 = MakeRotation(0.0f, 45.0f, 0.0f);
+
+		// 면끼리
+		CHECK_TRUE(Collision::Overlap(Unit, FVector(0, 0, 0), Identity, Unit, FVector(2.0f, 0, 0), Identity));
+		CHECK_TRUE(!Collision::Overlap(Unit, FVector(0, 0, 0), Identity, Unit, FVector(2.01f, 0, 0), Identity));
+
+		// AABB는 겹치지만 실제로는 떨어짐
+		CHECK_TRUE(!Collision::Overlap(Unit, FVector(0, 0, 0), Identity, Unit, FVector(2.0f, 2.0f, 0), Yaw45));
+		CHECK_TRUE(Collision::Overlap(Unit, FVector(0, 0, 0), Identity, Unit, FVector(1.7f, 1.7f, 0), Yaw45));
+
+		// 포함, 같은 박스
+		CHECK_TRUE(Collision::Overlap(Unit, FVector(0, 0, 0), Identity, FCollisionShape::MakeBox(FVector(0.2f, 0.2f, 0.2f)), FVector(0.3f, 0.3f, 0.3f), Yaw45));
+		CHECK_TRUE(Collision::Overlap(Unit, FVector(0, 0, 0), Identity, Unit, FVector(0, 0, 0), Identity));
+
+		// 면 축 6개로는 못 거르고 모서리 외적 축으로만 분리되는 경우
+		const FCollisionShape Stick = FCollisionShape::MakeBox(FVector(0.3f, 2.0f, 0.3f));
+		const FQuat Tilted = MakeRotation(45.0f, 30.0f, 0.0f);
+		CHECK_TRUE(!Collision::Overlap(Unit, FVector(0, 0, 0), Identity, Stick, FVector(1.7f, 1.7f, 0), Tilted));
+		CHECK_TRUE(Collision::Overlap(Unit, FVector(0, 0, 0), Identity, Stick, FVector(1.2f, 1.2f, 0), Tilted));
+	}
 }
 
 int32 Collision::RunSelfTests()
@@ -242,6 +267,7 @@ int32 Collision::RunSelfTests()
 	TestComponentShapes();
 	TestSegmentClosestPoints();
 	TestCapsuleOverlap();
+	TestBoxOverlap();
 
 	if (NumFailed == 0)
 	{

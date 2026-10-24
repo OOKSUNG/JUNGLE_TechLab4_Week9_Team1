@@ -83,6 +83,11 @@ bool Collision::Overlap(const FCollisionShape& A, const FVector& PosA, const FQu
 	}
 	else if (A.IsBox() && B.IsBox())
 	{
+		FOrientedBox BoxA = Collision::ToOrientedBox(A, PosA, RotA);
+		FOrientedBox BoxB = Collision::ToOrientedBox(B, PosB, RotB);
+		FCollisionContact C;
+
+		return OverlapBoxBox(BoxA, BoxB, &C);
 	}
 
 	return false;
@@ -103,7 +108,63 @@ bool Collision::OverlapCapsuleBox(const FCapsuleSegment& Capsule, const FOriente
 
 bool Collision::OverlapBoxBox(const FOrientedBox& A, const FOrientedBox& B, FCollisionContact* OutContact)
 {
-	return false;
+	constexpr float Epsilon = 1e-6f;
+
+	float R[3][3];
+	float AbsR[3][3];
+	for (int32 i = 0; i < 3; ++i)
+	{
+		for (int32 j = 0; j < 3; ++j)
+		{
+			R[i][j] = A.Axis[i].Dot(B.Axis[j]);
+			AbsR[i][j] = std::abs(R[i][j]) + Epsilon;
+		}
+	}
+
+	const FVector Offset = B.Center - A.Center;
+	const float T[3] = { Offset.Dot(A.Axis[0]), Offset.Dot(A.Axis[1]), Offset.Dot(A.Axis[2]) };
+
+	const FVector& EA = A.Extent;
+	const FVector& EB = B.Extent;
+
+	// A의 축
+	for (int32 i = 0; i < 3; ++i)
+	{
+		const float RA = EA[i];
+		const float RB = EB[0] * AbsR[i][0] + EB[1] * AbsR[i][1] + EB[2] * AbsR[i][2];
+		if (std::abs(T[i]) > RA + RB)
+			return false;
+	}
+
+	// B의 축
+	for (int32 j = 0; j < 3; ++j)
+	{
+		const float RA = EA[0] * AbsR[0][j] + EA[1] * AbsR[1][j] + EA[2] * AbsR[2][j];
+		const float RB = EB[j];
+		const float Dist = T[0] * R[0][j] + T[1] * R[1][j] + T[2] * R[2][j];
+		if (std::abs(Dist) > RA + RB)
+			return false;
+	}
+
+	// A[i] x B[j]
+	for (int32 i = 0; i < 3; ++i)
+	{
+		const int32 I1 = (i + 1) % 3;
+		const int32 I2 = (i + 2) % 3;
+		for (int32 j = 0; j < 3; ++j)
+		{
+			const int32 J1 = (j + 1) % 3;
+			const int32 J2 = (j + 2) % 3;
+
+			const float RA = EA[I1] * AbsR[I2][j] + EA[I2] * AbsR[I1][j];
+			const float RB = EB[J1] * AbsR[i][J2] + EB[J2] * AbsR[i][J1];
+			const float Dist = T[I2] * R[I1][j] - T[I1] * R[I2][j];
+			if (std::abs(Dist) > RA + RB)
+				return false;
+		}
+	}
+
+	return true;
 }
 
 FVector Collision::ClosestPointOnSegment(const FVector& P, const FVector& A, const FVector& B)
