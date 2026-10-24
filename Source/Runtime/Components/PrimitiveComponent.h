@@ -25,10 +25,10 @@ class UPrimitiveComponent :public USceneComponent
 {
 	DECLARE_CLASS(UPrimitiveComponent, USceneComponent)
 
-	// DECLARE_DELEGATE(DelegateWhenBeginOverlap, ...)
-	// DECLARE_DELEGATE(DelegateWhenEndOverlap, ...)
-	// DECLARE_DELEGATE(DelegateWhenHit ...)
-	// Begin, End, Hit에서 사용할 인자가 결정되었을때 추가
+	DECLARE_DELEGATE(DelegateWhenBeginOverlap)
+	DECLARE_DELEGATE(DelegateWhenEndOverlap)
+	DECLARE_DELEGATE(DelegateWhenHit)
+	// To-Do : Begin, End, Hit에서 사용할 인자가 결정되었을때 뒤에 추가
 
 	// Material은 여기서 등록하지 않는다. 컴포넌트마다 머티리얼을 다루는 방식이 달라서
 	// (빌보드는 단일 머티리얼, 스태틱 메시는 슬롯별 덮어쓰기) 각자 등록한다.
