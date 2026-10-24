@@ -37,6 +37,8 @@ namespace
 UPrimitiveComponent::UPrimitiveComponent()
 {
 	//SetMaterial(UAssetManager::GetAssetByPath<UMaterial>("DefaultMaterial"));
+	DelegateWhenBeginOverlap.Add([](){ HTR_LOG(Info, "BeginOverlap"); });
+	DelegateWhenEndOverlap.Add([]() { HTR_LOG(Info, "EndOverlap"); });
 }
 
 UPrimitiveComponent::~UPrimitiveComponent()
@@ -167,4 +169,19 @@ bool UPrimitiveComponent::TraceMesh(const FRay& WorldRay, const FStaticMeshData&
 bool UPrimitiveComponent::TraceMeshLocal(const FRay& LocalRay, const FStaticMeshData& Mesh, float& OutT)
 {
 	return RayIntersectsMesh(LocalRay, Mesh, OutT);
+}
+
+void UPrimitiveComponent::OnBeginOverlap()
+{
+	DelegateWhenBeginOverlap.Broadcast();
+}
+
+void UPrimitiveComponent::OnEndOverlap()
+{
+	DelegateWhenEndOverlap.Broadcast();
+}
+
+void UPrimitiveComponent::OnHit()
+{
+	//DelegateWhenHit.Broadcast();
 }

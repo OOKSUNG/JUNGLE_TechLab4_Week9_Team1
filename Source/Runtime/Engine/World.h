@@ -33,6 +33,18 @@ struct FRenderStats
 	void Reset() { *this = FRenderStats(); }
 };
 
+struct FOverlapInfo
+{
+	uint32 OverlapFirst;
+	uint32 OverlapSecond;
+
+	bool operator==(const FOverlapInfo& other) const
+	{
+		if (this->OverlapFirst == other.OverlapFirst && this->OverlapSecond == other.OverlapSecond) return true;
+		else return false;
+	}
+};
+
 class UWorld : public UObject
 {
 	DECLARE_CLASS(UWorld, UObject)
@@ -133,6 +145,11 @@ public:
 
 	using Super::Serialize;
 	virtual void Serialize(FStructuredArchive::FRecord Record) override;
+
+	void GatherOverlap();
+	void AddOverlap(uint32 OverlapFirst, uint32 OverlapSecond);
+	void ResetOverlap();
+	UPrimitiveComponent* FindPrimitiveByUUID(uint32 UUID);
 private:
 	// 활성 Lit View 중 하나에서 Receiver 후보가 보이면 유지한다.
 	// LocalLight와 ReceiverFrustum은 지정한 경우에만 영향 구와 투영 범위를 제한한다.
@@ -185,6 +202,8 @@ private:
 	// 메인 스레드의 동적 수집에서 View마다 내용을 바꾸고 용량은 재사용한다.
 	TArray<int32> ParticleOrder;
 	TArray<float> ParticleDistances;
+	TArray<FOverlapInfo> OverlapInfo;
+	TArray<FOverlapInfo> LastFrameOverlapInfo;
 
 	FRenderStats RenderStats;
 
