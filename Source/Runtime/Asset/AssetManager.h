@@ -8,11 +8,6 @@
 #include <filesystem>
 #include <functional>
 
-enum class EAssetType
-{
-
-};
-
 class UStaticMesh;
 class FShader;
 

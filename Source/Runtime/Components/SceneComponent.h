@@ -90,14 +90,8 @@ public:
 	FVector ComponentVelocity;
 
 protected:
-
-	bool bTransformDirty;
 	FTransform Transform;
 
 	USceneComponent* AttachParent = nullptr; // Attach 부모 정보
 	TArray<USceneComponent*> AttachChildren;
-
-	bool bAbsoluteLocation = false;
-	bool bAbsoluteRotation = false;
-	bool bAbsoluteScale = false;
 };

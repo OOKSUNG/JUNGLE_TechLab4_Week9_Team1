@@ -20,6 +20,7 @@
 #include "Camera/CameraComponent.h"
 // 피킹 결과와 View별 Billboard 행렬 공급에 사용한다.
 #include "Collision/HitResult.h"
+#include "Collision/CollisionTests.h"
 #include "Components/BillboardComponent.h"
 #include "GameFramework/Actor/LightActorBase.h"
 
@@ -45,6 +46,8 @@
 #include "Engine/DirectionalLightSceneProxy.h"
 #include "Core/Stats/ShadowStats.h"
 #include "Math/Frustum.h"
+
+#include "Components/ShapeComponent.h"
 
 namespace
 {
@@ -100,6 +103,11 @@ bool UEditorEngine::Init()
 
 	OutputLogPanel = EditorUI->AddEditorPanel<FOutputLogPanel>();
 	FLog::AddSink(OutputLogPanel);
+
+#if defined(ENGINE_DEBUG)
+	// 로그 패널이 생긴 뒤에 돌려야 결과가 Output Log에 보인다.
+	Collision::RunSelfTests();
+#endif
 	OutputLogPanel->SetCommandHandler(
 		[this](const FString& CommandLine, FString& OutMessage)
 		{
@@ -728,8 +736,6 @@ void UEditorEngine::RenderMultipleViewports()
 		{
 			SCOPE_CYCLE_COUNTER(STAT_PrepareRenderViews);
 
-			// FireBall 라이트 상수는 Renderer 공용 상태라 월드가 바뀌면 다시 올린다.
-			// ViewWorld->GetScene().UpdateFireBallLight(Renderer);
 			ViewWorld->GetScene().UpdateLights(Renderer);
 			PreparedWorld = ViewWorld;
 		}
@@ -757,7 +763,6 @@ void UEditorEngine::RenderMultipleViewports()
 		{
 			SCOPE_CYCLE_COUNTER(STAT_PrepareRenderViews);
 
-			//ViewWorld->GetScene().UpdateFireBallLight(Renderer);
 			ViewWorld->GetScene().UpdateLights(Renderer);
 			PreparedWorld = ViewWorld;
 		}
@@ -987,7 +992,6 @@ void UEditorEngine::RenderOverlayPass(const int32 ViewIndex, UWorld& ViewWorld, 
 		if (ShowFlags.IsEnabled(EEngineShowFlag::Bounds))
 		{
 			LineBatcher->BuildVertexBuffer(ViewWorld);
-			ViewWorld.GetPathTracker().OnRender(LineBatcher.get());
 		}
 
 		// 선택된 액터가 라이트면 원뿔을 같이 쌓는다
@@ -997,6 +1001,33 @@ void UEditorEngine::RenderOverlayPass(const int32 ViewIndex, UWorld& ViewWorld, 
 			{
 				LightActor->GetLightComponent()->DrawDebug(LineBatcher.get());
 			}
+		}
+
+		TArray<UShapeComponent*> Shapes;
+		for (auto Iter = TObjectIterator<UShapeComponent>(); Iter; Iter++)
+		{
+			if (Iter->GetWorld() == &ViewWorld)
+				Shapes.Add(*Iter);
+		}
+
+		// 임시: 3번의 Overlap 단계가 붙으면 그 결과로 교체
+		const AActor* SelectedActor = Gizmo->GetTarget() ? Gizmo->GetTarget()->GetOwner() : nullptr;
+		for (UShapeComponent* Shape : Shapes)
+		{
+			if (Shape->ShouldDrawOnlyIfSelected() && Shape->GetOwner() != SelectedActor)
+				continue;
+
+			bool bOverlapping = false;
+			for (UShapeComponent* Other : Shapes)
+			{
+				if (Shape->IsOverlapping(*Other))
+				{
+					bOverlapping = true;
+					break;
+				}
+			}
+
+			Shape->DrawDebug(*LineBatcher, bOverlapping);
 		}
 
 		LineBatcher->OnRender(ViewProjection);

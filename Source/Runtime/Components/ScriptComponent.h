@@ -23,8 +23,11 @@ public:
 
 	bool CreateScriptFromTemplate(const FString& SceneName, const FString& ActorName);
 	bool LoadScript();
+	bool EnsureScriptFile();
 
 	void BindScriptContext();
+
+	const FString& GetScriptPath() const { return ScriptPath; }
 
 private:
 	sol::environment Environment;

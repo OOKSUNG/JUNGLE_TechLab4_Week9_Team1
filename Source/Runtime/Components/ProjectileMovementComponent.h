@@ -6,7 +6,7 @@ class UProjectileMovementComponent : public UMovementComponent
 	DECLARE_CLASS(UProjectileMovementComponent, UMovementComponent)
 
 		REFLECT_START(ClassName)
-			PROPERTY(InintialSpeed)
+			PROPERTY(InitialSpeed)
 			PROPERTY(MaxSpeed)
 			PROPERTY(ProjectileGravityScale)
 			PROPERTY(bRotationFollowsVelocity)
@@ -26,20 +26,20 @@ public:
 	UProjectileMovementComponent();
 
 	// Projectile
-	float InintialSpeed = 0.0f;
+	float InitialSpeed = 0.0f;
 	float MaxSpeed = 0.0f;
 	float ProjectileGravityScale = 1.0f;
 
 	bool bRotationFollowsVelocity;
 	bool bInitialVelocityInLocalSpace;
 
-	float PreviousHitTime;
+	float PreviousHitTime = 1.0f;
 	FVector PreviousHitNormal;
 
 	bool bIsSliding = false;
 
 	// Bounce
-	bool bShouldBounce;
+	bool bShouldBounce = false;
 	float Bounciness;
 	float Friction;	
 
@@ -50,7 +50,7 @@ public:
 	int32 MaxSimulationIterations = 5; // Min : 1, Max : 25 in Unreal
 
 	// Homing
-	bool bIsHomingProjectile;
+	bool bIsHomingProjectile = false;
 	float HomingAccelerationMagnitude;
 	USceneComponent* HomingTargetComponent = nullptr;
 
@@ -67,7 +67,7 @@ public:
 	FVector LimitVelocity(FVector NewVelocity) const;
 	virtual FVector ComputeVelocity(FVector InitialVelocity, float DeltaTime) const;
 	virtual FVector ComputeMoveDelta(const FVector& InVelocity, float DeltaTime) const;
-	virtual FVector ComputAcceleration(const FVector& InVelocity, float DeltaTime) const;
+	virtual FVector ComputeAcceleration(const FVector& InVelocity, float DeltaTime) const;
 	virtual FVector ComputeHomingAcceleration(const FVector& InVelocity, float DeltaTime) const;
 	virtual FVector ComputeBounceResult(const FHitResult& Hit, float Timeslice, const FVector& MoveDelta);
 

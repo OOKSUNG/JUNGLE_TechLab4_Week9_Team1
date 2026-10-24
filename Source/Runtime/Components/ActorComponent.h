@@ -20,10 +20,10 @@ public:
 
 	virtual void InitializeComponent() {};
 	virtual void BeginPlay() {};
+	virtual void EndPlay() {};
 	virtual void TickComponent(float DeltaTime)
 	{
 	};
-	virtual void EndPlay() {};
 
 	void SetOwner(AActor* InOwner) { Owner = InOwner; }
 	AActor* GetOwner() const { return Owner; }

@@ -12,12 +12,10 @@ void UScriptComponent::InitializeComponent()
     LuaVM = GEngine->GetLuaVM();
     State = LuaVM->GetState();
 
-    UWorld* World = GetOwner()->GetWorld();
-
-    FString SceneName = World->GetSceneName();
-    FString ActorName = GetOwner()->GetName();
-
-    CreateScriptFromTemplate(SceneName, ActorName);
+    if (!EnsureScriptFile()) 
+    {
+		return;
+    }
 
     PrimaryComponentTick.bCanEverTick = true;
 }
@@ -299,4 +297,28 @@ bool UScriptComponent::ReloadScript()
 	HTR_LOG(Info, "[Lua] Hot reload succeeded: {}", ScriptPath);
 
 	return true;
+}
+
+bool UScriptComponent::EnsureScriptFile()
+{
+	AActor* Owner = GetOwner();
+
+	if (!Owner)
+	{
+		HTR_LOG(Error, "[Lua] ScriptComponent has no owner");
+		return false;
+	}
+
+	UWorld* World = Owner->GetWorld();
+
+	if (!World)
+	{
+		HTR_LOG(Error, "[Lua] ScriptComponent owner has no world");
+		return false;
+	}
+
+	const FString SceneName = World->GetSceneName();
+	const FString ActorName = Owner->GetName();
+
+	return CreateScriptFromTemplate(SceneName, ActorName);
 }

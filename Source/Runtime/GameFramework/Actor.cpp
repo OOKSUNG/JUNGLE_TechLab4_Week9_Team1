@@ -47,18 +47,21 @@ void AActor::BeginPlay()
 	}
 
 	RegisterAllActorTickFunctions(true);
+	bActorHasBegunPlay = true;
 }
 
-void AActor::EndPlay() 
+void AActor::EndPlay()
 {
+	if (!bActorHasBegunPlay)
+		return;
+
+	bActorHasBegunPlay = false;
 	RegisterAllActorTickFunctions(false);
 
 	for (UActorComponent* Component : Components)
 	{
 		if (Component)
-		{
 			Component->EndPlay();
-		}
 	}
 }
 
@@ -226,15 +229,14 @@ FVector AActor::GetActorLocation() const
 	return FVector::ZeroVector;
 }
 
-//FRotator AActor::GetActorRotation() const
-//{
-//    if (RootComponent)
-//    {
-//        // USceneComponent의 GetWorldRotation() 호출
-//        return RootComponent->GetWorldRotation();
-//    }
-//    return FRotator::ZeroRotator;
-//}
+FRotator AActor::GetActorRotation() const
+{
+	if (RootComponent)
+	{
+		return RootComponent->GetWorldRotation();
+	}
+	return FRotator();
+}
 
 FVector AActor::GetActorScale3D() const
 {
@@ -245,14 +247,14 @@ FVector AActor::GetActorScale3D() const
 	return FVector::OneVector;
 }
 
-//FQuat AActor::GetActorQuat() const
-//{
-//    if (RootComponent)
-//    {
-//        return FQuat(RootComponent->GetWorldRotation());
-//    }
-//    return FQuat::Identity;
-//}
+FQuat AActor::GetActorQuat() const
+{
+	if (RootComponent)
+	{
+		return RootComponent->GetWorldRotation().Quaternion();
+	}
+	return FQuat();
+}
 
 FTransform AActor::GetActorTransform() const
 {
@@ -303,13 +305,8 @@ UActorComponent* AActor::AddComponent(UClass* ComponentClass, FName Name)
 	NewComponent->InitializeComponent();
 	NewComponent->RegisterComponent();
 
-	//if (UParticleSubUVComponent* ParticleSubUV = Cast<UParticleSubUVComponent>(NewComponent))
-	//{
-	//    ParticleSubUV->BeginPlay();
-	//    RegisterAllActorTickFunctions(true);
-	//}
-
-	if (World)
+	// 에디터 월드에도 World는 있으므로, 게임이 시작된 액터에만 BeginPlay를 보낸다 (UE의 HasActorBegunPlay 검사).
+	if (World && HasActorBegunPlay())
 	{
 		NewComponent->BeginPlay();
 		RegisterAllActorTickFunctions(true);

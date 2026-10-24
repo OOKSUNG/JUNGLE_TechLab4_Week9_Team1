@@ -14,10 +14,10 @@
 #include "Components/PointLightComponent.h"
 #include "Components/RectLightComponent.h"
 #include "Components/SkyLightComponent.h"
+#include "Components/ScriptComponent.h"
 
 #include "Components/RotatingMovementComponent.h"
 #include "Components/ProjectileMovementComponent.h"
-#include "Components/FireBallComponent.h"
 #include "Asset/AssetManager.h"
 #include "Render/Material.h"
 #include "Render/Texture2D.h"
@@ -331,6 +331,65 @@ namespace
 			ImGui::EndCombo();
 		}
 	}
+
+	void DrawScriptComponentActions(UScriptComponent& ScriptComponent)
+	{
+		ImGui::SeparatorText("Lua Script");
+
+		const FString& CurrentPath = ScriptComponent.GetScriptPath();
+
+		if (!CurrentPath.empty())
+		{
+			ImGui::TextWrapped("File: %s", CurrentPath.c_str());
+		}
+		else
+		{
+			ImGui::TextDisabled("Script file is not created yet.");
+		}
+
+		if (!ImGui::Button("Edit Script", ImVec2(-FLT_MIN, 0.0f)))
+		{
+			return;
+		}
+
+		// 아직 파일이 없다면 template.lua로 생성한다.
+		if (!ScriptComponent.EnsureScriptFile())
+		{
+			HTR_LOG(Error, "[Lua] Failed to prepare script file");
+			return;
+		}
+
+		std::error_code ErrorCode;
+
+		const std::filesystem::path AbsolutePath = std::filesystem::absolute(
+		        ScriptComponent.GetScriptPath(), ErrorCode).lexically_normal();
+
+		if (ErrorCode)
+		{
+			HTR_LOG(Error, "[Lua] Failed to resolve script path '{}': {}",
+			    ScriptComponent.GetScriptPath(), ErrorCode.message());
+			return;
+		}
+
+		const FString PathString = AbsolutePath.string();
+
+		ImGuiPlatformIO& PlatformIO = ImGui::GetPlatformIO();
+
+		if (!PlatformIO.Platform_OpenInShellFn)
+		{
+			HTR_LOG(Error, "[Lua] Open-in-shell function is unavailable");
+			return;
+		}
+
+		const bool bOpened = PlatformIO.Platform_OpenInShellFn(
+		    ImGui::GetCurrentContext(), PathString.c_str());
+
+		if (!bOpened)
+		{
+			HTR_LOG(Error, "[Lua] Failed to open script '{}'", PathString);
+		}
+	}
+
 
 	UMaterial* EnsureMaterialOverride(UMeshComponent* MeshComponent, int32 Slot, UMaterial* Effective, UMaterial* Override)
 	{
@@ -846,7 +905,7 @@ namespace
 			ImGui::InputText("##Component Name", ComponentNameInputBuf, sizeof(ComponentNameInputBuf));
 			TArray<UClass*> Classes;
 			GetDerivedClasses(UActorComponent::StaticClass(), Classes);
-			// 이름순 정렬하면 메뉴가 안정적
+			std::sort(Classes.begin(), Classes.end(), [](const UClass* A, const UClass* B) { return A->Name < B->Name; });
 			for (UClass* Class : Classes)
 			{
 				//if (!IsSpawnableComponent(Class)) continue;
@@ -1124,6 +1183,11 @@ void FDetailsPanel::OnRender()
 			ImGui::PushID(TargetComponent);
 			ImGui::SeparatorText("Component Properties");
 			DrawProperties(TargetComponent, CustomFont);
+
+			if (UScriptComponent* ScriptComponent = Cast<UScriptComponent>(TargetComponent))
+			{
+				DrawScriptComponentActions(*ScriptComponent);
+			}
 
 			// Light Component를 선택했을 때 기존 Property 아래에 Depth Map을 표시한다.
 			if (const ULightComponent* Light = Cast<ULightComponent>(TargetComponent))

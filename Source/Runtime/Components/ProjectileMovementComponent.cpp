@@ -3,6 +3,17 @@
 
 const float UProjectileMovementComponent::MIN_TICK_TIME = 1e-6f;
 
+namespace
+{
+	// 방향 벡터를 그 방향을 보는 회전으로 바꾼다. 이 엔진의 FRotator는 +Pitch가 아래를 향한다(FQuat::MakeFromEuler 규약).
+	FRotator RotationFromDirection(const FVector& Direction)
+	{
+		const float Yaw = FMath::RadiansToDegrees(std::atan2(Direction.Y, Direction.X));
+		const float Pitch = -FMath::RadiansToDegrees(std::atan2(Direction.Z, std::sqrt(Direction.X * Direction.X + Direction.Y * Direction.Y)));
+		return FRotator(Pitch, Yaw, 0.0f);
+	}
+}
+
 UProjectileMovementComponent::UProjectileMovementComponent()
 {
 	// Default
@@ -27,9 +38,9 @@ void UProjectileMovementComponent::InitializeComponent()
 
 	if (Velocity.SizeSquared() > 0.0f)
 	{
-		if (InintialSpeed > 0.0f)
+		if (InitialSpeed > 0.0f)
 		{
-			Velocity = Velocity.Normalized() * InintialSpeed;
+			Velocity = Velocity.Normalized() * InitialSpeed;
 		}
 
 		if (bInitialVelocityInLocalSpace)
@@ -81,24 +92,12 @@ void UProjectileMovementComponent::TickComponent(float DeltaTime)
 		Hit.Time = 1.0f;
 		const FVector OldVelocity = Velocity;
 		const FVector MoveDelta = ComputeMoveDelta(OldVelocity, TimeTick);
-		FRotator NewRotation = bRotationFollowsVelocity ? FRotator(OldVelocity) : UpdatedComponent->GetWorldRotation();
+		const bool bFaceVelocity = bRotationFollowsVelocity && OldVelocity.SizeSquared() > SMALL_NUMBER;
+		const FRotator NewRotation = bFaceVelocity ? RotationFromDirection(OldVelocity) : UpdatedComponent->GetWorldRotation();
 		
-		// Rotation
-		if (bRotationFollowsVelocity)
-		{
-			// TODO
-		}
 
 		// Move the component
-		if (bShouldBounce)
-		{			
-			// SafeMoveUpdatedComponent( MoveDelta, NewRotaiton, bSweepCollision, Hit);
-			MoveUpdatedComponent(MoveDelta, NewRotation, bSweepCollision, &Hit);
-		}
-		else
-		{
-			MoveUpdatedComponent(MoveDelta, NewRotation, bSweepCollision, &Hit);
-		}
+		MoveUpdatedComponent(MoveDelta, NewRotation, bSweepCollision, &Hit);
 
 		// Handle hit result after movement
 		if (!Hit.bBlockingHit)
@@ -119,6 +118,8 @@ void UProjectileMovementComponent::TickComponent(float DeltaTime)
 			}
 
 			float SubTickTimeRemaining = TimeTick * (1.0f - Hit.Time);
+			// 튕김(HandleImpact)을 먼저 처리한다. UE의 HandleBlockingHit 순서와 같다.
+			HandleImpact(Hit, TimeTick, MoveDelta);
 			HandleDeflection(Hit, OldVelocity, SubTickTimeRemaining);
 			PreviousHitTime = Hit.Time;
 			PreviousHitNormal = ConstrainDirectionToPlane(Hit.Normal);
@@ -154,7 +155,7 @@ FVector UProjectileMovementComponent::LimitVelocity(FVector NewVelocity) const
 FVector UProjectileMovementComponent::ComputeVelocity(FVector InitialVelocity, float DeltaTime) const
 {
 	// v = v0 + a*t
-	const FVector Acceleration = ComputAcceleration(InitialVelocity, DeltaTime);
+	const FVector Acceleration = ComputeAcceleration(InitialVelocity, DeltaTime);
 	FVector NewVelocity = InitialVelocity + (Acceleration * DeltaTime);
 
 	return LimitVelocity(NewVelocity);
@@ -170,7 +171,7 @@ FVector UProjectileMovementComponent::ComputeMoveDelta(const FVector& InVelocity
 	return Delta;
 }
 
-FVector UProjectileMovementComponent::ComputAcceleration(const FVector& InVelocity, float DeltaTime) const
+FVector UProjectileMovementComponent::ComputeAcceleration(const FVector& InVelocity, float DeltaTime) const
 {
 	FVector Acceleration(FVector::ZeroVector);	
 
@@ -188,7 +189,7 @@ FVector UProjectileMovementComponent::ComputAcceleration(const FVector& InVeloci
 
 FVector UProjectileMovementComponent::ComputeHomingAcceleration(const FVector& InVelocity, float DeltaTime) const
 {
-	FVector HomingAcceleration = (HomingTargetComponent->GetWorldLocation() - UpdatedComponent->GetWorldLocation()).Normalized();
+	FVector HomingAcceleration = (HomingTargetComponent->GetWorldLocation() - UpdatedComponent->GetWorldLocation()).GetSafeNormal() * HomingAccelerationMagnitude;
 	return HomingAcceleration;
 }
 
@@ -266,7 +267,7 @@ bool UProjectileMovementComponent::HandleSliding(FHitResult& Hit, float& SubTick
 	FHitResult InitailHit;
 	const FVector OldHitNormal = ConstrainDirectionToPlane(Hit.Normal);
 
-	MoveUpdatedComponent(Velocity * SubTickTimeRemaining, UpdatedComponent->GetRelativeRotation(), bSweepCollision, &Hit);
+	MoveUpdatedComponent(Velocity * SubTickTimeRemaining, UpdatedComponent->GetWorldRotation(), bSweepCollision, &Hit);
 
 	if (Hit.bBlockingHit)
 	{

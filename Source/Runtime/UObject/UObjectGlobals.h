@@ -50,7 +50,6 @@ struct FObjectDuplicationParameters
 
 
 UObject* StaticConstructObject_Internal(const FStaticConstructObjectParameters& Params);
-UObject* DuplicateObject_Internal(UClass* Class, const UObject* SourceObject, UObject* Outer, const FName Name = NAME_None);
 FName MakeUniqueObjectName(UObject* Outer, const UClass* Class, FName BaseName = NAME_None);
 UObject* StaticDuplicateObject(UObject const* SourceObject, UObject* DestOuter, const FName DestName = NAME_None, EObjectFlags FlagMask = EObjectFlags::RF_AllFlags, UClass* DestClass = nullptr);
 UObject* StaticDuplicateObjectEx(FObjectDuplicationParameters& Parameters);

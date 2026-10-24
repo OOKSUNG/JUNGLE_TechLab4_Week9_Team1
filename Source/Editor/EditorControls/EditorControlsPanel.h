@@ -7,7 +7,6 @@
 #include "GameFramework/Actor/StaticMeshActor.h"
 #include "GameFramework/Actor/LightActorBase.h"
 #include "GameFramework/Actor/TextRenderActor.h"
-#include "GameFramework/Actor/FireBallActor.h"
 #include "GameFramework/Actor/RectLightActor.h"
 #include "GameFramework/Actor/SpotLightActor.h"
 #include "GameFramework/Actor/PointLightActor.h"
@@ -46,8 +45,7 @@ public:
 		"PointLight",
 		"RectLight",
 		"SpotLight",
-		"ExponentialHeightFog",
-		"FireBall"};
+		"ExponentialHeightFog"};
 
 	FGizmo* Gizmo = nullptr;
 	int32 GizmoSelectedIndex = 0;
@@ -67,8 +65,7 @@ public:
 		APointLightActor::StaticClass(),
 		ARectLightActor::StaticClass(),
 		ASpotLightActor::StaticClass(),
-		AExponentialHeightFogActor::StaticClass(),
-		AFireBallActor::StaticClass()
+		AExponentialHeightFogActor::StaticClass()
 	};
 
     void SetViewportAdapter(FMultipleViewportsAdapter* InAdapter) { ViewportAdapter = InAdapter; }
