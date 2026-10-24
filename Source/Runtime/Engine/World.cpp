@@ -1003,6 +1003,8 @@ UWorld* UWorld::GetDuplicatedWorldForPIE(UWorld * InWorld)
 
 	UWorld* PIEWorld = CreateWorld(EWorldType::PIE, false);
 
+	PIEWorld->SetScenePath(InWorld->GetScenePath());
+
 	FObjectDuplicationParameters Params(InWorld, nullptr);
 	Params.DuplicationSeed.Add(InWorld, PIEWorld);
 	Params.DuplicationSeed.Add(InWorld->GetPersistentLevel(), PIEWorld->GetPersistentLevel());

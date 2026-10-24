@@ -162,7 +162,7 @@ bool UScriptComponent::LoadScript()
         return false;
     }
 
-    BindScriptContext();
+    BindScriptContext(Environment);
 
     sol::protected_function_result Result = State->safe_script_file
         (
@@ -186,11 +186,23 @@ bool UScriptComponent::LoadScript()
     return true;
 }
 
-void UScriptComponent::BindScriptContext()
+void UScriptComponent::BindScriptContext(sol::environment& TargetEnvironment)
 {
-    Environment["self"] = GetOwner();
+	AActor* Owner = GetOwner();
 
-    Environment.set_function(
+	TargetEnvironment["self"] = Owner;
+    TargetEnvironment["scriptPath"] = ScriptPath;
+
+	if (Owner)
+	{
+		if (UWorld* World = Owner->GetWorld())
+		{
+			TargetEnvironment["sceneName"] =
+			    World->GetSceneName();
+		}
+	}
+
+    TargetEnvironment.set_function(
         "DestroySelf",
         [this]()
         {
@@ -257,7 +269,7 @@ bool UScriptComponent::ReloadScript()
 	sol::environment NewEnvironment(*State, sol::create, State->globals());
 
 	// 현재 액터 컨텍스트를 새 환경에도 다시 넣어야 함
-	NewEnvironment["self"] = GetOwner();
+	BindScriptContext(NewEnvironment);
 
 	sol::protected_function_result Result =
 		State->safe_script_file(ScriptPath, NewEnvironment, sol::script_pass_on_error);
@@ -289,8 +301,6 @@ bool UScriptComponent::ReloadScript()
             HTR_LOG(Error, "[Lua] {}", Error.what());
         }
     }
-
-    void BindScriptContext();
 
     PrimaryComponentTick.bCanEverTick = true;
 

@@ -25,7 +25,7 @@ public:
 	bool LoadScript();
 	bool EnsureScriptFile();
 
-	void BindScriptContext();
+	void BindScriptContext(sol::environment& TargetEnvironment);
 
 	const FString& GetScriptPath() const { return ScriptPath; }
 
