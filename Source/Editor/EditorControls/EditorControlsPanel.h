@@ -13,6 +13,9 @@
 #include "GameFramework/Actor/DirectionalLightActor.h"
 #include "GameFramework/Actor/SkyLightActor.h"
 #include "GameFramework/Actor/ExponentialHeightFogActor.h"
+#include "GameFramework/Actor/BoxActor.h"
+#include "GameFramework/Actor/SphereActor.h"
+#include "GameFramework/Actor/CapsuleActor.h"
 
 class FMultipleViewportsAdapter;
 
@@ -35,7 +38,7 @@ public:
 
 	int32 SelectedIndex = 0;
 
-	const char* Items[11] ={
+	const char* Items[13] ={
 		"Actor",
 		"StaticMesh",
 		"Particle",
@@ -45,7 +48,10 @@ public:
 		"PointLight",
 		"RectLight",
 		"SpotLight",
-		"ExponentialHeightFog"};
+		"ExponentialHeightFog",
+		"Box",
+		"Sphere",
+		"Capsule"};
 
 	FGizmo* Gizmo = nullptr;
 	int32 GizmoSelectedIndex = 0;
@@ -65,7 +71,10 @@ public:
 		APointLightActor::StaticClass(),
 		ARectLightActor::StaticClass(),
 		ASpotLightActor::StaticClass(),
-		AExponentialHeightFogActor::StaticClass()
+		AExponentialHeightFogActor::StaticClass(),
+		ABoxActor::StaticClass(),
+		ASphereActor::StaticClass(),
+		ACapsuleActor::StaticClass()
 	};
 
     void SetViewportAdapter(FMultipleViewportsAdapter* InAdapter) { ViewportAdapter = InAdapter; }

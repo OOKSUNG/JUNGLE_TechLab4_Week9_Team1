@@ -384,3 +384,84 @@ FVector Collision::ClosestPointOnBox(const FVector& P, const FOrientedBox& Box)
 	}
 	return Result;
 }
+
+Collision::FSweepResult Collision::Sweep(const FCollisionShape& Shape, const FVector& Start, const FVector& Delta, const FQuat& Rot,
+                                         const TArray<FSweepTarget>& Targets)
+{
+	FSweepResult Result;
+
+	const float DeltaLen = Delta.Length();
+	if (DeltaLen < SMALL_NUMBER || Targets.Num() == 0)
+		return Result;
+
+	TArray<uint8> Ignored;
+	Ignored.SetNum(Targets.Num());
+
+	auto FirstOverlapAt = [&](float T, FCollisionContact* OutContact) -> int32
+	{
+		const FVector Pos = Start + Delta * T;
+		for (int32 i = 0; i < static_cast<int32>(Targets.Num()); ++i)
+		{
+			if (Ignored[i])
+				continue;
+			const FSweepTarget& Target = Targets[i];
+			if (Overlap(Shape, Pos, Rot, Target.Shape, Target.Pos, Target.Rot, OutContact))
+				return i;
+		}
+		return -1;
+	};
+
+	// 시작부터 겹친 대상: 빠져나가는 방향이면 무시하고, 파고드는 방향이면 바로 막는다.
+	for (int32 i = 0; i < static_cast<int32>(Targets.Num()); ++i)
+	{
+		FCollisionContact Contact;
+		const FSweepTarget& Target = Targets[i];
+		if (!Overlap(Shape, Start, Rot, Target.Shape, Target.Pos, Target.Rot, &Contact))
+			continue;
+
+		if (Delta.Dot(Contact.Normal) >= 0.0f)
+		{
+			Ignored[i] = 1;
+			continue;
+		}
+
+		Result.bBlockingHit = true;
+		Result.bStartPenetrating = true;
+		Result.Time = 0.0f;
+		Result.TargetIndex = i;
+		Result.Contact = Contact;
+		return Result;
+	}
+
+	// 도형의 가장 작은 반 크기보다 짧은 조각으로 나눠 얇은 벽을 건너뛰지 않게 한다.
+	float MinHalfSize = Shape.Radius;
+	if (Shape.IsBox())
+		MinHalfSize = std::min({ Shape.BoxHalfExtent.X, Shape.BoxHalfExtent.Y, Shape.BoxHalfExtent.Z });
+	const int32 Steps = MinHalfSize > KINDA_SMALL_NUMBER
+		? std::clamp(static_cast<int32>(std::ceil(DeltaLen / MinHalfSize)), 1, 64)
+		: 1;
+
+	for (int32 Step = 0; Step < Steps; ++Step)
+	{
+		float Lo = static_cast<float>(Step) / Steps;
+		float Hi = static_cast<float>(Step + 1) / Steps;
+		if (FirstOverlapAt(Hi, nullptr) < 0)
+			continue;
+
+		for (int32 Iter = 0; Iter < 10; ++Iter)
+		{
+			const float Mid = (Lo + Hi) * 0.5f;
+			if (FirstOverlapAt(Mid, nullptr) >= 0)
+				Hi = Mid;
+			else
+				Lo = Mid;
+		}
+
+		Result.bBlockingHit = true;
+		Result.TargetIndex = FirstOverlapAt(Hi, &Result.Contact);
+		Result.Time = std::max(0.0f, Lo - 1e-3f / DeltaLen);
+		return Result;
+	}
+
+	return Result;
+}

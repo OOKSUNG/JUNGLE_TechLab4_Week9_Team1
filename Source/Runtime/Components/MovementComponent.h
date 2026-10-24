@@ -32,6 +32,7 @@ public:
 
 protected:
 	bool bConstrainToPlane = false;
+	bool bWarnedSweepWithoutShape = false;
 	FVector PlaneConstraintNormal = FVector::ZeroVector;
 	FVector PlaneConstraintOrigin = FVector::ZeroVector;
 

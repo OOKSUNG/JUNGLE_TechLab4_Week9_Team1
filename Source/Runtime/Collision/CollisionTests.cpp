@@ -371,6 +371,51 @@ namespace
 		CHECK_CONTACT(FCollisionShape::MakeBox(FVector(0.3f, 2.0f, 0.3f)), FVector(1.2f, 1.2f, 0), MakeRotation(45.0f, 30.0f, 0.0f), Unit, Origin, Identity);
 		CHECK_CONTACT(FCollisionShape::MakeBox(FVector(0.7f, 0.4f, 1.2f)), FVector(0.3f, 0.2f, 0.9f), MakeRotation(35.0f, 50.0f, 20.0f), Unit, Origin, Identity);
 	}
+
+	void TestSweep()
+	{
+		const FCollisionShape Sphere = FCollisionShape::MakeSphere(0.5f);
+		const FCollisionShape Unit = FCollisionShape::MakeBox(FVector(1.0f, 1.0f, 1.0f));
+		const FQuat Identity;
+		const TArray<Collision::FSweepTarget> Wall = { { Unit, FVector(0, 0, 0), Identity } };
+
+		// 벽을 향해: 중심 x = -1.5에서 닿으므로 t = 0.3 (당김만큼 조금 앞)
+		Collision::FSweepResult R = Collision::Sweep(Sphere, FVector(-3, 0, 0), FVector(5, 0, 0), Identity, Wall);
+		CHECK_TRUE(R.bBlockingHit && !R.bStartPenetrating && R.TargetIndex == 0);
+		CHECK_TRUE(R.Time > 0.299f && R.Time <= 0.3f);
+		CHECK_VECTOR(R.Contact.Normal, FVector(-1, 0, 0));
+		CHECK_TRUE(!Collision::Overlap(Sphere, FVector(-3, 0, 0) + FVector(5, 0, 0) * R.Time, Identity, Unit, FVector(0, 0, 0), Identity));
+
+		// 빗나감
+		R = Collision::Sweep(Sphere, FVector(-3, 0, 0), FVector(0, 5, 0), Identity, Wall);
+		CHECK_TRUE(!R.bBlockingHit);
+		CHECK_FLOAT(R.Time, 1.0f);
+
+		// 얇은 벽을 빠르게: 건너뛰지 않는다
+		const TArray<Collision::FSweepTarget> ThinWall = { { FCollisionShape::MakeBox(FVector(0.05f, 2.0f, 2.0f)), FVector(0, 0, 0), Identity } };
+		R = Collision::Sweep(FCollisionShape::MakeSphere(0.2f), FVector(-3, 0, 0), FVector(6, 0, 0), Identity, ThinWall);
+		CHECK_TRUE(R.bBlockingHit);
+		CHECK_TRUE(R.Time > 0.457f && R.Time <= 0.4584f);
+
+		// 시작부터 겹침: 빠져나가면 허용, 파고들면 막힘
+		R = Collision::Sweep(Sphere, FVector(1.3f, 0, 0), FVector(1, 0, 0), Identity, Wall);
+		CHECK_TRUE(!R.bBlockingHit);
+		R = Collision::Sweep(Sphere, FVector(1.3f, 0, 0), FVector(-1, 0, 0), Identity, Wall);
+		CHECK_TRUE(R.bBlockingHit && R.bStartPenetrating);
+		CHECK_FLOAT(R.Time, 0.0f);
+		CHECK_VECTOR(R.Contact.Normal, FVector(1, 0, 0));
+
+		// 겹친 벽을 빠져나가다 다른 벽에: 중심 x = 2.5에서 닿으므로 t = 0.4
+		const TArray<Collision::FSweepTarget> TwoWalls = { { Unit, FVector(0, 0, 0), Identity }, { Unit, FVector(4, 0, 0), Identity } };
+		R = Collision::Sweep(Sphere, FVector(1.3f, 0, 0), FVector(3, 0, 0), Identity, TwoWalls);
+		CHECK_TRUE(R.bBlockingHit && R.TargetIndex == 1);
+		CHECK_TRUE(R.Time > 0.399f && R.Time <= 0.4f);
+
+		// 박스가 박스로: x = -2에서 닿으므로 t = 0.75
+		R = Collision::Sweep(Unit, FVector(-5, 0, 0), FVector(4, 0, 0), Identity, Wall);
+		CHECK_TRUE(R.bBlockingHit);
+		CHECK_TRUE(R.Time > 0.749f && R.Time <= 0.75f);
+	}
 }
 
 int32 Collision::RunSelfTests()
@@ -388,6 +433,7 @@ int32 Collision::RunSelfTests()
 	TestClosestPointOnBox();
 	TestCapsuleBoxOverlap();
 	TestContact();
+	TestSweep();
 
 	if (NumFailed == 0)
 	{
