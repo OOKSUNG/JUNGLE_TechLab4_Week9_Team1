@@ -1,14 +1,42 @@
 #include "EnginePCH.h"
 #include "Engine.h"
 
+#include "Components/ScriptComponent.h"
+
 UEngine* GEngine = nullptr;
+UEngine::~UEngine() = default;
 
 bool UEngine::Init()
 {
+	UScriptComponent::StaticClass();
+
 	AssetManager = NewObject<UAssetManager>();
 	/*World = FObjectFactory::ConstructObject<UWorld>();
 
 	if (!World || !World->Init()) return false;*/
+
+	LuaVM = MakeUnique<FLuaVM>();
+
+	if (!LuaVM->Initialize())
+	{
+		HTR_LOG(Error, "[Startup] Lua VM initialization failed");
+		return false;
+	}
+
+	// 초기 연결 확인용입니다.
+	if (!LuaVM->ExecuteString(
+		"Log('Lua VM startup test', 123, true)",
+		"@VMStartup"
+	))
+	{
+		return false;
+	}
+
+	// Lua 파일을 실행한다.
+	if (!LuaVM->ExecuteFile("Assets/Scripts/VMTest.lua"))
+	{
+		return false;
+	}
 
  	return true;
 }

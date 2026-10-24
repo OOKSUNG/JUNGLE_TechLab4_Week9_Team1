@@ -147,6 +147,18 @@ public:
 	using Super::Serialize;
 	virtual void Serialize(FStructuredArchive::FRecord Record) override;
 
+	void SetScenePath(const FString& InScenePath)
+	{
+		ScenePath = InScenePath;
+	}
+
+	const FString& GetScenePath() const
+	{
+		return ScenePath;
+	}
+
+	FString GetSceneName() const;
+
 	void GatherOverlap();
 	void AddOverlap(uint32 OverlapFirst, uint32 OverlapSecond);
 	void ResetOverlap();
@@ -208,4 +220,5 @@ private:
 
 	FRenderStats RenderStats;
 
+	FString ScenePath;
 };

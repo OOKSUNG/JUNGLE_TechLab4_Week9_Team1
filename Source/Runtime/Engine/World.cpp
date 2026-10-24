@@ -665,7 +665,8 @@ bool UWorld::IsSmallShadowCaster(const FLODSphere& Sphere, const FLODViewContext
 	return ViewCount > 0;
 }
 
-float UWorld::GetLocalShadowCasterRadius(const ULightComponent& Light, const FLightRenderParameters& Parameters, float TanHalfFOV)
+
+float UWorld::GetLocalShadowCasterRadius(const ULightComponent& Light, const FLightRenderParameters& Parameters, float TanHalfFOV)
 {
 	const int32 Resolution = FShadowSettings::GetEffectiveResolution(Light.GetShadowMapResolution());
 	if (Resolution <= 0)
@@ -1002,6 +1003,8 @@ UWorld* UWorld::GetDuplicatedWorldForPIE(UWorld * InWorld)
 
 	UWorld* PIEWorld = CreateWorld(EWorldType::PIE, false);
 
+	PIEWorld->SetScenePath(InWorld->GetScenePath());
+
 	FObjectDuplicationParameters Params(InWorld, nullptr);
 	Params.DuplicationSeed.Add(InWorld, PIEWorld);
 	Params.DuplicationSeed.Add(InWorld->GetPersistentLevel(), PIEWorld->GetPersistentLevel());
@@ -1214,4 +1217,16 @@ UShapeComponent* UWorld::FindShapeByUUID(uint32 UUID)
 		}
 	}
 	return nullptr;
+}
+
+FString UWorld::GetSceneName() const
+{
+	if (ScenePath.empty())
+	{
+		return "Untitled";
+	}
+
+	return std::filesystem::path(ScenePath)
+	    .stem()
+	    .string();
 }

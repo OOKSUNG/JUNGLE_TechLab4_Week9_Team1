@@ -27,6 +27,7 @@ bool FEditorFileUtils::NewScene(UWorld* World)
 	World->ClearWorld();
 
 	CurrentScenePath.clear();
+	World->SetScenePath("");
 
 	return true;
 }
@@ -70,6 +71,9 @@ bool FEditorFileUtils::SaveSceneAs(UWorld* World)
 
 	FilePath = std::filesystem::absolute(FilePath).lexically_normal().string();
 
+	CurrentScenePath = FilePath;
+	World->SetScenePath(FilePath);
+
 	if (!FJsonArchive::SaveWorld(World, FilePath))
 	{
 		HTR_LOG(Error, "Failed to save scene: {}", FilePath);
@@ -83,8 +87,6 @@ bool FEditorFileUtils::SaveSceneAs(UWorld* World)
 
 		return false;
 	}
-
-	CurrentScenePath = FilePath;
 
 	HTR_LOG(Info, "Save Scene As : {}", CurrentScenePath);
 
@@ -104,11 +106,12 @@ bool FEditorFileUtils::LoadScene(UWorld* World)
 
 	FilePath = std::filesystem::absolute(FilePath).lexically_normal().string();
 
-	if (!FJsonArchive::LoadWorld(World, FilePath))
-		return false;
-
 	// 이제 이 파일이 현재 Scene
 	CurrentScenePath = FilePath;
+	World->SetScenePath(FilePath);
+
+	if (!FJsonArchive::LoadWorld(World, FilePath))
+		return false;
 
 	HTR_LOG(Info, "Load Scene : {}", CurrentScenePath);
 
