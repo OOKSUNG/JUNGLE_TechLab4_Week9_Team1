@@ -4,7 +4,7 @@
 
 #include <functional>
 
-#define DECLARE_DELEGATE(Name, ...) TDelegate<__VA_ARGS__> Name	// Delegate 객체 이름, 전체 Parameter를 매크로에 넘기면 해당 TDelegate 객체 생성
+#define DECLARE_DELEGATE(Name, ...) TDelegate<__VA_ARGS__> Name;	// Delegate 객체 이름, 전체 Parameter를 매크로에 넘기면 해당 TDelegate 객체 생성
 
 template<typename... Args>
 
