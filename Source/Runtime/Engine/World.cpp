@@ -127,11 +127,6 @@ void UWorld::Tick(float DeltaTime)
 			SCOPE_CYCLE_COUNTER(STAT_ActorTick);
 			// 모든 Actor를 도는 대신 등록된 Tick 함수(메인 카메라 포함)만 실행한다.
 			TickTaskManager.RunAllTickGroups(DeltaTime);
-
-			for (ULevel* Level : Levels)
-			{
-				PathTracker.Tick(Level->GetActors(), DeltaTime);
-			}
 		}
 
 		GatherOverlap(); // 게임 중에만 충돌처리
@@ -147,10 +142,6 @@ void UWorld::ClearWorld()
 	{
 		BeginPlayList.Dequeue();
 	}
-
-	PathTracker.SetPlaybackEnabled(false);
-	PathTracker.SetPathRenderingEnabled(false);
-	PathTracker.ClearPath();
 
 	
 	for (ULevel* Level : Levels)
@@ -829,6 +820,9 @@ bool UWorld::DestroyActor(AActor* Actor)
 	if (!Level)
 		return false;
 
+	// 게임 중이던 액터면 EndPlay부터 알린다. 이 시점엔 아직 월드와 컴포넌트에 접근할 수 있다.
+	Actor->EndPlay();
+
 	// 1. BeginPlay 대기열에서 제거
 	TQueue<AActor*> NewBeginPlayList;
 
@@ -844,27 +838,6 @@ bool UWorld::DestroyActor(AActor* Actor)
 	}
 
 	BeginPlayList = std::move(NewBeginPlayList);
-
-	// 2. PathTracker에서 제거
-	PathTracker.OnObjectDestroyed(Actor);
-
-	//// 3. PrimitiveComponents에서 제거
-	//for (UActorComponent* Component : Actor->Components)
-	//{
-	//	UPrimitiveComponent* Primitive = Cast<UPrimitiveComponent>(Component);
-
-	//	if (!Primitive)
-	//		continue;
-
-	//	for (int32 i = PrimitiveComponents.Num() - 1; i >= 0; --i)
-	//	{
-	//		if (PrimitiveComponents[i] == Primitive)
-	//		{
-	//			PrimitiveComponents.RemoveAt(i, 1);
-	//			break;
-	//		}
-	//	}
-	//}
 
 	// 4. Level의 Actors에서 제거
 	for (int32 i = Level->Actors.Num() - 1; i >= 0; --i)
@@ -997,6 +970,16 @@ void UWorld::BeginPlay()
 
 void UWorld::EndPlay()
 {
+	for (ULevel* Level : Levels)
+	{
+		// EndPlay에서 액터가 지워질 수 있으므로 목록을 복사해서 돈다.
+		const TArray<AActor*> Actors = Level->GetActors();
+		for (AActor* Actor : Actors)
+		{
+			if (Actor)
+				Actor->EndPlay();
+		}
+	}
 }
 
 UWorld* UWorld::CreateWorld(const EWorldType InWorldType, bool bInformEngineOfWorld, FName WorldName)

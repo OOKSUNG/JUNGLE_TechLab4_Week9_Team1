@@ -9,7 +9,7 @@ class UMovementComponent : public UActorComponent
 		REFLECT_END()
 
 protected:
-	USceneComponent* UpdatedComponent;
+	USceneComponent* UpdatedComponent = nullptr;
 
 public:
 	FVector Velocity;

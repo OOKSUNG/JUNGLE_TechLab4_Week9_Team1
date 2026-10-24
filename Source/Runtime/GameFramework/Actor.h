@@ -23,7 +23,9 @@ public:
 	virtual void BeginPlay(); // xx World->AddPrimitive 책임이동 필요
 	// 액터 자신의 로직. 컴포넌트는 각자의 PrimaryComponentTick으로 따로 실행된다.
 	virtual void Tick(float DeltaTime) {}
-	virtual void EndPlay() {};
+	// 게임 중이던 액터가 파괴되거나 PIE가 끝날 때 한 번 불린다. 컴포넌트의 EndPlay도 여기서 부른다.
+	virtual void EndPlay();
+	bool HasActorBegunPlay() const { return bActorHasBegunPlay; }
 	// FActorTickFunction이 호출하는 진입점
 	void TickActor(float DeltaTime) { Tick(DeltaTime); }
 
@@ -74,6 +76,7 @@ protected:
 	UWorld* World = nullptr;
 	ULevel* Level = nullptr;
 private:
+	bool bActorHasBegunPlay = false;
 	
 
 };

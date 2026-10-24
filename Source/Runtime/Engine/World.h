@@ -8,7 +8,6 @@
 #include "Components/TextRenderComponent.h"
 #include "Math/Transform.h"
 #include "Render/Renderer.h"
-#include "PathTracker.h"
 #include "Math/Frustum.h"
 #include "Math/BVH.h"
 #include "Engine/Scene.h"
@@ -113,7 +112,6 @@ public:
 	ULevel* GetCurrentLevel() const { return CurrentLevel; }
 	void SetCurrentLevel(ULevel* InLevel) { CurrentLevel = InLevel; }
 
-	FPathTracker& GetPathTracker() { return PathTracker; }
 
 	int32 GetActorNum();
 
@@ -190,7 +188,6 @@ private:
 	//메인 카메라 
 	ACameraActor* MainCamera = nullptr;
 
-	FPathTracker PathTracker;
 
 	ULevel* PersistentLevel = nullptr;
 	ULevel* CurrentLevel = nullptr;
