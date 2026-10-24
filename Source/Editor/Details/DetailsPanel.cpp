@@ -845,7 +845,7 @@ namespace
 			ImGui::InputText("##Component Name", ComponentNameInputBuf, sizeof(ComponentNameInputBuf));
 			TArray<UClass*> Classes;
 			GetDerivedClasses(UActorComponent::StaticClass(), Classes);
-			// 이름순 정렬하면 메뉴가 안정적
+			std::sort(Classes.begin(), Classes.end(), [](const UClass* A, const UClass* B) { return A->Name < B->Name; });
 			for (UClass* Class : Classes)
 			{
 				//if (!IsSpawnableComponent(Class)) continue;
