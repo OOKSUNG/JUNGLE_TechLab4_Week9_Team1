@@ -36,7 +36,6 @@ class UPrimitiveComponent :public USceneComponent
 		PROPERTY(bVisible)
 		PROPERTY(bCastShadow)
 		PROPERTY(bReceiveShadow)
-		PROPERTY(bEnableCollision)
 		REFLECT_END()
 public:
 	UPrimitiveComponent();
@@ -70,14 +69,6 @@ public:
 		bVisible = bInVisible;
 		MarkRenderStateDirty();
 	}
-
-	bool IsEnableCollision() const { return bEnableCollision; }
-	void SetEnableCollision(bool bCollision)
-	{
-		bEnableCollision = bCollision;
-		MarkRenderStateDirty();
-	}
-
 
 	bool IsShadowCaster() const { return bCastShadow; }
 	bool IsShadowReceiver() const { return bReceiveShadow; }
@@ -137,5 +128,4 @@ private:
 	bool bReceiveShadow = true;
 	bool bOverlapTrigger = false;	// Overlap 발생시 Event Trigger 발생 여부
 	bool bBlockComponent = false;	// 상대 물체 통과 방지
-	bool bEnableCollision = false;	// 충돌 감지 여부 
 };

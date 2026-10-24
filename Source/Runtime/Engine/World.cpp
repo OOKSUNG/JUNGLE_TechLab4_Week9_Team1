@@ -16,6 +16,7 @@
 #include "Components/ExponentialHeightFogComponent.h"
 
 #include "Components/StaticMeshComponent.h"
+#include "Components/ShapeComponent.h"
 #include "Asset/LOD/StaticMeshLODSelector.h"
 
 #include "Math/Frustum.h"
@@ -1122,30 +1123,39 @@ void UWorld::GatherOverlap()
 {
 	LastFrameOverlapInfo = OverlapInfo;	// 이전 FrameOverlapInfo에 OverlapInfo 저장
 	ResetOverlap(); // 현재 FrameOverlapInfo를 리셋
-	for (int i = 0;i < GetScene().PrimitiveSceneProxies.Num();i++)
+	TArray<UShapeComponent*> Shapes;
+	for (ULevel* Level : Levels)
 	{
-		UPrimitiveComponent* PrimComp = GetScene().PrimitiveSceneProxies[i]->GetComponent();
-		if (PrimComp->IsEnableCollision())
+		if (!Level) continue;
+		for (AActor* Actor : Level->GetActors())
 		{
-			FBox AABBfst = PrimComp->CalcBounds();
-			for (int j = i+1;j < GetScene().PrimitiveSceneProxies.Num();j++)
+			if (!Actor) continue;
+			for (UActorComponent* Component : Actor->GetComponents())
 			{
-				UPrimitiveComponent* SecondComp = GetScene().PrimitiveSceneProxies[j]->GetComponent();
-				if (SecondComp->IsEnableCollision()) {
-					FBox AABBsec = SecondComp->CalcBounds();
-					if ((AABBfst.Min.X <= AABBsec.Max.X && AABBfst.Max.X >= AABBsec.Min.X) &&	// AABB 간단 충돌 판정
-						(AABBfst.Min.Y <= AABBsec.Max.Y && AABBfst.Max.Y >= AABBsec.Min.Y) &&
-						(AABBfst.Min.Z <= AABBsec.Max.Z && AABBfst.Max.Z >= AABBsec.Min.Z))
-					{
-						AddOverlap(std::min(PrimComp->GetUUID(), SecondComp->GetUUID()), std::max(PrimComp->GetUUID(), SecondComp->GetUUID()));	// 작은 UUID -> 큰 UUID 순 정렬
-						// 프레임 사이에 순서만 반대인 쌍이 중복계산 되는것을 방지하기 위함
-					}
+				if (UShapeComponent* Shape = Cast<UShapeComponent>(Component))
+				{
+					if (Shape->IsEnableCollision())
+						Shapes.Add(Shape);	// Shape 판정을 위해 월드에 존재하는 전체 Shape배열에 추가
 				}
-			}		
+			}
 		}
 	}
 
-	// To-Do : 정밀 판정 부분 추가, OverlapInfo 정보에 담아서 처리
+	for (int i = 0; i < Shapes.Num(); ++i)
+	{
+		for (int j = i + 1; j < Shapes.Num(); ++j)
+		{
+			UShapeComponent* First = Shapes[i];
+			UShapeComponent* Second = Shapes[j];
+			// IsOverlapping 내부에서 AABB 검사 후 정밀 판정을 수행한다.
+			if (First->IsOverlapping(*Second))
+			{
+				// 프레임마다 같은 쌍을 유지하도록 작은 UUID부터 저장, 전체 충돌 쌍 저장
+				AddOverlap(std::min(First->GetUUID(), Second->GetUUID()),
+				           std::max(First->GetUUID(), Second->GetUUID()));
+			}
+		}
+	}
 
 
 	for (int i = 0; i < OverlapInfo.Num();i++)
@@ -1194,11 +1204,21 @@ void UWorld::ResetOverlap()
 
 UPrimitiveComponent* UWorld::FindPrimitiveByUUID(uint32 UUID)
 {
-	for (int i = 0;i < GetScene().PrimitiveSceneProxies.Num();i++)
+	// 렌더 프록시가 없는 Shape도 찾고, 비활성화된 컴포넌트에도 EndOverlap을 전달한다.
+	for (ULevel* Level : Levels)
 	{
-		if (GetScene().PrimitiveSceneProxies[i]->GetComponent()->GetUUID() == UUID)
+		if (!Level) continue;
+		for (AActor* Actor : Level->GetActors())
 		{
-			return GetScene().PrimitiveSceneProxies[i]->GetComponent();
+			if (!Actor) continue;
+			for (UActorComponent* Component : Actor->GetComponents())
+			{
+				if (UPrimitiveComponent* Primitive = Cast<UPrimitiveComponent>(Component))
+				{
+					if (Primitive->GetUUID() == UUID)
+						return Primitive;
+				}
+			}
 		}
 	}
 	return nullptr;
