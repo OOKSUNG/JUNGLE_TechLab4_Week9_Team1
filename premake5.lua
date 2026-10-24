@@ -20,6 +20,8 @@ IncludeDir["ImGui"] = "Source/ThirdParty/ImGui"
 IncludeDir["stb"]   = "Source/ThirdParty/stb"
 IncludeDir["json"]  = "Source/ThirdParty/json"
 IncludeDir["DDSLoader"] = "Source/ThirdParty/DDSLoader"
+IncludeDir["Sol2"] = "vcpkg_installed/x64-windows/include"
+IncludeDir["LuaJIT"] = "vcpkg_installed/x64-windows/include/luajit"
 
 -- premake의 filter는 project()를 만나면 초기화된다.
 -- 두 프로젝트가 같은 런타임(/MDd vs /MD)으로 컴파일되지 않으면 링크가 실패하므로
@@ -142,6 +144,8 @@ project "HitoriEngine"
 	includedirs
 	{
 		"Source/Runtime",
+		"%{IncludeDir.LuaJIT}",
+    	"%{IncludeDir.Sol2}",
 		"%{IncludeDir.stb}",
 		"%{IncludeDir.json}",
 		"%{IncludeDir.DDSLoader}",
@@ -184,6 +188,8 @@ project "HitoriEditor"
 		"Source",             -- "Editor/OutputLog/ConsolePanel.h"처럼 Source 기준 include를 쓴다
 		"Source/Runtime",
 		"Source/Programs",
+		"%{IncludeDir.LuaJIT}",
+    	"%{IncludeDir.Sol2}",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.ImGui}/backends",
 		"%{IncludeDir.stb}",
@@ -192,11 +198,36 @@ project "HitoriEditor"
 
 	links
 	{
+		"lua51",
 		"d3d11.lib",
 		"dxgi.lib",
 		"dxguid.lib",
 		"d3dcompiler.lib",
 	}
+
+	filter "configurations:Debug or Benchmark_Debug"
+		libdirs
+		{
+			"vcpkg_installed/x64-windows/debug/lib",
+		}
+
+		postbuildcommands
+		{
+			"{COPYFILE} %[vcpkg_installed/x64-windows/debug/bin/lua51.dll] %[%{!cfg.targetdir}/lua51.dll]",
+		}
+
+	filter "configurations:Release or Benchmark or ObjViewer"
+		libdirs
+		{
+			"vcpkg_installed/x64-windows/lib",
+		}
+
+		postbuildcommands
+		{
+			"{COPYFILE} %[vcpkg_installed/x64-windows/bin/lua51.dll] %[%{!cfg.targetdir}/lua51.dll]",
+		}
+
+	filter {}
 
 	filter "configurations:ObjViewer"
 		targetname "ObjViewer"
