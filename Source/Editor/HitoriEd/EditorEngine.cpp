@@ -47,6 +47,8 @@
 #include "Core/Stats/ShadowStats.h"
 #include "Math/Frustum.h"
 
+#include "Components/ShapeComponent.h"
+
 namespace
 {
 	DECLARE_CYCLE_STAT("Viewport Update", STAT_ViewportUpdate);
@@ -999,6 +1001,18 @@ void UEditorEngine::RenderOverlayPass(const int32 ViewIndex, UWorld& ViewWorld, 
 			{
 				LightActor->GetLightComponent()->DrawDebug(LineBatcher.get());
 			}
+		}
+
+		const AActor* SelectedActor = Gizmo->GetTarget() ? Gizmo->GetTarget()->GetOwner() : nullptr;
+		for (auto Iter = TObjectIterator<UShapeComponent>(); Iter; Iter++)
+		{
+			if (Iter->GetWorld() != &ViewWorld)
+				continue;
+
+			if (Iter->ShouldDrawOnlyIfSelected() && Iter->GetOwner() != SelectedActor)
+				continue;
+
+			Iter->DrawDebug(*LineBatcher, false);
 		}
 
 		LineBatcher->OnRender(ViewProjection);
