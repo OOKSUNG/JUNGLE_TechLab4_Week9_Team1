@@ -36,7 +36,7 @@
 #include "PlayInEditorDataTypes.h"
 #include "Core/Misc/Optional.h"
 
-#include "Core/CoroutineScheduler.h"
+#include <sol/sol.hpp>
 
 //Temp
 #include "Text/Font.h"
@@ -81,7 +81,6 @@ public:
 	//void DestroyWorldContext(UWorld* PlayWorld);
 
 	sol::state lua;
-	CoroutineScheduler FCoroutineScheduler;
 private:
 	bool ExecShadowCommand(const FString& CommandLine, FString& OutMessage);
 	bool ExecShadowResolutionCommand(const FString& CommandLine, FString& OutMessage);

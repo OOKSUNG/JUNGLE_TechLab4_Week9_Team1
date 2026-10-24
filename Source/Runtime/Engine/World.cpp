@@ -131,6 +131,7 @@ void UWorld::Tick(float DeltaTime)
 		}
 
 		GatherOverlap(); // 게임 중에만 충돌처리
+		FCoroutineScheduler.Update(DeltaTime);
 	}
 
 	
@@ -138,6 +139,10 @@ void UWorld::Tick(float DeltaTime)
 
 void UWorld::ClearWorld()
 {
+	// 액터를 삭제하기 전에 Lua 함수와 코루틴 참조를 해제한다.
+	FCoroutineScheduler.Reset();
+	OverlapInfo.Reset();
+	LastFrameOverlapInfo.Reset();
 	// BeginPlay 대기 중인 Actor 제거
 	while (!BeginPlayList.IsEmpty())
 	{
@@ -981,6 +986,7 @@ void UWorld::EndPlay()
 				Actor->EndPlay();
 		}
 	}
+	FCoroutineScheduler.Reset();
 }
 
 UWorld* UWorld::CreateWorld(const EWorldType InWorldType, bool bInformEngineOfWorld, FName WorldName)

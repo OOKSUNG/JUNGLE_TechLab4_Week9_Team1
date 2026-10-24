@@ -15,6 +15,7 @@
 #include "Asset/LOD/StaticMeshLODSelector.h"
 #include "Engine/EngineTypes.h"
 #include "Containers/Queue.h"
+#include "Core/CoroutineScheduler.h"
 //class ACameraActor;
 class ULevel;
 class UShapeComponent;
@@ -129,6 +130,7 @@ public:
 
 	FScene& GetScene() { return Scene; }
 	FTickTaskManager& GetTickTaskManager() { return TickTaskManager; }
+	CoroutineScheduler& GetCoroutineScheduler() { return FCoroutineScheduler; }
 
 	const FRenderStats& GetRenderStats() const { return RenderStats; }
 
@@ -148,6 +150,7 @@ public:
 	virtual void Serialize(FStructuredArchive::FRecord Record) override;
 
 	void GatherOverlap();
+	const TArray<FOverlapInfo>& GetOverlapInfo() const { return OverlapInfo; }
 	void AddOverlap(uint32 OverlapFirst, uint32 OverlapSecond);
 	void ResetOverlap();
 	UShapeComponent* FindShapeByUUID(uint32 UUID);
@@ -183,6 +186,8 @@ private:
 
 	// 등록된 Tick 함수만 실행한다. Actor보다 먼저 사라져도 남은 함수와의 연결을 스스로 끊는다.
 	FTickTaskManager TickTaskManager;
+	// 실행 중인 게임 World의 대기·재개 작업만 관리한다.
+	CoroutineScheduler FCoroutineScheduler;
 
 	TQueue<AActor*> BeginPlayList;
 

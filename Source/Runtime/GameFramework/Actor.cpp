@@ -3,6 +3,7 @@
 #include "Engine/World.h"
 #include "Engine/Level.h"
 #include "Components/SceneComponent.h"
+#include "Components/ShapeComponent.h"
 #include "Components/ParticleSubUVComponent.h"
 #include "Components/ExponentialHeightFogComponent.h"
 #include "Core/EngineLog.h"
@@ -63,6 +64,41 @@ void AActor::EndPlay()
 		if (Component)
 			Component->EndPlay();
 	}
+}
+
+bool AActor::IsOverlappingActor(const AActor* Other) const
+{
+	if (!Other || Other == this || !World || Other->GetWorld() != World)
+		return false;
+
+	const TArray<FOverlapInfo>& Overlaps = World->GetOverlapInfo();	// 현재 OverlapInfo 정보 
+	if (Overlaps.IsEmpty())
+		return false;
+
+	TSet<uint32> MyShapeIDs;
+	TSet<uint32> OtherShapeIDs;
+	for (UActorComponent* Component : Components)
+	{
+		if (UShapeComponent* Shape = Cast<UShapeComponent>(Component))
+			MyShapeIDs.Add(Shape->GetUUID());
+	}
+	for (UActorComponent* Component : Other->GetComponents())
+	{
+		if (UShapeComponent* Shape = Cast<UShapeComponent>(Component))
+			OtherShapeIDs.Add(Shape->GetUUID());
+	}
+
+	if (MyShapeIDs.IsEmpty() || OtherShapeIDs.IsEmpty())
+		return false;
+
+	for (const FOverlapInfo& Overlap : Overlaps)
+	{
+		// 순서 바꿔서 한번씩 체크, 겹치는게 하나라도 있으면 true
+		if ((MyShapeIDs.Contains(Overlap.OverlapFirst) && OtherShapeIDs.Contains(Overlap.OverlapSecond)) ||
+		    (MyShapeIDs.Contains(Overlap.OverlapSecond) && OtherShapeIDs.Contains(Overlap.OverlapFirst)))
+			return true;
+	}
+	return false;
 }
 
 void AActor::RegisterAllActorTickFunctions(bool bRegister)

@@ -47,7 +47,6 @@
 #include "Core/Stats/ShadowStats.h"
 #include "Math/Frustum.h"
 
-#include "Core/CoroutineScheduler.h"
 #include <sol/sol.hpp>
 #include "Components/ShapeComponent.h"
 
@@ -137,28 +136,28 @@ bool UEditorEngine::Init()
 	lua.open_libraries(sol::lib::base, sol::lib::coroutine);
 	lua.set_function("RegisterCoroutine", [this](sol::thread LuaCouroutine)	// Coroutine에 대한 정보를 Scheduler에서 저장 (Coroutine이 다수일경우 구분해서 처리 필요)
 		{
-			FCoroutineScheduler.RegisterLuaCoroutine(LuaCouroutine);	
+			if (!PlayWorld)
+			{
+				HTR_LOG(Warning, "[Lua] RegisterCoroutine requires a running game World.");
+				return;
+			}
+			PlayWorld->GetCoroutineScheduler().RegisterLuaCoroutine(LuaCouroutine);
 		});
 	lua.set_function("StartCoroutine", [this](sol::thread LuaCoroutine)	// Coroutine 시작 후 Yield결과를 판정, Wait 및 WaitUntil 처리
 		{
+			if (!PlayWorld)
+			{
+				HTR_LOG(Warning, "[Lua] StartCoroutine requires a running game World.");
+				return;
+			}
 			sol::protected_function resume = lua["coroutine"]["resume"];
-			FCoroutineScheduler.RunCoroutine(lua, resume, LuaCoroutine);
+			PlayWorld->GetCoroutineScheduler().RunCoroutine(lua, resume, LuaCoroutine);
 		});
 	lua.set_function("print", [](const std::string& message)
 		{
 			HTR_LOG(Info, "[Lua] {}", message);
 		});
 
-	auto result = lua.safe_script_file(
-		"Coroutine.lua",
-		sol::script_pass_on_error
-	);
-
-	if (!result.valid())
-	{
-		sol::error error = result;
-		HTR_LOG(Error, "[Lua] {}", error.what());
-	}
 
 	
 
@@ -392,7 +391,6 @@ void UEditorEngine::Tick(const float DeltaTime)
 				A->GetName(), A->GetWorld() == PIEWorld, A->GetLevel() == PIEWorld->GetPersistentLevel(),
 				A->GetRootComponent() && A->GetRootComponent()->GetOwner() == A);
 	}
-	FCoroutineScheduler.Update(DeltaTime);
 	UpdateMultipleViewportState(DeltaTime);
 	TickWorldAndEditor(DeltaTime);
 	RenderMultipleViewports();
@@ -584,8 +582,10 @@ void UEditorEngine::TickWorldAndEditor(const float DeltaTime)
 			GetActiveWorld()->Tick(1.0f / 60.0f);
 			bStepRequested = false;
 		}
-		else if(!bIsPaused)
+		else if (!bIsPaused)
+		{
 			GetActiveWorld()->Tick(DeltaTime);
+		}
 
 	}
 	{
@@ -1522,6 +1522,17 @@ void UEditorEngine::StartPlayInEditorSession()
 	}
 
 	OnActiveWorldChanged();
+
+	// Lua Script 실행 위치
+	if (PlayWorld)
+	{
+		auto result = lua.safe_script_file("Coroutine.lua", sol::script_pass_on_error);
+		if (!result.valid())
+		{
+			sol::error error = result;
+			HTR_LOG(Error, "[Lua] {}", error.what());
+		}
+	}
 }
 
 UWorld* UEditorEngine::CreatePIEWorldByDuplication(FWorldContext& PIEContext, UWorld* InEditorWorld)

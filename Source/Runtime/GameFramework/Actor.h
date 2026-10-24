@@ -44,6 +44,8 @@ public:
 	FQuat GetActorQuat() const;           //xx 타입명변경
 	FTransform GetActorTransform() const;
 	bool TryGetActorBounds(FBox& OutBounds) const;
+	// World가 마지막으로 갱신한 Shape 겹침 정보를 조회한다.
+	bool IsOverlappingActor(const AActor* Other) const;
 
 	bool Destroy();
 	

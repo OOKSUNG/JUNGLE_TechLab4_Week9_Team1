@@ -16,6 +16,12 @@ public:
 	using CoroutineFunc = std::function<void()>;
 	using CheckFunc = std::function<bool()>;
 
+	void Reset()
+	{
+		CoroutineInfoArray.Reset();
+		LuaCouroutineArray.Reset();
+	}
+
 	void Wait(CoroutineFunc Function, float Waittime)	// Function은 Coroutine 대기 완료 후 재개할 함수 람다 형태로 추가
 	{
 		CoroutineInfo Coroutine;
