@@ -53,4 +53,16 @@ namespace Collision
 
 	FCapsuleSegment ToCapsuleSegment(const FCollisionShape& Shape, const FVector& Pos, const FQuat& Rot);
 	FOrientedBox ToOrientedBox(const FCollisionShape& Shape, const FVector& Pos, const FQuat& Rot);
+
+	bool Overlap(const FCollisionShape& A, const FVector& PosA, const FQuat& RotA,
+	             const FCollisionShape& B, const FVector& PosB, const FQuat& RotB,
+	             FCollisionContact* OutContact = nullptr);
+
+	bool OverlapCapsuleCapsule(const FCapsuleSegment& A, const FCapsuleSegment& B, FCollisionContact* OutContact);
+	bool OverlapCapsuleBox(const FCapsuleSegment& Capsule, const FOrientedBox& Box, FCollisionContact* OutContact);
+	bool OverlapBoxBox(const FOrientedBox& A, const FOrientedBox& B, FCollisionContact* OutContact);
+
+	FVector ClosestPointOnSegment(const FVector& P, const FVector& A, const FVector& B);
+	float ClosestPointsSegmentSegment(const FVector& P1, const FVector& Q1, const FVector& P2, const FVector& Q2, FVector& OutC1, FVector& OutC2);
+	FVector ClosestPointOnBox(const FVector& P, const FOrientedBox& Box);
 }

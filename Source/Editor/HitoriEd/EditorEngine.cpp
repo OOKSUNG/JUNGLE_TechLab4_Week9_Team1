@@ -1003,16 +1003,31 @@ void UEditorEngine::RenderOverlayPass(const int32 ViewIndex, UWorld& ViewWorld, 
 			}
 		}
 
-		const AActor* SelectedActor = Gizmo->GetTarget() ? Gizmo->GetTarget()->GetOwner() : nullptr;
+		TArray<UShapeComponent*> Shapes;
 		for (auto Iter = TObjectIterator<UShapeComponent>(); Iter; Iter++)
 		{
-			if (Iter->GetWorld() != &ViewWorld)
+			if (Iter->GetWorld() == &ViewWorld)
+				Shapes.Add(*Iter);
+		}
+
+		// 임시: 3번의 Overlap 단계가 붙으면 그 결과로 교체
+		const AActor* SelectedActor = Gizmo->GetTarget() ? Gizmo->GetTarget()->GetOwner() : nullptr;
+		for (UShapeComponent* Shape : Shapes)
+		{
+			if (Shape->ShouldDrawOnlyIfSelected() && Shape->GetOwner() != SelectedActor)
 				continue;
 
-			if (Iter->ShouldDrawOnlyIfSelected() && Iter->GetOwner() != SelectedActor)
-				continue;
+			bool bOverlapping = false;
+			for (UShapeComponent* Other : Shapes)
+			{
+				if (Shape->IsOverlapping(*Other))
+				{
+					bOverlapping = true;
+					break;
+				}
+			}
 
-			Iter->DrawDebug(*LineBatcher, false);
+			Shape->DrawDebug(*LineBatcher, bOverlapping);
 		}
 
 		LineBatcher->OnRender(ViewProjection);

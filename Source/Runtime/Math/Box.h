@@ -4,7 +4,7 @@ struct FBox
 {
 	FVector Min;
 	FVector Max;
-	
+
 
 	FBox GetWorldAABB(const FMatrix& M) const
 	{
@@ -20,12 +20,10 @@ struct FBox
 
 		// 범위는 회전 부분의 절댓값으로 변환
 		FVectorRegister Ereg = VectorSIMD::Add(
-			VectorSIMD::Add(
-				VectorSIMD::Mul(VectorSIMD::SplatX(Extentreg), VectorSIMD::Abs(VectorSIMD::Load(M.M[0]))),
-				VectorSIMD::Mul(VectorSIMD::SplatY(Extentreg), VectorSIMD::Abs(VectorSIMD::Load(M.M[1])))
-			),
-			VectorSIMD::Mul(VectorSIMD::SplatZ(Extentreg), VectorSIMD::Abs(VectorSIMD::Load(M.M[2])))
-		);
+		    VectorSIMD::Add(
+		        VectorSIMD::Mul(VectorSIMD::SplatX(Extentreg), VectorSIMD::Abs(VectorSIMD::Load(M.M[0]))),
+		        VectorSIMD::Mul(VectorSIMD::SplatY(Extentreg), VectorSIMD::Abs(VectorSIMD::Load(M.M[1])))),
+		    VectorSIMD::Mul(VectorSIMD::SplatZ(Extentreg), VectorSIMD::Abs(VectorSIMD::Load(M.M[2]))));
 
 		FVector E;
 		VectorSIMD::StoreFloat3(&E.X, Ereg);
@@ -42,5 +40,13 @@ struct FBox
 		Max.X = std::max(Max.X, Other.Max.X);
 		Max.Y = std::max(Max.Y, Other.Max.Y);
 		Max.Z = std::max(Max.Z, Other.Max.Z);
+	}
+
+	// 두 AABB가 겹치면 true
+	bool Intersects(const FBox& Other) const
+	{
+		return Min.X <= Other.Max.X && Other.Min.X <= Max.X &&
+		       Min.Y <= Other.Max.Y && Other.Min.Y <= Max.Y &&
+		       Min.Z <= Other.Max.Z && Other.Min.Z <= Max.Z;
 	}
 };

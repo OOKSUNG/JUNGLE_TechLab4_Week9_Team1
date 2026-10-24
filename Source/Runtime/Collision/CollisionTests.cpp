@@ -166,6 +166,69 @@ namespace
 		CHECK_FLOAT(CapsuleShape.HalfHeight, 2.0f);
 		delete Capsule;
 	}
+
+	void TestSegmentClosestPoints()
+	{
+		CHECK_VECTOR(Collision::ClosestPointOnSegment(FVector(0.5f, 1.0f, 0.0f), FVector(0, 0, 0), FVector(1, 0, 0)), FVector(0.5f, 0.0f, 0.0f));
+		CHECK_VECTOR(Collision::ClosestPointOnSegment(FVector(3.0f, 1.0f, 0.0f), FVector(0, 0, 0), FVector(1, 0, 0)), FVector(1.0f, 0.0f, 0.0f));
+
+		FVector C1, C2;
+
+		// 십자로 엇갈림
+		CHECK_FLOAT(Collision::ClosestPointsSegmentSegment(FVector(-1, 0, 0), FVector(1, 0, 0), FVector(0, -1, 1), FVector(0, 1, 1), C1, C2), 1.0f);
+		CHECK_VECTOR(C1, FVector(0, 0, 0));
+		CHECK_VECTOR(C2, FVector(0, 0, 1));
+
+		// 평행
+		CHECK_FLOAT(Collision::ClosestPointsSegmentSegment(FVector(0, 0, 0), FVector(2, 0, 0), FVector(0, 1, 0), FVector(2, 1, 0), C1, C2), 1.0f);
+
+		// 일직선, 끝점끼리
+		CHECK_FLOAT(Collision::ClosestPointsSegmentSegment(FVector(0, 0, 0), FVector(1, 0, 0), FVector(2, 0, 0), FVector(3, 0, 0), C1, C2), 1.0f);
+		CHECK_VECTOR(C1, FVector(1, 0, 0));
+		CHECK_VECTOR(C2, FVector(2, 0, 0));
+
+		// 한쪽 끝에서 잘림
+		CHECK_FLOAT(Collision::ClosestPointsSegmentSegment(FVector(0, 0, 0), FVector(1, 0, 0), FVector(2, -1, 1), FVector(2, 1, 1), C1, C2), 2.0f);
+		CHECK_VECTOR(C1, FVector(1, 0, 0));
+		CHECK_VECTOR(C2, FVector(2, 0, 1));
+
+		// 점과 선분
+		CHECK_FLOAT(Collision::ClosestPointsSegmentSegment(FVector(0, 1, 0), FVector(0, 1, 0), FVector(-1, 0, 0), FVector(1, 0, 0), C1, C2), 1.0f);
+		CHECK_VECTOR(C2, FVector(0, 0, 0));
+	}
+
+	void TestCapsuleOverlap()
+	{
+		const FCollisionShape Sphere = FCollisionShape::MakeSphere(0.5f);
+		const FCollisionShape Capsule = FCollisionShape::MakeCapsule(0.5f, 1.0f);
+		const FQuat Identity;
+		const FQuat Lying = MakeRotation(90.0f, 0.0f, 0.0f);
+
+		// 경계(거리 = 반지름 합)는 겹침
+		CHECK_TRUE(Collision::Overlap(Sphere, FVector(0, 0, 0), Identity, Sphere, FVector(1.0f, 0, 0), Identity));
+		CHECK_TRUE(!Collision::Overlap(Sphere, FVector(0, 0, 0), Identity, Sphere, FVector(1.01f, 0, 0), Identity));
+
+		// 세운 캡슐과 눕힌 캡슐이 십자로
+		CHECK_TRUE(Collision::Overlap(Capsule, FVector(0, 0, 0), Identity, Capsule, FVector(0, 0.9f, 0), Lying));
+		CHECK_TRUE(!Collision::Overlap(Capsule, FVector(0, 0, 0), Identity, Capsule, FVector(0, 1.1f, 0), Lying));
+
+		// 캡슐 위 반구 끝과 구
+		CHECK_TRUE(Collision::Overlap(Capsule, FVector(0, 0, 0), Identity, Sphere, FVector(0, 0, 1.5f), Identity));
+		CHECK_TRUE(!Collision::Overlap(Capsule, FVector(0, 0, 0), Identity, Sphere, FVector(0, 0, 1.6f), Identity));
+
+		// 컴포넌트를 거친 IsOverlapping
+		USphereComponent* A = NewObject<USphereComponent>();
+		USphereComponent* B = NewObject<USphereComponent>();
+		A->SetSphereRadius(0.5f);
+		B->SetSphereRadius(0.5f);
+		B->SetRelativeLocation(FVector(0.9f, 0, 0));
+		CHECK_TRUE(A->IsOverlapping(*B));
+		CHECK_TRUE(!A->IsOverlapping(*A));
+		B->SetRelativeLocation(FVector(1.5f, 0, 0));
+		CHECK_TRUE(!A->IsOverlapping(*B));
+		delete A;
+		delete B;
+	}
 }
 
 int32 Collision::RunSelfTests()
@@ -177,6 +240,8 @@ int32 Collision::RunSelfTests()
 	TestOrientedBox();
 	TestCapsuleSegment();
 	TestComponentShapes();
+	TestSegmentClosestPoints();
+	TestCapsuleOverlap();
 
 	if (NumFailed == 0)
 	{

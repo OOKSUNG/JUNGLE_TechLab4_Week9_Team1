@@ -105,7 +105,13 @@ void UShapeComponent::DrawDebug(FLineBatcher& LineBatcher, bool bHighlight) cons
 
 bool UShapeComponent::IsOverlapping(const UShapeComponent& Other) const
 {
-	return false;
+	if (&Other == this || !CalcBounds().Intersects(Other.CalcBounds()))
+	{
+		return false;
+	}
+
+	return Collision::Overlap(GetCollisionShape(), GetWorldLocation(), GetWorldRotation().Quaternion(),
+	                          Other.GetCollisionShape(), Other.GetWorldLocation(), Other.GetWorldRotation().Quaternion());
 }
 
 bool UShapeComponent::ComputeContact(const UShapeComponent& Other, FCollisionContact& OutContact) const
