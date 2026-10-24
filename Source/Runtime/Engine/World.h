@@ -135,6 +135,19 @@ public:
 
 	using Super::Serialize;
 	virtual void Serialize(FStructuredArchive::FRecord Record) override;
+
+	void SetScenePath(const FString& InScenePath)
+	{
+		ScenePath = InScenePath;
+	}
+
+	const FString& GetScenePath() const
+	{
+		return ScenePath;
+	}
+
+	FString GetSceneName() const;
+
 private:
 	// 활성 Lit View 중 하나에서 Receiver 후보가 보이면 유지한다.
 	// LocalLight와 ReceiverFrustum은 지정한 경우에만 영향 구와 투영 범위를 제한한다.
@@ -191,4 +204,5 @@ private:
 
 	FRenderStats RenderStats;
 
+	FString ScenePath;
 };

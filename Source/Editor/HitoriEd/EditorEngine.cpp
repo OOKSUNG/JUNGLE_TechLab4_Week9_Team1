@@ -1401,6 +1401,8 @@ void UEditorEngine::PreExit()
 	// PIE 창이 열린 채 종료하면 Device가 살아 있을 때 Swapchain과 타깃을 먼저 정리한다.
 	DestroyPIEWindow();
 	ImGuiRenderer->Shutdown();
+
+	Super::PreExit();
 }
 
 // 선택과 Gizmo 참조를 정리한 뒤 Actor를 삭제한다.

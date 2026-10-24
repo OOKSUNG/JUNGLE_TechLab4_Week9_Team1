@@ -30,6 +30,7 @@ bool FEditorFileUtils::NewScene(UWorld* World)
 	World->GetPathTracker().ClearPath();
 
 	CurrentScenePath.clear();
+	World->SetScenePath("");
 
 	return true;
 }
@@ -88,6 +89,7 @@ bool FEditorFileUtils::SaveSceneAs(UWorld* World)
 	}
 
 	CurrentScenePath = FilePath;
+	World->SetScenePath(FilePath);
 
 	HTR_LOG(Info, "Save Scene As : {}", CurrentScenePath);
 
@@ -112,6 +114,7 @@ bool FEditorFileUtils::LoadScene(UWorld* World)
 
 	// 이제 이 파일이 현재 Scene
 	CurrentScenePath = FilePath;
+	World->SetScenePath(FilePath);
 
 	HTR_LOG(Info, "Load Scene : {}", CurrentScenePath);
 

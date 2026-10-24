@@ -10,6 +10,9 @@
 
 #include "Asset/AssetManager.h"
 
+// TODO: 전방 선언으로 바꿔야 한다.
+#include "Scripting/LuaVM.h"
+
 struct FWorldContext
 {
 	EWorldType WorldType;
@@ -56,6 +59,8 @@ class UEngine : public UObject
 	DECLARE_CLASS(UEngine, UObject)
 	friend class FEngineLoop;
 public:
+	virtual ~UEngine() override;
+
 	// 창을 만들기 전에 호출된다.
 	virtual FEngineConfig GetConfig() const { return {}; }
 
@@ -73,8 +78,11 @@ public:
 	FWorldContext* GetWorldContextFromWorld(const UWorld* InWorld);
 	void DestroyWorldContext(UWorld* InWorld);
 
+	FLuaVM* GetLuaVM() const { return LuaVM.get(); }
+
 protected:
 	UAssetManager* AssetManager;
+	TUniquePtr<FLuaVM> LuaVM;
 
 	FEngineLoop& GetEngineLoop() const { return *EngineLoop; }
 

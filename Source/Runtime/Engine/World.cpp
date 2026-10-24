@@ -671,7 +671,8 @@ bool UWorld::IsSmallShadowCaster(const FLODSphere& Sphere, const FLODViewContext
 	return ViewCount > 0;
 }
 
-float UWorld::GetLocalShadowCasterRadius(const ULightComponent& Light, const FLightRenderParameters& Parameters, float TanHalfFOV)
+
+float UWorld::GetLocalShadowCasterRadius(const ULightComponent& Light, const FLightRenderParameters& Parameters, float TanHalfFOV)
 {
 	const int32 Resolution = FShadowSettings::GetEffectiveResolution(Light.GetShadowMapResolution());
 	if (Resolution <= 0)
@@ -1131,4 +1132,14 @@ bool UWorld::HasVisibleShadowReceiver(const TArray<FFrustumPlanes>& ActiveViewFr
 			bHasReceiver = true;
 		});
 	return bHasReceiver;
+}
+
+FString UWorld::GetSceneName() const
+{
+	if (ScenePath.empty())
+	{
+		return "Untitled";
+	}
+
+	return std::filesystem::path(ScenePath).stem().string();
 }
