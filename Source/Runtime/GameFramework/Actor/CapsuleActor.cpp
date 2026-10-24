@@ -5,4 +5,5 @@ ACapsuleActor::ACapsuleActor()
 {
 	CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>("CollisionComponent");
 	SetRootComponent(CapsuleComponent);
+	CapsuleComponent->SetBlockComponent(true);
 }

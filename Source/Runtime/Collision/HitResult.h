@@ -49,4 +49,14 @@ struct FHitResult
 
 	AActor* GetActor() const { return HitActor; }
 	UPrimitiveComponent* GetComponent() const { return HitComponent; }
+
+	static FHitResult GetReversedHit(const FHitResult& Hit, UPrimitiveComponent* MovedComponent, AActor* MovedActor)
+	{
+		FHitResult Result = Hit;
+		Result.Normal = -Hit.Normal;
+		Result.ImpactNormal = -Hit.ImpactNormal;
+		Result.HitComponent = MovedComponent;
+		Result.HitActor = MovedActor;
+		return Result;
+	}
 };

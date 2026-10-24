@@ -9,6 +9,7 @@
 #include "Core/TDelegate.h"
 
 class FPrimitiveSceneProxy;
+class AActor;
 
 enum class EPrimitiveType
 {
@@ -25,26 +26,30 @@ class UPrimitiveComponent :public USceneComponent
 {
 	DECLARE_CLASS(UPrimitiveComponent, USceneComponent)
 
-	DECLARE_DELEGATE(DelegateWhenBeginOverlap)
-	DECLARE_DELEGATE(DelegateWhenEndOverlap)
-	DECLARE_DELEGATE(DelegateWhenHit)
-	// To-Do : Begin, End, Hit에서 사용할 인자가 결정되었을때 뒤에 추가
-
 	// Material은 여기서 등록하지 않는다. 컴포넌트마다 머티리얼을 다루는 방식이 달라서
 	// (빌보드는 단일 머티리얼, 스태틱 메시는 슬롯별 덮어쓰기) 각자 등록한다.
 	REFLECT_START(ClassName)
 		PROPERTY(bVisible)
 		PROPERTY(bCastShadow)
 		PROPERTY(bReceiveShadow)
+		PROPERTY(bBlockComponent)
 		REFLECT_END()
 public:
+	DECLARE_DELEGATE(DelegateWhenBeginOverlap)
+	DECLARE_DELEGATE(DelegateWhenEndOverlap)
+	DECLARE_DELEGATE(DelegateWhenHit, UPrimitiveComponent*, AActor*, UPrimitiveComponent*, const FHitResult&)
+	// To-Do : Begin, End에서 사용할 인자가 결정되었을때 뒤에 추가
+
 	UPrimitiveComponent();
 	virtual ~UPrimitiveComponent();
 
 	virtual void BeginPlay() override;
 	void OnBeginOverlap();
 	void OnEndOverlap();
-	void OnHit();
+	void OnHit(AActor* OtherActor, UPrimitiveComponent* OtherComp, const FHitResult& Hit);
+
+	bool IsBlockComponent() const { return bBlockComponent; }
+	void SetBlockComponent(bool bInBlock) { bBlockComponent = bInBlock; }
 
 	// Todo: subuv
 	//void SubmitToRenderQueue(TQueue<FRenderPacket>& RenderQueue);
@@ -120,6 +125,7 @@ protected:
 	bool TraceMesh(const FRay& WorldRay, const FStaticMeshData& Mesh, const FMatrix& WorldMatrix, FHitResult& OutResult);
 	bool TraceMeshLocal(const FRay& LocalRay, const FStaticMeshData& Mesh, float& OutT);
 	bool bVisible = true;
+	bool bBlockComponent = false;
 
 private:
 	friend class FScene;
@@ -127,5 +133,4 @@ private:
 	bool bCastShadow = true;
 	bool bReceiveShadow = true;
 	bool bOverlapTrigger = false;	// Overlap 발생시 Event Trigger 발생 여부
-	bool bBlockComponent = false;	// 상대 물체 통과 방지
 };

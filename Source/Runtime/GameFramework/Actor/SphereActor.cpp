@@ -5,4 +5,5 @@ ASphereActor::ASphereActor()
 {
 	SphereComponent = CreateDefaultSubobject<USphereComponent>("CollisionComponent");
 	SetRootComponent(SphereComponent);
+	SphereComponent->SetBlockComponent(true);
 }

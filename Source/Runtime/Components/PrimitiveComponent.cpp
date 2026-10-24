@@ -127,7 +127,7 @@ bool UPrimitiveComponent::MoveComponent(const FVector& Delta, const FRotator& Ne
 	if (Hit)
 		Hit->Init(Start, Start + Delta);
 
-	UShapeComponent* Shape = bSweep ? Cast<UShapeComponent>(this) : nullptr;
+	UShapeComponent* Shape = bSweep && IsBlockComponent() ? Cast<UShapeComponent>(this) : nullptr;
 	UWorld* World = GetWorld();
 	if (!Shape || !World)
 	{
@@ -148,7 +148,7 @@ bool UPrimitiveComponent::MoveComponent(const FVector& Delta, const FRotator& Ne
 		for (UActorComponent* Component : Actor->GetComponents())
 		{
 			UShapeComponent* Other = Cast<UShapeComponent>(Component);
-			if (!Other || !SweepBounds.Intersects(Other->CalcBounds()))
+			if (!Other || !Other->IsBlockComponent() || !SweepBounds.Intersects(Other->CalcBounds()))
 				continue;
 
 			Targets.Add({ Other->GetCollisionShape(), Other->GetWorldLocation(), Other->GetWorldRotation().Quaternion() });
@@ -160,23 +160,30 @@ bool UPrimitiveComponent::MoveComponent(const FVector& Delta, const FRotator& Ne
 	const FVector NewLocation = Start + Delta * Sweep.Time;
 	SetWorldLocationAndRotation(NewLocation, NewRotation, bSweep);
 
-	if (Hit && Sweep.bBlockingHit)
-	{
-		UShapeComponent* HitComponent = TargetComponents[Sweep.TargetIndex];
-		Hit->bBlockingHit = true;
-		Hit->bStartPenetrating = Sweep.bStartPenetrating;
-		Hit->Time = Sweep.Time;
-		Hit->Distance = Delta.Length() * Sweep.Time;
-		Hit->Location = NewLocation;
-		Hit->ImpactPoint = Sweep.Contact.Point;
-		Hit->Normal = Sweep.Contact.Normal;
-		Hit->ImpactNormal = Sweep.Contact.Normal;
-		Hit->PenetrationDepth = Sweep.Contact.PenetrationDepth;
-		Hit->HitComponent = HitComponent;
-		Hit->HitActor = HitComponent->GetOwner();
-	}
+	if (!Sweep.bBlockingHit)
+		return true;
 
-	return !Sweep.bBlockingHit || Sweep.Time > 0.0f;
+	FHitResult LocalHit;
+	if (!Hit)
+		Hit = &LocalHit;
+
+	UShapeComponent* HitComponent = TargetComponents[Sweep.TargetIndex];
+	Hit->bBlockingHit = true;
+	Hit->bStartPenetrating = Sweep.bStartPenetrating;
+	Hit->Time = Sweep.Time;
+	Hit->Distance = Delta.Length() * Sweep.Time;
+	Hit->Location = NewLocation;
+	Hit->ImpactPoint = Sweep.Contact.Point;
+	Hit->Normal = Sweep.Contact.Normal;
+	Hit->ImpactNormal = Sweep.Contact.Normal;
+	Hit->PenetrationDepth = Sweep.Contact.PenetrationDepth;
+	Hit->HitComponent = HitComponent;
+	Hit->HitActor = HitComponent->GetOwner();
+
+	OnHit(Hit->HitActor, HitComponent, *Hit);
+	HitComponent->OnHit(GetOwner(), this, FHitResult::GetReversedHit(*Hit, this, GetOwner()));
+
+	return Sweep.Time > 0.0f;
 }
 
 // 기본 Primitive는 기존 공통 Proxy를 사용한다.
@@ -235,7 +242,7 @@ void UPrimitiveComponent::OnEndOverlap()
 	DelegateWhenEndOverlap.Broadcast();
 }
 
-void UPrimitiveComponent::OnHit()
+void UPrimitiveComponent::OnHit(AActor* OtherActor, UPrimitiveComponent* OtherComp, const FHitResult& Hit)
 {
-	//DelegateWhenHit.Broadcast();
+	DelegateWhenHit.Broadcast(this, OtherActor, OtherComp, Hit);
 }
