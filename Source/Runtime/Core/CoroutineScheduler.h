@@ -1,7 +1,7 @@
 #pragma once
 
 #include"EnginePCH.h"
-#include <coroutine>
+#include <sol/sol.hpp>
 
 struct CoroutineInfo
 {
@@ -26,7 +26,7 @@ public:
 
 	void Update(float deltaTime)
 	{
-		for (int i = CoroutineInfoArray.Num();i > 0 ;i--) {
+		for (int i = CoroutineInfoArray.Num()-1;i >= 0 ;i--) {
 			if (CoroutineInfoArray[i].CheckFunction)	// 조건 Coroutine일 경우와 시간 Coroutine일 경우 분리
 			{
 				if (CoroutineInfoArray[i].CheckFunction())
@@ -58,7 +58,14 @@ public:
 		CoroutineInfoArray.Add(Coroutine);	// CouroutineInfoArray에 해당 정보 추가
 	}
 
+	void RegisterLuaCoroutine(sol::thread LuaCour)
+	{
+		LuaCouroutineArray.Add(LuaCour);
+	}
+
+	TArray<sol::thread> LuaCouroutineArray;
 private:
 	TArray<CoroutineInfo> CoroutineInfoArray;
+	
 };
 

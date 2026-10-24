@@ -46,6 +46,10 @@
 #include "Core/Stats/ShadowStats.h"
 #include "Math/Frustum.h"
 
+#include "Core/CoroutineScheduler.h"
+#include <sol/sol.hpp>
+
+
 namespace
 {
 	DECLARE_CYCLE_STAT("Viewport Update", STAT_ViewportUpdate);
@@ -121,6 +125,56 @@ bool UEditorEngine::Init()
 		HTR_LOG(Error, "Failed To Initialize ImGui!");
 	}
 	HTR_LOG(Info, "Initialize ImGui Success!");
+	
+
+	// Lua Coroutine용 함수 Binding
+	lua.open_libraries(sol::lib::base, sol::lib::coroutine);
+	lua.set_function("RegisterCoroutine", [this](sol::thread LuaCouroutine)	// Coroutine에 대한 정보를 Scheduler에서 저장 (Coroutine이 다수일경우 구분해서 처리 필요)
+		{
+			FCoroutineScheduler.RegisterLuaCoroutine(LuaCouroutine);	
+		});
+	lua.set_function("StartCoroutine", [this](sol::thread LuaCouroutine)	// Coroutine 시작 후 Yield결과를 판정, Wait 및 WaitUntil 처리
+		{
+			sol::protected_function resume = lua["coroutine"]["resume"];
+			int32 index = FCoroutineScheduler.LuaCouroutineArray.Find(LuaCouroutine);
+			if (index != -1)
+			{
+				auto YieldResult = resume(LuaCouroutine);
+				bool Success = YieldResult.get<bool>(0);
+				if (Success)
+				{
+					FString waittype = YieldResult.get<FString>(1);
+					if (waittype == "wait")
+					{
+						float WaitTime = YieldResult.get<float>(2);
+						FCoroutineScheduler.Wait([resume, LuaCouroutine](){ auto result = resume(LuaCouroutine); }, WaitTime);
+					}
+					if (waittype == "wait_until")
+					{
+						sol::protected_function condition = YieldResult.get<sol::protected_function>(2);
+						std::function<bool()> CheckFunction = [condition]() {if (condition().get<bool>())return true; else return false;};
+						FCoroutineScheduler.WaitUntil([resume, LuaCouroutine]() { auto result = resume(LuaCouroutine); }, CheckFunction);
+					}
+				}
+			}
+		});
+	lua.set_function("print", [](const std::string& message)
+		{
+			HTR_LOG(Info, "[Lua] {}", message);
+		});
+
+	auto result = lua.safe_script_file(
+		R"(C:\Users\JUNGLE\Documents\GitHub\JUNGLE_TechLab4_Week9_Team1\Coroutine.lua)",
+		sol::script_pass_on_error
+	);
+
+	if (!result.valid())
+	{
+		sol::error error = result;
+		HTR_LOG(Error, "[Lua] {}", error.what());
+	}
+
+	
 
 	GridRenderer = MakeUnique<FGridRenderer>();
 	GridRenderer->Init(Renderer);
@@ -352,6 +406,7 @@ void UEditorEngine::Tick(const float DeltaTime)
 				A->GetName(), A->GetWorld() == PIEWorld, A->GetLevel() == PIEWorld->GetPersistentLevel(),
 				A->GetRootComponent() && A->GetRootComponent()->GetOwner() == A);
 	}
+	FCoroutineScheduler.Update(DeltaTime);
 	UpdateMultipleViewportState(DeltaTime);
 	TickWorldAndEditor(DeltaTime);
 	RenderMultipleViewports();
