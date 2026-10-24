@@ -30,6 +30,7 @@ class UPrimitiveComponent :public USceneComponent
 		PROPERTY(bVisible)
 		PROPERTY(bCastShadow)
 		PROPERTY(bReceiveShadow)
+		PROPERTY(bGenerateOverlapEvents)
 		PROPERTY(bBlockComponent)
 		REFLECT_END()
 public:
@@ -40,6 +41,8 @@ public:
 
 	bool IsBlockComponent() const { return bBlockComponent; }
 	void SetBlockComponent(bool bInBlock) { bBlockComponent = bInBlock; }
+	bool GetGenerateOverlapEvents() const { return bGenerateOverlapEvents; }
+	void SetGenerateOverlapEvents(bool bInGenerate) { bGenerateOverlapEvents = bInGenerate; }
 
 	// Todo: subuv
 	//void SubmitToRenderQueue(TQueue<FRenderPacket>& RenderQueue);
@@ -115,6 +118,7 @@ protected:
 	bool TraceMesh(const FRay& WorldRay, const FStaticMeshData& Mesh, const FMatrix& WorldMatrix, FHitResult& OutResult);
 	bool TraceMeshLocal(const FRay& LocalRay, const FStaticMeshData& Mesh, float& OutT);
 	bool bVisible = true;
+	bool bGenerateOverlapEvents = false;
 	bool bBlockComponent = false;
 
 private:
@@ -122,5 +126,4 @@ private:
 	FPrimitiveSceneProxy* SceneProxy = nullptr;
 	bool bCastShadow = true;
 	bool bReceiveShadow = true;
-	bool bOverlapTrigger = false;	// Overlap 발생시 Event Trigger 발생 여부
 };

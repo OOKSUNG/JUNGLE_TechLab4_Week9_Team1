@@ -14,18 +14,17 @@ class UShapeComponent : public UPrimitiveComponent
 	REFLECT_START(UShapeComponent)
 		PROPERTY(ShapeColor)
 		PROPERTY(bDrawOnlyIfSelected)
-		PROPERTY(bEnableCollision)
 	REFLECT_END()
 
 public:
 	UShapeComponent();
 
-	DECLARE_DELEGATE(DelegateWhenBeginOverlap)
-	DECLARE_DELEGATE(DelegateWhenEndOverlap)
-	DECLARE_DELEGATE(DelegateWhenHit, UPrimitiveComponent*, AActor*, UPrimitiveComponent*, const FHitResult&)
+	DECLARE_DELEGATE(OnComponentBeginOverlap, UPrimitiveComponent*, AActor*, UPrimitiveComponent*)
+	DECLARE_DELEGATE(OnComponentEndOverlap, UPrimitiveComponent*, AActor*, UPrimitiveComponent*)
+	DECLARE_DELEGATE(OnComponentHit, UPrimitiveComponent*, AActor*, UPrimitiveComponent*, const FHitResult&)
 
-	void OnBeginOverlap();
-	void OnEndOverlap();
+	void OnBeginOverlap(UShapeComponent* Other);
+	void OnEndOverlap(UShapeComponent* Other);
 	void OnHit(AActor* OtherActor, UPrimitiveComponent* OtherComp, const FHitResult& Hit);
 
 	virtual FCollisionShape GetCollisionShape() const = 0;
@@ -35,17 +34,10 @@ public:
 	bool ComputeContact(const UShapeComponent& Other, FCollisionContact& OutContact) const;
 	bool ShouldDrawOnlyIfSelected() const;
 	float GetShapeScale() const;
-	bool IsEnableCollision() const { return bEnableCollision; }
-	void SetEnableCollision(bool bCollision)
-	{
-		bEnableCollision = bCollision;
-		MarkRenderStateDirty();
-	}
 
 protected:
 	virtual bool ShouldCreateRenderState() const override;
 
 	FColor ShapeColor{ 223, 149, 157, 255 };
 	bool bDrawOnlyIfSelected = false;
-	bool bEnableCollision = false; // 충돌 감지 여부
 };
