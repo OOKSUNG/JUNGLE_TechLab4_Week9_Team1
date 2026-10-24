@@ -1137,7 +1137,7 @@ void UWorld::GatherOverlap()
 			{
 				if (UShapeComponent* Shape = Cast<UShapeComponent>(Component))
 				{
-					if (Shape->IsEnableCollision())
+					if (Shape->GetGenerateOverlapEvents())
 						Shapes.Add(Shape);	// Shape 판정을 위해 월드에 존재하는 전체 Shape배열에 추가
 				}
 			}
@@ -1165,14 +1165,10 @@ void UWorld::GatherOverlap()
 	{
 		if (LastFrameOverlapInfo.Find(OverlapInfo[i]) == -1)
 		{
-			if (FindShapeByUUID(OverlapInfo[i].OverlapFirst))
-			{
-				FindShapeByUUID(OverlapInfo[i].OverlapFirst)->OnBeginOverlap();	// 새로운 OverlapInfo의 요소를 이전 OverlapInfo에서 찾지 못함 => BeginOverlap()
-			}
-			if (FindShapeByUUID(OverlapInfo[i].OverlapSecond))
-			{
-				FindShapeByUUID(OverlapInfo[i].OverlapSecond)->OnBeginOverlap();
-			}
+			UShapeComponent* First = FindShapeByUUID(OverlapInfo[i].OverlapFirst);
+			UShapeComponent* Second = FindShapeByUUID(OverlapInfo[i].OverlapSecond);
+			if (First) First->OnBeginOverlap(Second);
+			if (Second) Second->OnBeginOverlap(First);
 		}
 	}
 
@@ -1180,14 +1176,10 @@ void UWorld::GatherOverlap()
 	{
 		if (OverlapInfo.Find(LastFrameOverlapInfo[i]) == -1)
 		{
-			if (FindShapeByUUID(LastFrameOverlapInfo[i].OverlapFirst))
-			{
-				FindShapeByUUID(LastFrameOverlapInfo[i].OverlapFirst)->OnEndOverlap(); // 이전 OverlapInfo의 요소를 새로운 OverlapInfo에서 찾지 못함 => EndOverlap()
-			}
-			if (FindShapeByUUID(LastFrameOverlapInfo[i].OverlapSecond))
-			{
-				FindShapeByUUID(LastFrameOverlapInfo[i].OverlapSecond)->OnEndOverlap();
-			}
+			UShapeComponent* First = FindShapeByUUID(LastFrameOverlapInfo[i].OverlapFirst);
+			UShapeComponent* Second = FindShapeByUUID(LastFrameOverlapInfo[i].OverlapSecond);
+			if (First) First->OnEndOverlap(Second);
+			if (Second) Second->OnEndOverlap(First);
 		}
 	}
 }
