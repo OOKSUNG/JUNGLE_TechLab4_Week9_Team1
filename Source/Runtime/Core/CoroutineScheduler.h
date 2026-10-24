@@ -63,9 +63,41 @@ public:
 		LuaCouroutineArray.Add(LuaCour);
 	}
 
+	void RunCoroutine(sol::state& lua, sol::protected_function resume, sol::thread LuaCoroutine)	// Coroutine 반복 실행함수, Yield 만나고 값에 따라서 Wait Array에 값을 넣는 역할 담당
+	{
+		auto YieldResult = resume(LuaCoroutine);	// Yield시 같이 넘기는 값을 Resume하면서 가져옴
+		bool Success = YieldResult.get<bool>(0);
+		if (Success)	// Yield가 Success일 경우만 실행
+		{
+			sol::protected_function status = lua["coroutine"]["status"];	// Coroutine.status 실행해서 현재 상태 체크
+			FString state = status(LuaCoroutine);
+
+			if (state == "dead") // 함수가 끝났으므로 대기 정보를 읽지 않음
+			{
+				return;
+			}
+
+			if (state == "suspended")	// 대기 상태이므로 Wait 체크
+			{
+				FString waittype = YieldResult.get<FString>(1);
+				if (waittype == "wait")
+				{
+					float WaitTime = YieldResult.get<float>(2);
+					Wait([this, resume, LuaCoroutine, &lua]() { RunCoroutine(lua, resume, LuaCoroutine); }, WaitTime);	// Wait가 있으면 대기열에 현재 람다를 넣음, 현재 람다가 끝나고 다음 Wait에도 실행되도록 RunCoroutine을 넣음
+				}
+				if (waittype == "wait_until")
+				{
+					sol::protected_function condition = YieldResult.get<sol::protected_function>(2);
+					std::function<bool()> CheckFunction = [condition]() {if (condition().get<bool>())return true; else return false;};
+					WaitUntil([this, resume, LuaCoroutine, &lua]() { RunCoroutine(lua, resume, LuaCoroutine); }, CheckFunction); // WaitUntil이 있으면 대기열에 현재 람다를 넣음, 현재 람다가 끝나고 다음 Wait에도 실행되도록 RunCoroutine을 넣음
+				}
+			}
+		}
+	}
+
 	TArray<sol::thread> LuaCouroutineArray;
+
 private:
 	TArray<CoroutineInfo> CoroutineInfoArray;
-	
 };
 

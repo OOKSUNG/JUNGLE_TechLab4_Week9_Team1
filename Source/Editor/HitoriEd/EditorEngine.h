@@ -216,5 +216,4 @@ private:
 	void SaveCurrentScene();
 	void SaveSceneAs();
 
-	
 };

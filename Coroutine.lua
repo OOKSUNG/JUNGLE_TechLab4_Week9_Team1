@@ -8,7 +8,11 @@ end
 
 function Attack()
     print("coroutine started")
-    Wait(6)
+    Wait(3)
+    print("coroutine started2")
+    Wait(5)
+    print("coroutine started3")
+    Wait(4)
     print("coroutine ended")
 end
 
@@ -17,3 +21,4 @@ RegisterCoroutine(co);
 StartCoroutine(co);
 
 
+            

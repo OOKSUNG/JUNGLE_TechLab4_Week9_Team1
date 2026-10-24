@@ -133,30 +133,10 @@ bool UEditorEngine::Init()
 		{
 			FCoroutineScheduler.RegisterLuaCoroutine(LuaCouroutine);	
 		});
-	lua.set_function("StartCoroutine", [this](sol::thread LuaCouroutine)	// Coroutine 시작 후 Yield결과를 판정, Wait 및 WaitUntil 처리
+	lua.set_function("StartCoroutine", [this](sol::thread LuaCoroutine)	// Coroutine 시작 후 Yield결과를 판정, Wait 및 WaitUntil 처리
 		{
 			sol::protected_function resume = lua["coroutine"]["resume"];
-			int32 index = FCoroutineScheduler.LuaCouroutineArray.Find(LuaCouroutine);
-			if (index != -1)
-			{
-				auto YieldResult = resume(LuaCouroutine);
-				bool Success = YieldResult.get<bool>(0);
-				if (Success)
-				{
-					FString waittype = YieldResult.get<FString>(1);
-					if (waittype == "wait")
-					{
-						float WaitTime = YieldResult.get<float>(2);
-						FCoroutineScheduler.Wait([resume, LuaCouroutine](){ auto result = resume(LuaCouroutine); }, WaitTime);
-					}
-					if (waittype == "wait_until")
-					{
-						sol::protected_function condition = YieldResult.get<sol::protected_function>(2);
-						std::function<bool()> CheckFunction = [condition]() {if (condition().get<bool>())return true; else return false;};
-						FCoroutineScheduler.WaitUntil([resume, LuaCouroutine]() { auto result = resume(LuaCouroutine); }, CheckFunction);
-					}
-				}
-			}
+			FCoroutineScheduler.RunCoroutine(lua, resume, LuaCoroutine);
 		});
 	lua.set_function("print", [](const std::string& message)
 		{
@@ -1740,3 +1720,4 @@ void UEditorEngine::SaveSceneAs()
 	}
 	FEditorFileUtils::SaveSceneAs(EditorWorld);
 }
+
