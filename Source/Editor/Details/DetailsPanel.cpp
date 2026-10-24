@@ -884,7 +884,7 @@ namespace
 		}
 	}
 
-	void DrawActorHeader(AActor* Actor, UActorComponent*& OutSelectedComponent)
+	void DrawActorHeader(AActor* Actor, UActorComponent*& OutSelectedComponent, UActorComponent*& OutAddedComponent)
 	{
 		if (!Actor) { return; }
 
@@ -911,7 +911,9 @@ namespace
 				//if (!IsSpawnableComponent(Class)) continue;
 				if (ImGui::MenuItem(Class->Name.c_str()))
 				{
-					OutSelectedComponent = Actor->AddComponent(Class, FString(ComponentNameInputBuf));
+					OutAddedComponent = Actor->AddComponent(Class, FString(ComponentNameInputBuf));
+					if (OutAddedComponent)
+						OutSelectedComponent = OutAddedComponent;
 					ComponentNameInputBuf[0] = '\0';
 					ImGui::CloseCurrentPopup();
 				}
@@ -1169,8 +1171,23 @@ void FDetailsPanel::OnRender()
 
 		UActorComponent* SelectCandidateComponent = TargetComponent;
 
-		DrawActorHeader(TargetActor, TargetComponent);
-		DrawCompoenetList(TargetActor, TargetComponent);				
+		UActorComponent* AddedComponent = nullptr;
+		DrawActorHeader(TargetActor, TargetComponent, AddedComponent);
+		if (USceneComponent* AddedSceneComponent = Cast<USceneComponent>(AddedComponent))
+		{
+			USceneComponent* Root = TargetActor->GetRootComponent();
+			bool bReplacesDefaultRoot = TargetActor->IsDefaultSceneRoot(Root);
+			if (bReplacesDefaultRoot)
+			{
+				for (USceneComponent* Child : Root->GetAttachChildren())
+					if (Child && Child != AddedSceneComponent && Child->GetOwner() == TargetActor && !Child->IsHiddenInDetails())
+						bReplacesDefaultRoot = false;
+			}
+
+			if (bReplacesDefaultRoot)
+				PendingMakeRootComponent = AddedSceneComponent;
+		}
+		DrawCompoenetList(TargetActor, TargetComponent);
 		ImGui::Separator();
 
 		// 액터 -> 컴포넌트 순으로, 클래스별 프로퍼티 표시
@@ -1202,18 +1219,28 @@ void FDetailsPanel::OnRender()
 				DrawMaterialSlots(MeshComponent);
 			}
 			ImGui::PopID();
+		}
+	}
 
-			if (PendingDeleteComponent)
-			{
-				if (DeleteCallback)
-				{
-					DeleteCallback(PendingDeleteComponent);
-				}
+	if (PendingDeleteComponent)
+	{
+		if (DeleteCallback)
+		{
+			DeleteCallback(PendingDeleteComponent);
+		}
 
-				PendingDeleteComponent = nullptr;
-			}			
-		}		
-	}	
+		PendingDeleteComponent = nullptr;
+	}
+
+	if (PendingMakeRootComponent)
+	{
+		if (MakeRootCallback)
+		{
+			MakeRootCallback(PendingMakeRootComponent);
+		}
+
+		PendingMakeRootComponent = nullptr;
+	}
 	ImGui::End();
 }
 
@@ -1309,7 +1336,7 @@ void FDetailsPanel::DrawSceneComponentNode(USceneComponent* Component, USceneCom
 	TArray<USceneComponent*> Children;
 	for (USceneComponent* Child : Component->GetAttachChildren())
 	{
-		if (Child && !Child->IsHiddenInDetails())
+		if (Child && Child->GetOwner() == Component->GetOwner() && !Child->IsHiddenInDetails())
 		{
 			Children.Add(Child);
 		}
@@ -1371,7 +1398,11 @@ void FDetailsPanel::DrawSceneComponentNode(USceneComponent* Component, USceneCom
 
 		if (ImGui::BeginPopupContextItem("Component Context"))
 		{
-			if (ImGui::MenuItem("Delete", nullptr, false, Component != Root))
+			if (ImGui::MenuItem("Make Root", nullptr, false, Component != Root))
+				PendingMakeRootComponent = Component;
+
+			AActor* Owner = Component->GetOwner();
+			if (ImGui::MenuItem("Delete", nullptr, false, Owner && Owner->CanDestroyComponent(Component)))
 				PendingDeleteComponent = Component;
 			ImGui::EndPopup();
 		}
@@ -1432,7 +1463,7 @@ void FDetailsPanel::TryReparent(USceneComponent* DroppedComponent, USceneCompone
 		&& DroppedComponent->GetAttachParent() != DragComponent
 		&& DroppedComponent != DragComponent)
 	{
-		DroppedComponent->SetupAttachment(DragComponent, EAttachmentRule::KeepWorld);
+		DroppedComponent->AttachToComponent(DragComponent, EAttachmentRule::KeepWorld);
 	}
 }
 

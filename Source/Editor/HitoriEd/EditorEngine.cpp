@@ -302,6 +302,12 @@ bool UEditorEngine::Init()
 			DeleteComponent(Component);
 		}
 	);
+	DetailsPanel->SetMakeRootCallback(
+		[this](USceneComponent* NewRoot)
+		{
+			MakeRootComponent(NewRoot);
+		}
+	);
 
 	LineBatcher = MakeUnique<FLineBatcher>();
 	LineBatcher->Init(Renderer, GetActiveWorld());
@@ -1489,9 +1495,45 @@ void UEditorEngine::DeleteComponent(UActorComponent* Component)
 		return;
 	if (IsPlaying() && !bIsPaused)
 		return;
+
+	AActor* Owner = Component->GetOwner();
+	if (!Owner || !Owner->CanDestroyComponent(Component))
+		return;
+
+	USceneComponent* NextSelection = nullptr;
+	if (USceneComponent* SceneComponent = Cast<USceneComponent>(Component))
+	{
+		NextSelection = SceneComponent->GetAttachParent();
+		if (NextSelection && NextSelection->GetOwner() != Owner)
+			NextSelection = nullptr;
+	}
+
 	DetailsPanel->SelectComponent(nullptr);
 	Outline->SetTarget(nullptr);
-	Component->GetOwner()->DestroyComponent(Component);
+	Owner->DestroyComponent(Component);
+
+	OutlinerPanel->SelectActor(Owner);
+	if (NextSelection && NextSelection != Owner->GetRootComponent())
+		DetailsPanel->SelectComponent(NextSelection);
+}
+
+void UEditorEngine::MakeRootComponent(USceneComponent* NewRoot)
+{
+	AActor* Owner = NewRoot ? NewRoot->GetOwner() : nullptr;
+	if (!Owner || Owner->GetRootComponent() == NewRoot)
+		return;
+	if (IsPlaying() && !bIsPaused)
+		return;
+
+	USceneComponent* OldRoot = Owner->GetRootComponent();
+
+	DetailsPanel->SelectComponent(nullptr);
+	Outline->SetTarget(nullptr);
+	Owner->ReplaceRootComponent(NewRoot);
+	if (Owner->IsDefaultSceneRoot(OldRoot))
+		Owner->DestroyComponent(OldRoot);
+
+	OutlinerPanel->SelectActor(Owner);
 }
 
 void UEditorEngine::StartPlayInEditorSession()

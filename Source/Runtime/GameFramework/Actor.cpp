@@ -14,7 +14,6 @@ enum class EAttachmentRule;
 AActor::AActor()
 {
 	PrimaryActorTick.Target = this;
-	SetRootComponent(CreateDefaultSubobject<USceneComponent>("DefaultSceneRoot"));
 }
 
 AActor::~AActor()
@@ -137,6 +136,8 @@ void AActor::Serialize(FStructuredArchive::FRecord Record)
 		FString ParentName;
 	};
 	TArray<FPendingAttachment> PendingAttachments;
+	TArray<UActorComponent*> LoadedComponents;
+	USceneComponent* PreviousRoot = RootComponent;
 
 	int32 Num = SavedComponents.Num();
 	FStructuredArchive::FArray ComponentArray = Record.EnterArray("Components", Num);
@@ -152,7 +153,8 @@ void AActor::Serialize(FStructuredArchive::FRecord Record)
 			FString ClassName = Component->GetClass()->Name;
 			if (USceneComponent* SceneComponent = Cast<USceneComponent>(Component))
 			{
-				ParentName = SceneComponent->GetAttachParent() ? SceneComponent->GetAttachParent()->GetName() : "";
+				USceneComponent* Parent = SceneComponent->GetAttachParent();
+				ParentName = Parent && Parent->GetOwner() == this ? Parent->GetName() : "";
 			}
 			ComponentRecord << SA_VALUE("Name", Name) << SA_VALUE("Class", ClassName) << SA_VALUE("Parent", ParentName);
 			Component->Serialize(ComponentRecord);
@@ -183,6 +185,7 @@ void AActor::Serialize(FStructuredArchive::FRecord Record)
 		}
 
 		Component->Serialize(ComponentRecord);
+		LoadedComponents.Add(Component);
 		if (USceneComponent* SceneComponent = Cast<USceneComponent>(Component))
 		{
 			if (!ParentName.empty())
@@ -192,12 +195,127 @@ void AActor::Serialize(FStructuredArchive::FRecord Record)
 		}
 	}
 
+	FString RootName = RootComponent ? RootComponent->GetName() : FString();
+	if (TOptional<FStructuredArchive::FSlot> RootSlot = Record.TryEnterField("RootComponent", Ar.IsSaving() && RootComponent))
+	{
+		RootSlot.GetValue() << RootName;
+		if (Ar.IsLoading())
+		{
+			USceneComponent* SavedRoot = Cast<USceneComponent>(FindComponentByName(FName(RootName)));
+			if (SavedRoot && SavedRoot != RootComponent)
+			{
+				SavedRoot->DetachFromComponent(EAttachmentRule::KeepRelative);
+				SetRootComponent(SavedRoot);
+			}
+		}
+	}
+
 	for (const FPendingAttachment& Attachment : PendingAttachments)
 	{
 		USceneComponent* ParentComponent = Cast<USceneComponent>(FindComponentByName(FName(Attachment.ParentName)));
 		if (ParentComponent)
 		{
-			Attachment.Child->SetupAttachment(ParentComponent);
+			Attachment.Child->AttachToComponent(ParentComponent, EAttachmentRule::KeepRelative);
+		}
+	}
+
+	if (Ar.IsLoading() && PreviousRoot != RootComponent
+		&& IsDefaultSceneRoot(PreviousRoot) && LoadedComponents.Find(PreviousRoot) == -1)
+	{
+		DestroyComponent(PreviousRoot);
+	}
+}
+
+bool AActor::SetRootComponent(USceneComponent* NewRootComponent)
+{
+	if (NewRootComponent && NewRootComponent->GetOwner() != this)
+		return false;
+
+	if (RootComponent != NewRootComponent)
+	{
+		RootComponent = NewRootComponent;
+		if (RootComponent)
+			RootComponent->MarkTransformDirty();
+	}
+	return true;
+}
+
+void AActor::ReplaceRootComponent(USceneComponent* NewRootComponent)
+{
+	USceneComponent* OldRoot = RootComponent;
+	if (!NewRootComponent || NewRootComponent == OldRoot || NewRootComponent->GetOwner() != this)
+		return;
+
+	USceneComponent* ExternalParent = OldRoot ? OldRoot->GetAttachParent() : nullptr;
+	if (OldRoot)
+		OldRoot->DetachFromComponent(EAttachmentRule::KeepWorld);
+
+	NewRootComponent->DetachFromComponent(EAttachmentRule::KeepWorld);
+	SetRootComponent(NewRootComponent);
+
+	if (OldRoot)
+		OldRoot->AttachToComponent(NewRootComponent, EAttachmentRule::KeepWorld);
+	if (ExternalParent)
+		NewRootComponent->AttachToComponent(ExternalParent, EAttachmentRule::KeepWorld);
+}
+
+USceneComponent* AActor::CreateDefaultSceneRoot()
+{
+	return Cast<USceneComponent>(AddComponent(USceneComponent::StaticClass(), FName("DefaultSceneRoot")));
+}
+
+bool AActor::IsDefaultSceneRoot(const UActorComponent* Component) const
+{
+	return Component
+		&& Component->GetOwner() == this
+		&& Component->GetClass() == USceneComponent::StaticClass()
+		&& Component->GetFName() == FName("DefaultSceneRoot");
+}
+
+void AActor::AddOwnedComponent(UActorComponent* Component)
+{
+	if (!Component || Components.Find(Component) != -1)
+		return;
+
+	Component->SetOwner(this);
+	Components.Add(Component);
+}
+
+bool AActor::AttachToComponent(USceneComponent* Parent, EAttachmentRule Rule)
+{
+	return RootComponent && RootComponent->AttachToComponent(Parent, Rule);
+}
+
+bool AActor::AttachToActor(AActor* ParentActor, EAttachmentRule Rule)
+{
+	return ParentActor && ParentActor != this && AttachToComponent(ParentActor->GetRootComponent(), Rule);
+}
+
+void AActor::DetachFromActor(EAttachmentRule Rule)
+{
+	if (RootComponent && GetAttachParentActor())
+		RootComponent->DetachFromComponent(Rule);
+}
+
+AActor* AActor::GetAttachParentActor() const
+{
+	USceneComponent* Parent = RootComponent ? RootComponent->GetAttachParent() : nullptr;
+	return Parent ? Parent->GetOwner() : nullptr;
+}
+
+void AActor::GetAttachedActors(TArray<AActor*>& OutActors) const
+{
+	for (UActorComponent* Component : Components)
+	{
+		USceneComponent* SceneComponent = Cast<USceneComponent>(Component);
+		if (!SceneComponent)
+			continue;
+
+		for (USceneComponent* Child : SceneComponent->GetAttachChildren())
+		{
+			AActor* ChildOwner = Child ? Child->GetOwner() : nullptr;
+			if (ChildOwner && ChildOwner != this && OutActors.Find(ChildOwner) == -1)
+				OutActors.Add(ChildOwner);
 		}
 	}
 }
@@ -295,13 +413,16 @@ UActorComponent* AActor::AddComponent(UClass* ComponentClass, FName Name)
 	UActorComponent* NewComponent = NewObject<UActorComponent>(this, ComponentClass, Name);
 	if (!NewComponent){return nullptr;}
 
+	AddOwnedComponent(NewComponent);
+
 	if (USceneComponent* SceneComponent = Cast<USceneComponent>(NewComponent))
 	{
-		SceneComponent->SetupAttachment(RootComponent, EAttachmentRule::KeepRelative);
+		if (RootComponent)
+			SceneComponent->SetupAttachment(RootComponent);
+		else
+			SetRootComponent(SceneComponent);
 	}
 
-	NewComponent->SetOwner(this);
-	Components.Add(NewComponent);
 	NewComponent->InitializeComponent();
 	NewComponent->RegisterComponent();
 
@@ -315,42 +436,85 @@ UActorComponent* AActor::AddComponent(UClass* ComponentClass, FName Name)
 	return NewComponent;
 }
 
-void AActor::DestroyComponent(UActorComponent* Component)
+bool AActor::CanDestroyComponent(const UActorComponent* Component) const
 {
-	if (!Component)
-		return;
+	if (!Component || Component->GetOwner() != this)
+		return false;
 
-	if (Component == RootComponent)
+	if (Component != RootComponent || !IsDefaultSceneRoot(Component))
+		return true;
+
+	for (USceneComponent* Child : RootComponent->GetAttachChildren())
+		if (Child && Child->GetOwner() == this && !Child->IsHiddenInDetails())
+			return true;
+
+	return false;
+}
+
+bool AActor::DestroyComponent(UActorComponent* Component)
+{
+	if (!CanDestroyComponent(Component))
 	{
-		HTR_LOG(Warning, "DefaultSceneRoot cannot be deleted.");
-		return;
+		HTR_LOG(Warning, "Component cannot be deleted.");
+		return false;
 	}
 
-	if (USceneComponent* Parent = Cast<USceneComponent>(Component))
-	{
-		TArray<USceneComponent*> Children = Parent->GetAttachChildren();
-		for (USceneComponent* Candidate : Children)
-		{
-			if (!Candidate) { continue; }
+	if (HasActorBegunPlay())
+		Component->EndPlay();
 
-			Candidate->DetachFromParent(EAttachmentRule::KeepWorld);
-			Candidate->SetupAttachment(Parent->GetAttachParent(), EAttachmentRule::KeepWorld);
+	if (USceneComponent* SceneComponent = Cast<USceneComponent>(Component))
+	{
+		TArray<USceneComponent*> HiddenChildren;
+		for (USceneComponent* Child : SceneComponent->GetAttachChildren())
+			if (Child && Child->GetOwner() == this && Child->IsHiddenInDetails())
+				HiddenChildren.Add(Child);
+
+		for (USceneComponent* Child : HiddenChildren)
+			DestroyComponent(Child);
+
+		if (SceneComponent == RootComponent)
+		{
+			USceneComponent* NewRoot = nullptr;
+			for (USceneComponent* Child : SceneComponent->GetAttachChildren())
+			{
+				if (Child && Child->GetOwner() == this)
+				{
+					NewRoot = Child;
+					break;
+				}
+			}
+
+			if (!NewRoot)
+				NewRoot = CreateDefaultSceneRoot();
+
+			ReplaceRootComponent(NewRoot);
+		}
+
+		USceneComponent* Parent = SceneComponent->GetAttachParent();
+		TArray<USceneComponent*> Children = SceneComponent->GetAttachChildren();
+		for (USceneComponent* Child : Children)
+		{
+			if (!Child)
+				continue;
+
+			if (!Parent || !Child->AttachToComponent(Parent, EAttachmentRule::KeepWorld))
+				Child->DetachFromComponent(EAttachmentRule::KeepWorld);
 		}
 	}
+
+	for (UActorComponent* Other : Components)
+		if (Other && Other != Component)
+			Other->OnSiblingComponentDestroyed(Component);
 
 	Component->UnregisterComponent();
 	RemoveOwnedComponent(Component);
 	delete Component;
-	return;
+	return true;
 }
 
 void AActor::OnDefaultSubobjectCreated(UObject* Subobject)
 {
-	if (UActorComponent* Component = Cast<UActorComponent>(Subobject))
-	{
-		Component->SetOwner(this);
-		Components.Add(Component);
-	}
+	AddOwnedComponent(Cast<UActorComponent>(Subobject));
 }
 
 UActorComponent* AActor::FindComponentByName(FName Name) const
