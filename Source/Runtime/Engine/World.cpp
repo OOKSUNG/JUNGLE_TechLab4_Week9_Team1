@@ -92,6 +92,9 @@ AActor* UWorld::SpawnActor(UClass* Class, FName InName, const FTransform* Transf
 	// 3. Transform 적용
 	const FTransform SpawnTransform = Transform ? *Transform : FTransform::Identity;
 
+	if (!NewActor->GetRootComponent())
+		NewActor->CreateDefaultSceneRoot();
+
 	if (NewActor->GetRootComponent())
 	{
 		NewActor->GetRootComponent()->SetTransform(SpawnTransform);
@@ -118,6 +121,7 @@ void UWorld::Tick(float DeltaTime)
 	// 에디터 월드면 더이상 틱을 돌리지 않는다.
 	if (WorldType != EWorldType::Editor)
 	{
+		bInGameTick = true;
 		while (!BeginPlayList.IsEmpty())
 		{
 			BeginPlayList.Peek()->BeginPlay();
@@ -131,6 +135,9 @@ void UWorld::Tick(float DeltaTime)
 		}
 
 		GatherOverlap(); // 게임 중에만 충돌처리
+		bInGameTick = false;
+
+		FlushPendingDestroyActors();
 	}
 
 	
@@ -143,8 +150,9 @@ void UWorld::ClearWorld()
 	{
 		BeginPlayList.Dequeue();
 	}
+	PendingDestroyActors.Reset();
 
-	
+
 	for (ULevel* Level : Levels)
 	{
 		for (AActor* Actor : Level->Actors)
@@ -813,16 +821,43 @@ int32 UWorld::GetActorNum()
 
 bool UWorld::DestroyActor(AActor* Actor)
 {
-	if (!Actor)
+	if (!Actor || !Actor->GetLevel())
 		return false;
 
+	if (Actor->IsActorBeingDestroyed())
+		return true;
+
+	Actor->bActorIsBeingDestroyed = true;
+
+	if (bInGameTick)
+	{
+		PendingDestroyActors.Add(Actor);
+		return true;
+	}
+
+	return DestroyActorNow(Actor);
+}
+
+void UWorld::FlushPendingDestroyActors()
+{
+	const TArray<AActor*> Actors = PendingDestroyActors;
+	PendingDestroyActors.Reset();
+
+	for (AActor* Actor : Actors)
+		DestroyActorNow(Actor);
+}
+
+bool UWorld::DestroyActorNow(AActor* Actor)
+{
 	ULevel* Level = Actor->GetLevel();
-
-	if (!Level)
-		return false;
 
 	// 게임 중이던 액터면 EndPlay부터 알린다. 이 시점엔 아직 월드와 컴포넌트에 접근할 수 있다.
 	Actor->EndPlay();
+
+	TArray<AActor*> AttachedActors;
+	Actor->GetAttachedActors(AttachedActors);
+	for (AActor* AttachedActor : AttachedActors)
+		AttachedActor->DetachFromActor(EAttachmentRule::KeepWorld);
 
 	// 1. BeginPlay 대기열에서 제거
 	TQueue<AActor*> NewBeginPlayList;
@@ -1129,7 +1164,7 @@ void UWorld::GatherOverlap()
 		if (!Level) continue;
 		for (AActor* Actor : Level->GetActors())
 		{
-			if (!Actor) continue;
+			if (!Actor || Actor->IsActorBeingDestroyed()) continue;
 			for (UActorComponent* Component : Actor->GetComponents())
 			{
 				if (UShapeComponent* Shape = Cast<UShapeComponent>(Component))

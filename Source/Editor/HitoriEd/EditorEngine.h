@@ -60,6 +60,7 @@ public:
 	void PresentFrame();
 	void DeleteActor(AActor* Actor);
 	void DeleteComponent(UActorComponent* Component);
+	void MakeRootComponent(USceneComponent* NewRoot);
 
 	//Play 버튼을 눌렀을때 Play Session 실행을 요청한다.
 	inline void RequestPlaySession() { bPlaySessionRequested = true; }

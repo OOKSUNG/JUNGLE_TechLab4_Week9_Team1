@@ -12,4 +12,6 @@ namespace EditorDragDrop
 	inline constexpr const char* Font = "ASSET_FONT";
 
 	inline constexpr const char* Component = "COMPONENT";
+
+	inline constexpr const char* Actor = "ACTOR";
 }

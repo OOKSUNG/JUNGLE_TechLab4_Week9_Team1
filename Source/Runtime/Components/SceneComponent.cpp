@@ -6,7 +6,7 @@
 USceneComponent::~USceneComponent()
 {
 	TArray<USceneComponent*> Children = AttachChildren;
-	DetachFromParent();
+	RemoveFromAttachParent();
 	for (USceneComponent* Child : Children)
 	{
 		Child->AttachParent = nullptr;
@@ -28,77 +28,83 @@ void USceneComponent::PostEditChangeProperty(const FProperty& Property)
 		MarkTransformDirty();
 }
 
-void USceneComponent::SetupAttachment(USceneComponent* InParent, EAttachmentRule Rule)
+void USceneComponent::SetupAttachment(USceneComponent* InParent)
 {
-	if (InParent == this || AttachParent == InParent) return;
+	AttachToComponent(InParent, EAttachmentRule::KeepRelative);
+}
 
-	// 순환 체크
-	for (USceneComponent* Parent = InParent; Parent != nullptr; Parent = Parent->AttachParent)
-		if (Parent == this) return;
+bool USceneComponent::CanAttachTo(const USceneComponent* InParent) const
+{
+	if (!InParent || InParent == this)
+		return false;
+
+	for (const USceneComponent* Parent = InParent; Parent != nullptr; Parent = Parent->AttachParent)
+		if (Parent == this)
+			return false;
+
+	const AActor* MyOwner = GetOwner();
+	const AActor* ParentOwner = InParent->GetOwner();
+	if (!MyOwner || !ParentOwner)
+		return true;
+
+	const bool bIsRoot = MyOwner->GetRootComponent() == this;
+	if (MyOwner == ParentOwner)
+		return !bIsRoot;
+
+	return bIsRoot;
+}
+
+bool USceneComponent::AttachToComponent(USceneComponent* InParent, EAttachmentRule Rule)
+{
+	if (!CanAttachTo(InParent))
+		return false;
+
+	if (AttachParent == InParent)
+		return true;
+
+	const FMatrix WorldMatrix = GetWorldMatrix();
+	RemoveFromAttachParent();
+	AttachParent = InParent;
+	AttachParent->AttachChildren.Add(this);
 
 	if (Rule == EAttachmentRule::KeepWorld)
-	{
-		FMatrix WorldMatrix = GetWorldMatrix();
-		DetachFromParent(Rule);
-		AttachParent = InParent;
-		if (AttachParent)
-		{
-			AttachParent->AttachChildren.Add(this);
-		}
 		SetWorldTransform(WorldMatrix, false);
-	}
-	else
-	{
-		DetachFromParent(Rule);
-		AttachParent = InParent;
-		if (AttachParent)
-		{
-			AttachParent->AttachChildren.Add(this);
-		}
-	}
-
-	if (Rule == EAttachmentRule::SnapToTarget)
-	{
+	else if (Rule == EAttachmentRule::SnapToTarget)
 		SetTransform(FTransform::Identity);
-	}
+
+	MarkTransformDirty();
+	return true;
+}
+
+void USceneComponent::DetachFromComponent(EAttachmentRule Rule)
+{
+	if (!AttachParent)
+		return;
+
+	const FMatrix WorldMatrix = GetWorldMatrix();
+	RemoveFromAttachParent();
+
+	if (Rule == EAttachmentRule::KeepWorld)
+		SetWorldTransform(WorldMatrix, false);
 
 	MarkTransformDirty();
 }
 
-void USceneComponent::DetachFromParent(EAttachmentRule Rule)
+void USceneComponent::RemoveFromAttachParent()
 {
-	if (!AttachParent) return;
+	if (!AttachParent)
+		return;
 
-	if (Rule == EAttachmentRule::KeepWorld)
+	TArray<USceneComponent*>& Siblings = AttachParent->AttachChildren;
+	for (uint32 i = 0; i < Siblings.Num(); ++i)
 	{
-		FMatrix WorldMatrix = GetWorldMatrix();
-		TArray<USceneComponent*>& Siblings = AttachParent->AttachChildren;
-		for (uint32 i = 0;i < Siblings.Num(); ++i)
+		if (Siblings[i] == this)
 		{
-			if (Siblings[i] == this)
-			{
-				Siblings.RemoveAt(i, 1);
-				break;
-			}
+			Siblings.RemoveAt(i, 1);
+			break;
 		}
-		AttachParent = nullptr;
-		SetWorldTransform(WorldMatrix, false);
 	}
-	else
-	{
-		TArray<USceneComponent*>& Siblings = AttachParent->AttachChildren;
-		for (uint32 i = 0;i < Siblings.Num(); ++i)
-		{
-			if (Siblings[i] == this)
-			{
-				Siblings.RemoveAt(i, 1);
-				break;
-			}
-		}
-		AttachParent = nullptr;
-	}
-	
-	MarkTransformDirty();
+	AttachParent = nullptr;
 }
 
 FRotator USceneComponent::GetWorldRotation() const

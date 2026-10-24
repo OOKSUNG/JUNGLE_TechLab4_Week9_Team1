@@ -140,7 +140,7 @@ bool UPrimitiveComponent::MoveComponent(const FVector& Delta, const FRotator& Ne
 	TArray<UShapeComponent*> TargetComponents;
 	for (AActor* Actor : World->GetPersistentLevel()->GetActors())
 	{
-		if (!Actor || Actor == GetOwner())
+		if (!Actor || Actor == GetOwner() || Actor->IsActorBeingDestroyed())
 			continue;
 
 		for (UActorComponent* Component : Actor->GetComponents())

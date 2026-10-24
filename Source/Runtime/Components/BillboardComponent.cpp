@@ -39,6 +39,14 @@ void UBillboardComponent::TickComponent(float DeltaTime)
 	Super::TickComponent(DeltaTime);
 }
 
+void UBillboardComponent::OnSiblingComponentDestroyed(UActorComponent* DestroyedComponent)
+{
+	Super::OnSiblingComponentDestroyed(DestroyedComponent);
+
+	if (TintSource == DestroyedComponent)
+		TintSource = nullptr;
+}
+
 // 쿼드 AABB를 그대로 쓰면 두께가 0이라, 옆에서 본 View의 Ray가 BVH에서 빌보드를 놓친다.
 // 어느 방향으로 돌아도 쿼드를 감싸는 반지름을 쓰되, 렌더처럼 스케일 Y·Z를 폭·높이로 본다.
 FBox UBillboardComponent::CalcLocalBounds() const

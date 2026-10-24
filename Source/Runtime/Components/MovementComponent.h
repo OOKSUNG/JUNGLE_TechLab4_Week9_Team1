@@ -20,6 +20,7 @@ public:
 	virtual void InitializeComponent() override;
 	virtual void BeginPlay() override;
 	virtual void TickComponent(float DeltaTime) override;
+	virtual void OnSiblingComponentDestroyed(UActorComponent* DestroyedComponent) override;
 
 	virtual void SetUpdatedComponent(USceneComponent* NewComponent);
 	virtual void UpdateComponentVelocity();

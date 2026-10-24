@@ -70,6 +70,16 @@ void ULevel::Serialize(FStructuredArchive::FRecord Record)
 			FString ClassName = Actor->GetClass()->Name;
 			ActorRecord << SA_VALUE("Class", ClassName);
 			Actor->Serialize(ActorRecord);
+
+			USceneComponent* Root = Actor->GetRootComponent();
+			USceneComponent* AttachParent = Root ? Root->GetAttachParent() : nullptr;
+			int32 ParentIndex = AttachParent ? SavedActors.Find(AttachParent->GetOwner()) : -1;
+			if (TOptional<FStructuredArchive::FSlot> AttachSlot = ActorRecord.TryEnterField("AttachParent", ParentIndex >= 0))
+			{
+				FString ParentComponentName = AttachParent->GetName();
+				FStructuredArchive::FRecord AttachRecord = AttachSlot.GetValue().EnterRecord();
+				AttachRecord << SA_VALUE("Actor", ParentIndex) << SA_VALUE("Component", ParentComponentName);
+			}
 		}
 		return;
 	}
@@ -77,10 +87,21 @@ void ULevel::Serialize(FStructuredArchive::FRecord Record)
 	// 불러오기: 월드를 비우는 건 호출하는 쪽 책임 (PIE 복제는 새 월드라 비울 필요가 없다)
 	assert(OwningWorld);
 
+	struct FPendingActorAttachment
+	{
+		AActor* Child;
+		int32 ParentIndex;
+		FString ParentComponentName;
+	};
+	TArray<FPendingActorAttachment> PendingAttachments;
+
 	int32 Num = 0;
 	FStructuredArchive::FArray ActorArray = Record.EnterArray("Actors", Num);
+	TArray<AActor*> LoadedActors;
+	LoadedActors.SetNum(Num);
 	for (int32 i = 0; i < Num; ++i)
 	{
+		LoadedActors[i] = nullptr;
 		FStructuredArchive::FRecord ActorRecord = ActorArray.EnterElement().EnterRecord();
 
 		FString ClassName;
@@ -96,11 +117,36 @@ void ULevel::Serialize(FStructuredArchive::FRecord Record)
 		if (AActor* Actor = OwningWorld->SpawnActor(Class))
 		{
 			Actor->Serialize(ActorRecord);
+			LoadedActors[i] = Actor;
+
+			if (TOptional<FStructuredArchive::FSlot> AttachSlot = ActorRecord.TryEnterField("AttachParent", false))
+			{
+				FPendingActorAttachment Attachment{ Actor, -1, FString() };
+				FStructuredArchive::FRecord AttachRecord = AttachSlot.GetValue().EnterRecord();
+				AttachRecord << SA_VALUE("Actor", Attachment.ParentIndex) << SA_VALUE("Component", Attachment.ParentComponentName);
+				PendingAttachments.Add(Attachment);
+			}
 
 			// SpawnActor가 기본값으로 등록한 Fog를 방금 읽은 값으로 갱신한다.
 			for (UActorComponent* Component : Actor->GetComponents())
 				if (UExponentialHeightFogComponent* Fog = Cast<UExponentialHeightFogComponent>(Component))
 					OwningWorld->GetScene().UpdateFogInfo(Fog->GetUUID(), Fog->GetFogInfo());
 		}
+	}
+
+	for (const FPendingActorAttachment& Attachment : PendingAttachments)
+	{
+		if (Attachment.ParentIndex < 0 || Attachment.ParentIndex >= Num)
+			continue;
+
+		AActor* ParentActor = LoadedActors[Attachment.ParentIndex];
+		if (!ParentActor)
+			continue;
+
+		USceneComponent* ParentComponent = Cast<USceneComponent>(ParentActor->FindComponentByName(FName(Attachment.ParentComponentName)));
+		if (!ParentComponent)
+			ParentComponent = ParentActor->GetRootComponent();
+
+		Attachment.Child->AttachToComponent(ParentComponent, EAttachmentRule::KeepRelative);
 	}
 }
