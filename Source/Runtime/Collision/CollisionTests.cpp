@@ -312,6 +312,65 @@ namespace
 		CHECK_TRUE(Collision::OverlapCapsuleBox({ FVector(-4, 3, 0), FVector(3, 1.5f, 0), 0.92f }, Box, nullptr));
 		CHECK_TRUE(!Collision::OverlapCapsuleBox({ FVector(-4, 3, 0), FVector(3, 1.5f, 0), 0.90f }, Box, nullptr));
 	}
+
+	// Normal이 단위 벡터이고, A를 Normal·(Depth + 여유)만큼 밀면 떨어지는지 본다.
+	FCollisionContact CheckContactSeparates(const FCollisionShape& A, const FVector& PosA, const FQuat& RotA,
+	                                        const FCollisionShape& B, const FVector& PosB, const FQuat& RotB, int32 Line)
+	{
+		FCollisionContact Contact;
+		Check(Collision::Overlap(A, PosA, RotA, B, PosB, RotB, &Contact), "overlap before push", Line);
+		CheckFloat(Contact.Normal.Length(), 1.0f, "Normal.Length()", Line);
+		Check(Contact.PenetrationDepth >= 0.0f, "PenetrationDepth >= 0", Line);
+
+		const FVector Pushed = PosA + Contact.Normal * (Contact.PenetrationDepth + 1e-3f);
+		Check(!Collision::Overlap(A, Pushed, RotA, B, PosB, RotB), "separated after push", Line);
+		return Contact;
+	}
+
+#define CHECK_CONTACT(A, PosA, RotA, B, PosB, RotB) CheckContactSeparates(A, PosA, RotA, B, PosB, RotB, __LINE__)
+
+	void TestContact()
+	{
+		const FCollisionShape Sphere = FCollisionShape::MakeSphere(0.5f);
+		const FCollisionShape Unit = FCollisionShape::MakeBox(FVector(1.0f, 1.0f, 1.0f));
+		const FCollisionShape Capsule = FCollisionShape::MakeCapsule(0.5f, 1.0f);
+		const FQuat Identity;
+		const FVector Origin(0, 0, 0);
+
+		// Sphere–Sphere: A가 +X쪽
+		FCollisionContact C = CHECK_CONTACT(Sphere, FVector(0.8f, 0, 0), Identity, Sphere, Origin, Identity);
+		CHECK_VECTOR(C.Normal, FVector(1, 0, 0));
+		CHECK_FLOAT(C.PenetrationDepth, 0.2f);
+		CHECK_VECTOR(C.Point, FVector(0.5f, 0, 0));
+
+		// 선분이 교차하는 두 캡슐 (대체 방향)
+		CHECK_CONTACT(Capsule, FVector(0, 0, 0.1f), MakeRotation(90.0f, 0.0f, 0.0f), Capsule, Origin, Identity);
+
+		// Sphere–Box: 박스 바깥에서 면에 닿음
+		C = CHECK_CONTACT(Sphere, FVector(1.3f, 0, 0), Identity, Unit, Origin, Identity);
+		CHECK_VECTOR(C.Normal, FVector(1, 0, 0));
+		CHECK_FLOAT(C.PenetrationDepth, 0.2f);
+		CHECK_VECTOR(C.Point, FVector(1, 0, 0));
+
+		// Box–Sphere: 순서를 바꾸면 Normal은 반대, Point는 Sphere(B) 표면
+		C = CHECK_CONTACT(Unit, Origin, Identity, Sphere, FVector(1.3f, 0, 0), Identity);
+		CHECK_VECTOR(C.Normal, FVector(-1, 0, 0));
+		CHECK_FLOAT(C.PenetrationDepth, 0.2f);
+		CHECK_VECTOR(C.Point, FVector(0.8f, 0, 0));
+
+		// Sphere 중심이 박스 안: 가장 가까운 면(+X)으로
+		C = CHECK_CONTACT(Sphere, FVector(0.9f, 0.1f, 0), Identity, Unit, Origin, Identity);
+		CHECK_VECTOR(C.Normal, FVector(1, 0, 0));
+		CHECK_FLOAT(C.PenetrationDepth, 0.6f);
+
+		// Box–Box: 면, 대각선, 기울인 막대(외적 축)
+		C = CHECK_CONTACT(Unit, FVector(1.8f, 0, 0), Identity, Unit, Origin, Identity);
+		CHECK_VECTOR(C.Normal, FVector(1, 0, 0));
+		CHECK_FLOAT(C.PenetrationDepth, 0.2f);
+		CHECK_CONTACT(Unit, FVector(1.7f, 1.7f, 0), MakeRotation(0.0f, 45.0f, 0.0f), Unit, Origin, Identity);
+		CHECK_CONTACT(FCollisionShape::MakeBox(FVector(0.3f, 2.0f, 0.3f)), FVector(1.2f, 1.2f, 0), MakeRotation(45.0f, 30.0f, 0.0f), Unit, Origin, Identity);
+		CHECK_CONTACT(FCollisionShape::MakeBox(FVector(0.7f, 0.4f, 1.2f)), FVector(0.3f, 0.2f, 0.9f), MakeRotation(35.0f, 50.0f, 20.0f), Unit, Origin, Identity);
+	}
 }
 
 int32 Collision::RunSelfTests()
@@ -328,6 +387,7 @@ int32 Collision::RunSelfTests()
 	TestBoxOverlap();
 	TestClosestPointOnBox();
 	TestCapsuleBoxOverlap();
+	TestContact();
 
 	if (NumFailed == 0)
 	{

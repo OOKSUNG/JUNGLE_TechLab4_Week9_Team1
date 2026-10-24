@@ -116,7 +116,14 @@ bool UShapeComponent::IsOverlapping(const UShapeComponent& Other) const
 
 bool UShapeComponent::ComputeContact(const UShapeComponent& Other, FCollisionContact& OutContact) const
 {
-	return false;
+	if (&Other == this || !CalcBounds().Intersects(Other.CalcBounds()))
+	{
+		return false;
+	}
+
+	return Collision::Overlap(GetCollisionShape(), GetWorldLocation(), GetWorldRotation().Quaternion(),
+	                          Other.GetCollisionShape(), Other.GetWorldLocation(), Other.GetWorldRotation().Quaternion(),
+	                          &OutContact);
 }
 
 bool UShapeComponent::ShouldDrawOnlyIfSelected() const
