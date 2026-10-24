@@ -6,7 +6,6 @@
 #include "Render/RenderPacket.h"
 #include "Render/GeometryGenerator.h"
 #include "Collision/HitResult.h"
-#include "Core/TDelegate.h"
 
 class FPrimitiveSceneProxy;
 class AActor;

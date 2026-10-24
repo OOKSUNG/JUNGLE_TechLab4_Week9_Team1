@@ -41,8 +41,6 @@ namespace
 UPrimitiveComponent::UPrimitiveComponent()
 {
 	//SetMaterial(UAssetManager::GetAssetByPath<UMaterial>("DefaultMaterial"));
-	DelegateWhenBeginOverlap.Add([](){ HTR_LOG(Info, "BeginOverlap"); });
-	DelegateWhenEndOverlap.Add([]() { HTR_LOG(Info, "EndOverlap"); });
 }
 
 UPrimitiveComponent::~UPrimitiveComponent()

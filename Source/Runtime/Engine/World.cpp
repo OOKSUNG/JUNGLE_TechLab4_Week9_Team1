@@ -1162,13 +1162,13 @@ void UWorld::GatherOverlap()
 	{
 		if (LastFrameOverlapInfo.Find(OverlapInfo[i]) == -1)
 		{
-			if (FindPrimitiveByUUID(OverlapInfo[i].OverlapFirst))
+			if (FindShapeByUUID(OverlapInfo[i].OverlapFirst))
 			{
-				FindPrimitiveByUUID(OverlapInfo[i].OverlapFirst)->OnBeginOverlap();	// 새로운 OverlapInfo의 요소를 이전 OverlapInfo에서 찾지 못함 => BeginOverlap()
+				FindShapeByUUID(OverlapInfo[i].OverlapFirst)->OnBeginOverlap();	// 새로운 OverlapInfo의 요소를 이전 OverlapInfo에서 찾지 못함 => BeginOverlap()
 			}
-			if (FindPrimitiveByUUID(OverlapInfo[i].OverlapSecond))
+			if (FindShapeByUUID(OverlapInfo[i].OverlapSecond))
 			{
-				FindPrimitiveByUUID(OverlapInfo[i].OverlapSecond)->OnBeginOverlap();
+				FindShapeByUUID(OverlapInfo[i].OverlapSecond)->OnBeginOverlap();
 			}
 		}
 	}
@@ -1177,13 +1177,13 @@ void UWorld::GatherOverlap()
 	{
 		if (OverlapInfo.Find(LastFrameOverlapInfo[i]) == -1)
 		{
-			if (FindPrimitiveByUUID(LastFrameOverlapInfo[i].OverlapFirst))
+			if (FindShapeByUUID(LastFrameOverlapInfo[i].OverlapFirst))
 			{
-				FindPrimitiveByUUID(LastFrameOverlapInfo[i].OverlapFirst)->OnEndOverlap(); // 이전 OverlapInfo의 요소를 새로운 OverlapInfo에서 찾지 못함 => EndOverlap()
+				FindShapeByUUID(LastFrameOverlapInfo[i].OverlapFirst)->OnEndOverlap(); // 이전 OverlapInfo의 요소를 새로운 OverlapInfo에서 찾지 못함 => EndOverlap()
 			}
-			if (FindPrimitiveByUUID(LastFrameOverlapInfo[i].OverlapSecond))
+			if (FindShapeByUUID(LastFrameOverlapInfo[i].OverlapSecond))
 			{
-				FindPrimitiveByUUID(LastFrameOverlapInfo[i].OverlapSecond)->OnEndOverlap();
+				FindShapeByUUID(LastFrameOverlapInfo[i].OverlapSecond)->OnEndOverlap();
 			}
 		}
 	}
@@ -1202,7 +1202,7 @@ void UWorld::ResetOverlap()
 	OverlapInfo.Reset();
 }
 
-UPrimitiveComponent* UWorld::FindPrimitiveByUUID(uint32 UUID)
+UShapeComponent* UWorld::FindShapeByUUID(uint32 UUID)
 {
 	// 렌더 프록시가 없는 Shape도 찾고, 비활성화된 컴포넌트에도 EndOverlap을 전달한다.
 	for (ULevel* Level : Levels)
@@ -1213,10 +1213,10 @@ UPrimitiveComponent* UWorld::FindPrimitiveByUUID(uint32 UUID)
 			if (!Actor) continue;
 			for (UActorComponent* Component : Actor->GetComponents())
 			{
-				if (UPrimitiveComponent* Primitive = Cast<UPrimitiveComponent>(Component))
+				if (UShapeComponent* Shape = Cast<UShapeComponent>(Component))
 				{
-					if (Primitive->GetUUID() == UUID)
-						return Primitive;
+					if (Shape->GetUUID() == UUID)
+						return Shape;
 				}
 			}
 		}
