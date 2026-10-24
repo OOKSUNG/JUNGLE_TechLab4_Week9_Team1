@@ -18,6 +18,8 @@ void UScriptComponent::InitializeComponent()
     FString ActorName = GetOwner()->GetName();
 
     CreateScriptFromTemplate(SceneName, ActorName);
+
+    PrimaryComponentTick.bCanEverTick = true;
 }
 
 void UScriptComponent::BeginPlay()
@@ -25,6 +27,15 @@ void UScriptComponent::BeginPlay()
 	Super::BeginPlay();
 
     LoadScript();
+
+    std::error_code ErrorCode;
+
+    LastWriteTime =  std::filesystem::last_write_time(ScriptPath, ErrorCode);
+
+    if (ErrorCode)
+    {
+        HTR_LOG(Warning, "[Lua] Cannot read script timestamp: {}", ScriptPath);
+    }
 
     if (!BeginPlayFunction.valid())
     {
@@ -44,6 +55,9 @@ void UScriptComponent::TickComponent(float DeltaTime)
 {
 	Super::TickComponent(DeltaTime);
     
+    // 파일 변경 감지 체크
+    CheckHotReload(DeltaTime);
+
     if (!TickFunction.valid())
     {
         return;
@@ -188,4 +202,101 @@ void UScriptComponent::BindScriptContext()
             }
         }
     );
+}
+
+void UScriptComponent::CheckHotReload(float DeltaTime)
+{
+    HotReloadCheckTimer += DeltaTime;
+
+    if (HotReloadCheckTimer < 0.25f)
+    {
+        return;
+    }
+
+    HotReloadCheckTimer = 0.0f;
+
+    std::error_code ErrorCode;
+
+    const auto CurrentWriteTime =
+        std::filesystem::last_write_time(
+            ScriptPath,
+            ErrorCode
+        );
+
+    if (ErrorCode)
+    {
+        return;
+    }
+
+    if (CurrentWriteTime == LastWriteTime)
+    {
+        return;
+    }
+
+    // 같은 변경을 매 프레임 다시 감지하지 않도록 갱신
+    LastWriteTime = CurrentWriteTime;
+
+    ReloadScript();
+}
+
+bool UScriptComponent::ReloadScript()
+{
+	FLuaVM* LuaVM = GEngine->GetLuaVM();
+
+	if (!LuaVM || !LuaVM->IsInitialized())
+	{
+		return false;
+	}
+
+	sol::state* State = LuaVM->GetState();
+
+	if (!State)
+	{
+		return false;
+	}
+
+	// 기존 Environment는 아직 유지
+	sol::environment NewEnvironment(*State, sol::create, State->globals());
+
+	// 현재 액터 컨텍스트를 새 환경에도 다시 넣어야 함
+	NewEnvironment["self"] = GetOwner();
+
+	sol::protected_function_result Result =
+		State->safe_script_file(ScriptPath, NewEnvironment, sol::script_pass_on_error);
+
+    if (!Result.valid())
+    {
+        sol::error Error = Result;
+        HTR_LOG(Error, "[Lua] {}", Error.what());
+        return false;
+    }
+
+	// 새 스크립트가 정상일 때만 기존 환경 교체
+	Environment = std::move(NewEnvironment);
+
+	BeginPlayFunction = Environment["BeginPlay"];
+	TickFunction = Environment["Tick"];
+	EndPlayFunction = Environment["EndPlay"];
+	OverlapFunction = Environment["OnOverlap"];
+    
+    sol::protected_function ReloadFunction = Environment["OnReload"];
+
+    if (ReloadFunction.valid())
+    {
+        sol::protected_function_result Result = ReloadFunction();
+
+        if (!Result.valid())
+        {
+            sol::error Error = Result;
+            HTR_LOG(Error, "[Lua] {}", Error.what());
+        }
+    }
+
+    void BindScriptContext();
+
+    PrimaryComponentTick.bCanEverTick = true;
+
+	HTR_LOG(Info, "[Lua] Hot reload succeeded: {}", ScriptPath);
+
+	return true;
 }

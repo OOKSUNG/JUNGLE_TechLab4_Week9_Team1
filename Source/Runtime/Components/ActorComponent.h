@@ -23,6 +23,7 @@ public:
 	virtual void TickComponent(float DeltaTime)
 	{
 	};
+	virtual void EndPlay() {};
 
 	void SetOwner(AActor* InOwner) { Owner = InOwner; }
 	AActor* GetOwner() const { return Owner; }

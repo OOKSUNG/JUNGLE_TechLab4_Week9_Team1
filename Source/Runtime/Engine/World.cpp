@@ -996,6 +996,18 @@ void UWorld::BeginPlay()
 
 void UWorld::EndPlay()
 {
+	if (!PersistentLevel)
+	{
+		return;
+	}
+
+	for (AActor* Actor : PersistentLevel->GetActors())
+	{
+		if (Actor)
+		{
+			Actor->EndPlay();
+		}
+	}
 }
 
 UWorld* UWorld::CreateWorld(const EWorldType InWorldType, bool bInformEngineOfWorld, FName WorldName)

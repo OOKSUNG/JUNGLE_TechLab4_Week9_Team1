@@ -1,10 +1,11 @@
+#pragma once
 #include "ActorComponent.h"
 
 #include <sol/sol.hpp>
 
 class FLuaVM;
 
-class UScriptComponent : UActorComponent
+class UScriptComponent : public UActorComponent
 {
 	DECLARE_CLASS(UScriptComponent, UActorComponent)
 
@@ -12,19 +13,18 @@ class UScriptComponent : UActorComponent
 		REFLECT_END()
 
 public:
-	virtual ~UScriptComponent() override;
+	virtual ~UScriptComponent() override {};
 
 	virtual void InitializeComponent() override;
 	virtual void BeginPlay() override;
 	virtual void TickComponent(float DeltaTime) override;
-	void EndPlay();
+	virtual void EndPlay() override;
 	void OnOverlap(AActor* OtherActor);
 
 	bool CreateScriptFromTemplate(const FString& SceneName, const FString& ActorName);
 	bool LoadScript();
 
 	void BindScriptContext();
-	
 
 private:
 	sol::environment Environment;
@@ -38,4 +38,10 @@ private:
 	sol::state* State;
 
 	FString ScriptPath;
+
+	std::filesystem::file_time_type LastWriteTime{};
+	float HotReloadCheckTimer = 0.0f;
+
+	bool ReloadScript();
+	void CheckHotReload(float DeltaTime);
 };

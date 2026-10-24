@@ -49,6 +49,19 @@ void AActor::BeginPlay()
 	RegisterAllActorTickFunctions(true);
 }
 
+void AActor::EndPlay() 
+{
+	RegisterAllActorTickFunctions(false);
+
+	for (UActorComponent* Component : Components)
+	{
+		if (Component)
+		{
+			Component->EndPlay();
+		}
+	}
+}
+
 void AActor::RegisterAllActorTickFunctions(bool bRegister)
 {
 	if (bRegister && !World)

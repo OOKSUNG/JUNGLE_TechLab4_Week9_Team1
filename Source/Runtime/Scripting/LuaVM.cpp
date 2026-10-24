@@ -128,6 +128,8 @@ void FLuaVM::BindEngineAPI()
 			}
 
 			HTR_LOG(Info, "[Lua] {}", Message);
+
+			Message += "\n";
 			OutputDebugStringA(Message.c_str());
 		};
 

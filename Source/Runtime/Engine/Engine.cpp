@@ -1,11 +1,15 @@
 #include "EnginePCH.h"
 #include "Engine.h"
 
+#include "Components/ScriptComponent.h"
+
 UEngine* GEngine = nullptr;
 UEngine::~UEngine() = default;
 
 bool UEngine::Init()
 {
+	UScriptComponent::StaticClass();
+
 	AssetManager = NewObject<UAssetManager>();
 	/*World = FObjectFactory::ConstructObject<UWorld>();
 
