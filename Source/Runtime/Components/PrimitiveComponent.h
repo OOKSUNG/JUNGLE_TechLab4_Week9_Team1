@@ -8,7 +8,6 @@
 #include "Collision/HitResult.h"
 
 class FPrimitiveSceneProxy;
-class AActor;
 
 enum class EPrimitiveType
 {
@@ -34,18 +33,10 @@ class UPrimitiveComponent :public USceneComponent
 		PROPERTY(bBlockComponent)
 		REFLECT_END()
 public:
-	DECLARE_DELEGATE(DelegateWhenBeginOverlap)
-	DECLARE_DELEGATE(DelegateWhenEndOverlap)
-	DECLARE_DELEGATE(DelegateWhenHit, UPrimitiveComponent*, AActor*, UPrimitiveComponent*, const FHitResult&)
-	// To-Do : Begin, End에서 사용할 인자가 결정되었을때 뒤에 추가
-
 	UPrimitiveComponent();
 	virtual ~UPrimitiveComponent();
 
 	virtual void BeginPlay() override;
-	void OnBeginOverlap();
-	void OnEndOverlap();
-	void OnHit(AActor* OtherActor, UPrimitiveComponent* OtherComp, const FHitResult& Hit);
 
 	bool IsBlockComponent() const { return bBlockComponent; }
 	void SetBlockComponent(bool bInBlock) { bBlockComponent = bInBlock; }

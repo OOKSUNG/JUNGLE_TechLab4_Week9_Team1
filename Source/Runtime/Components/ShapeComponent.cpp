@@ -41,9 +41,9 @@ void UShapeComponent::OnEndOverlap()
 	DelegateWhenEndOverlap.Broadcast();
 }
 
-void UShapeComponent::OnHit()
+void UShapeComponent::OnHit(AActor* OtherActor, UPrimitiveComponent* OtherComp, const FHitResult& Hit)
 {
-	
+	DelegateWhenHit.Broadcast(this, OtherActor, OtherComp, Hit);
 }
 
 bool UShapeComponent::ShouldCreateRenderState() const

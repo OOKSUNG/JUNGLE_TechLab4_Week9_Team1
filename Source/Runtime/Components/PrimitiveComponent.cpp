@@ -178,7 +178,7 @@ bool UPrimitiveComponent::MoveComponent(const FVector& Delta, const FRotator& Ne
 	Hit->HitComponent = HitComponent;
 	Hit->HitActor = HitComponent->GetOwner();
 
-	OnHit(Hit->HitActor, HitComponent, *Hit);
+	Shape->OnHit(Hit->HitActor, HitComponent, *Hit);
 	HitComponent->OnHit(GetOwner(), this, FHitResult::GetReversedHit(*Hit, this, GetOwner()));
 
 	return Sweep.Time > 0.0f;
@@ -230,17 +230,3 @@ bool UPrimitiveComponent::TraceMeshLocal(const FRay& LocalRay, const FStaticMesh
 	return RayIntersectsMesh(LocalRay, Mesh, OutT);
 }
 
-void UPrimitiveComponent::OnBeginOverlap()
-{
-	DelegateWhenBeginOverlap.Broadcast();
-}
-
-void UPrimitiveComponent::OnEndOverlap()
-{
-	DelegateWhenEndOverlap.Broadcast();
-}
-
-void UPrimitiveComponent::OnHit(AActor* OtherActor, UPrimitiveComponent* OtherComp, const FHitResult& Hit)
-{
-	DelegateWhenHit.Broadcast(this, OtherActor, OtherComp, Hit);
-}

@@ -6,6 +6,7 @@
 struct FCollisionShape;
 struct FCollisionContact;
 class FLineBatcher;
+class AActor;
 
 class UShapeComponent : public UPrimitiveComponent
 {
@@ -21,11 +22,11 @@ public:
 
 	DECLARE_DELEGATE(DelegateWhenBeginOverlap)
 	DECLARE_DELEGATE(DelegateWhenEndOverlap)
-	DECLARE_DELEGATE(DelegateWhenHit)
+	DECLARE_DELEGATE(DelegateWhenHit, UPrimitiveComponent*, AActor*, UPrimitiveComponent*, const FHitResult&)
 
 	void OnBeginOverlap();
 	void OnEndOverlap();
-	void OnHit();
+	void OnHit(AActor* OtherActor, UPrimitiveComponent* OtherComp, const FHitResult& Hit);
 
 	virtual FCollisionShape GetCollisionShape() const = 0;
 	void DrawDebug(FLineBatcher& LineBatcher, bool bHighlight) const;
