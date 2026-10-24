@@ -26,7 +26,7 @@ public:
 
 	void Update(float deltaTime)
 	{
-		for (int i = 0;i < CoroutineInfoArray.Num();i++) {
+		for (int i = CoroutineInfoArray.Num();i > 0 ;i--) {
 			if (CoroutineInfoArray[i].CheckFunction)	// 조건 Coroutine일 경우와 시간 Coroutine일 경우 분리
 			{
 				if (CoroutineInfoArray[i].CheckFunction())
