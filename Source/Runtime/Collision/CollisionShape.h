@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/Types.h"
+#include "Containers/Array.h"
 #include "Math/Vector.h"
 #include "Math/Quat.h"
 
@@ -65,4 +66,23 @@ namespace Collision
 	FVector ClosestPointOnSegment(const FVector& P, const FVector& A, const FVector& B);
 	float ClosestPointsSegmentSegment(const FVector& P1, const FVector& Q1, const FVector& P2, const FVector& Q2, FVector& OutC1, FVector& OutC2);
 	FVector ClosestPointOnBox(const FVector& P, const FOrientedBox& Box);
+
+	struct FSweepTarget
+	{
+		FCollisionShape Shape;
+		FVector Pos;
+		FQuat Rot;
+	};
+
+	struct FSweepResult
+	{
+		bool bBlockingHit = false;
+		bool bStartPenetrating = false;
+		float Time = 1.0f;
+		int32 TargetIndex = -1;
+		FCollisionContact Contact;
+	};
+
+	FSweepResult Sweep(const FCollisionShape& Shape, const FVector& Start, const FVector& Delta, const FQuat& Rot,
+	                   const TArray<FSweepTarget>& Targets);
 }

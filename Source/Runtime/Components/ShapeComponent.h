@@ -1,6 +1,7 @@
 #pragma once
 
 #include "PrimitiveComponent.h"
+#include "Core/TDelegate.h"
 
 struct FCollisionShape;
 struct FCollisionContact;
@@ -12,9 +13,20 @@ class UShapeComponent : public UPrimitiveComponent
 	REFLECT_START(UShapeComponent)
 		PROPERTY(ShapeColor)
 		PROPERTY(bDrawOnlyIfSelected)
+		PROPERTY(bEnableCollision)
 	REFLECT_END()
 
 public:
+	UShapeComponent();
+
+	DECLARE_DELEGATE(DelegateWhenBeginOverlap)
+	DECLARE_DELEGATE(DelegateWhenEndOverlap)
+	DECLARE_DELEGATE(DelegateWhenHit)
+
+	void OnBeginOverlap();
+	void OnEndOverlap();
+	void OnHit();
+
 	virtual FCollisionShape GetCollisionShape() const = 0;
 	void DrawDebug(FLineBatcher& LineBatcher, bool bHighlight) const;
 
@@ -22,10 +34,17 @@ public:
 	bool ComputeContact(const UShapeComponent& Other, FCollisionContact& OutContact) const;
 	bool ShouldDrawOnlyIfSelected() const;
 	float GetShapeScale() const;
+	bool IsEnableCollision() const { return bEnableCollision; }
+	void SetEnableCollision(bool bCollision)
+	{
+		bEnableCollision = bCollision;
+		MarkRenderStateDirty();
+	}
 
 protected:
 	virtual bool ShouldCreateRenderState() const override;
 
 	FColor ShapeColor{ 223, 149, 157, 255 };
 	bool bDrawOnlyIfSelected = false;
+	bool bEnableCollision = false; // 충돌 감지 여부
 };

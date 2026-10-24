@@ -117,4 +117,6 @@ private:
 	FPrimitiveSceneProxy* SceneProxy = nullptr;
 	bool bCastShadow = true;
 	bool bReceiveShadow = true;
+	bool bOverlapTrigger = false;	// Overlap 발생시 Event Trigger 발생 여부
+	bool bBlockComponent = false;	// 상대 물체 통과 방지
 };

@@ -3,50 +3,50 @@
 #include "Math/Vector.h"
 
 class UPrimitiveComponent;
+class AActor;
 
 struct FHitResult
 {
-	int32 FaceIndex; // Hitted face index
+	int32 FaceIndex = -1;
 
-	float Time; // For swept
+	float Time = 1.0f;
 	float Distance = FLT_MAX;
 
-	FVector Location = FVector(); // For swept
-	FVector ImpactPoint = FVector();
-	FVector Normal; //For swept
+	FVector Location;
+	FVector ImpactPoint;
+	FVector Normal;
 	FVector ImpactNormal;
 
 	FVector TraceStart;
 	FVector TraceEnd;
 
-	float PenetrationDepth;
+	float PenetrationDepth = 0.0f;
 
 	bool bBlockingHit = false;
-	bool bStartPentrating = false;
+	bool bStartPenetrating = false;
 
 	UPrimitiveComponent* HitComponent = nullptr;
+	AActor* HitActor = nullptr;
 
-	FHitResult()
-	{
-		Init();
-	}
+	FHitResult() = default;
 
 	explicit FHitResult(float InTime)
 	{
-		Init();
 		Time = InTime;
 	}
 
-	// Initailize empty hit result
-	inline void Init()
+	void Init()
 	{
-		Time = 1.0f;		
+		*this = FHitResult();
 	}
 
-	inline void Init(FVector Start, FVector End)
+	void Init(const FVector& Start, const FVector& End)
 	{
-		Time = 1.0f;
+		Init();
 		TraceStart = Start;
 		TraceEnd = End;
 	}
+
+	AActor* GetActor() const { return HitActor; }
+	UPrimitiveComponent* GetComponent() const { return HitComponent; }
 };

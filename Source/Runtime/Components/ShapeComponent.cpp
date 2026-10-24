@@ -25,6 +25,27 @@ namespace
 	}
 }
 
+UShapeComponent::UShapeComponent()
+{
+	DelegateWhenBeginOverlap.Add([]() { HTR_LOG(Info, "BeginOverlap"); });
+	DelegateWhenEndOverlap.Add([]() { HTR_LOG(Info, "EndOverlap"); });
+}
+
+void UShapeComponent::OnBeginOverlap()
+{
+	DelegateWhenBeginOverlap.Broadcast();
+}
+
+void UShapeComponent::OnEndOverlap()
+{
+	DelegateWhenEndOverlap.Broadcast();
+}
+
+void UShapeComponent::OnHit()
+{
+	
+}
+
 bool UShapeComponent::ShouldCreateRenderState() const
 {
 	return false;
@@ -85,17 +106,14 @@ void UShapeComponent::DrawDebug(FLineBatcher& LineBatcher, bool bHighlight) cons
 		const FVector Up = Rot.GetUpVector();
 		const float R = Capsule.Radius;
 
-		// 1. 양 끝의 가로 원 (Up에 수직인 평면)
 		AddArc(LineBatcher, Capsule.A, F, Rt, R, 0.0f, 2.0f * PI, Color);
 		AddArc(LineBatcher, Capsule.B, F, Rt, R, 0.0f, 2.0f * PI, Color);
 
-		// 2. 옆면 직선 4개
 		LineBatcher.AddLine(Capsule.A + F * R, Capsule.B + F * R, Color);
 		LineBatcher.AddLine(Capsule.A - F * R, Capsule.B - F * R, Color);
 		LineBatcher.AddLine(Capsule.A + Rt * R, Capsule.B + Rt * R, Color);
 		LineBatcher.AddLine(Capsule.A - Rt * R, Capsule.B - Rt * R, Color);
 
-		// 3. 위 반구 (B에서 +Up 쪽으로 볼록), 아래 반구 (A에서 −Up 쪽으로 볼록)
 		AddArc(LineBatcher, Capsule.B, F, Up, R, 0.0f, PI, Color);
 		AddArc(LineBatcher, Capsule.B, Rt, Up, R, 0.0f, PI, Color);
 		AddArc(LineBatcher, Capsule.A, F, -Up, R, 0.0f, PI, Color);
@@ -116,7 +134,14 @@ bool UShapeComponent::IsOverlapping(const UShapeComponent& Other) const
 
 bool UShapeComponent::ComputeContact(const UShapeComponent& Other, FCollisionContact& OutContact) const
 {
-	return false;
+	if (&Other == this || !CalcBounds().Intersects(Other.CalcBounds()))
+	{
+		return false;
+	}
+
+	return Collision::Overlap(GetCollisionShape(), GetWorldLocation(), GetWorldRotation().Quaternion(),
+	                          Other.GetCollisionShape(), Other.GetWorldLocation(), Other.GetWorldRotation().Quaternion(),
+	                          &OutContact);
 }
 
 bool UShapeComponent::ShouldDrawOnlyIfSelected() const

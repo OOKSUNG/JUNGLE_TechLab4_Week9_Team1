@@ -1,6 +1,11 @@
 #include "EnginePCH.h"
 #include "Scripting/LuaVM.h"
 
+#include "GameFramework/Actor.h"
+#include "Components/SceneComponent.h"
+#include "Math/Vector.h"
+#include "Math/Rotator.h"
+
 #include <sol/sol.hpp>
 #include <luajit.h>
 
@@ -46,6 +51,164 @@ namespace
 		default:
 			return "<value>";
 		}
+	}
+
+	void BindLoggingAPI(sol::state& LuaState)
+	{
+		auto LogFunction = [](sol::variadic_args Args)
+			{
+				FString Message;
+
+				for (const auto& Argument : Args)
+				{
+					if (!Message.empty())
+					{
+						Message += " ";
+					}
+
+					const sol::object Value = Argument;
+					Message += LuaValueToString(Value);
+				}
+
+				HTR_LOG(Info, "[Lua] {}", Message);
+
+				Message += "\n";
+				OutputDebugStringA(Message.c_str());
+			};
+
+		// Lua에서 Log("Score:", 100, true)처럼 호출할 수 있습니다.
+		LuaState.set_function("Log", LogFunction);
+
+		// 기본 Lua print도 에디터 Output Log 쪽으로 연결합니다.
+		LuaState.set_function("print", LogFunction);
+	}
+
+	void BindVectorAPI(sol::state& LuaState)
+	{
+		LuaState.new_usertype<FVector>(
+			"FVector",
+			sol::constructors<
+				FVector(),
+				FVector(float, float, float)
+			>(),
+			"X", &FVector::X,
+			"Y", &FVector::Y,
+			"Z", &FVector::Z,
+			"Set", &FVector::Set,
+			"Size", &FVector::Size,
+			"SizeSquared", &FVector::SizeSquared,
+			"Length", &FVector::Length,
+			"Normalized", &FVector::Normalized,
+			"Add", &FVector::Add,
+			"Subtract", &FVector::Subtract,
+			"Dot", [](const FVector& A, const FVector& B)
+			{
+				return FVector::Dot(A, B);
+			},
+			"Cross", [](const FVector& A, const FVector& B)
+			{
+				return FVector::Cross(A, B);
+			},
+			"Distance", [](const FVector& A, const FVector& B)
+			{
+				return FVector::Distance(A, B);
+			},
+			sol::meta_function::addition,
+			[](const FVector& A, const FVector& B)
+			{
+				return A + B;
+			},
+			sol::meta_function::subtraction,
+			[](const FVector& A, const FVector& B)
+			{
+				return A - B;
+			},
+			sol::meta_function::multiplication,
+			[](const FVector& Vector, float Scalar)
+			{
+				return Vector * Scalar;
+			},
+			sol::meta_function::equal_to,
+			[](const FVector& A, const FVector& B)
+			{
+				return A == B;
+			}
+		);
+	}
+
+	void BindRotatorAPI(sol::state& LuaState)
+	{
+		LuaState.new_usertype<FRotator>(
+			"FRotator",
+			sol::constructors<
+				FRotator(),
+				FRotator(float, float, float)
+			>(),
+			"Pitch", &FRotator::Pitch,
+			"Yaw", &FRotator::Yaw,
+			"Roll", &FRotator::Roll
+		);
+	}
+
+	void BindActorAPI(sol::state& LuaState)
+	{
+		LuaState.new_usertype<AActor>(
+			"AActor",
+			sol::no_constructor,
+			"GetName", [](const AActor& Actor)
+			{
+				return Actor.GetName();
+			},
+			"GetActorLocation", [](const AActor& Actor)
+			{
+				return Actor.GetActorLocation();
+			},
+			"SetActorLocation", [](AActor& Actor, const FVector& NewLocation)
+			{
+				USceneComponent* RootComponent = Actor.GetRootComponent();
+				if (!RootComponent)
+				{
+					return false;
+				}
+
+				RootComponent->SetWorldLocation(NewLocation, false);
+				return true;
+			},
+			"GetActorRotation", [](const AActor& Actor)
+			{
+				return Actor.GetActorRotation();
+			},
+			"SetActorRotation", [](AActor& Actor, const FRotator& NewRotation)
+			{
+				USceneComponent* RootComponent = Actor.GetRootComponent();
+				if (!RootComponent)
+				{
+					return false;
+				}
+
+				RootComponent->SetWorldRotation(NewRotation, false);
+				return true;
+			},
+			"GetActorScale3D", [](const AActor& Actor)
+			{
+				return Actor.GetActorScale3D();
+			},
+			"SetActorScale3D", [](AActor& Actor, const FVector& NewScale)
+			{
+				USceneComponent* RootComponent = Actor.GetRootComponent();
+				if (!RootComponent)
+				{
+					return false;
+				}
+
+				RootComponent->SetWorldScale3D(NewScale);
+				return true;
+			},
+			"Destroy", [](AActor& Actor)
+			{
+				return Actor.Destroy();
+			}
+		);
 	}
 }
 
@@ -112,32 +275,15 @@ void FLuaVM::Shutdown()
 
 void FLuaVM::BindEngineAPI()
 {
-	auto LogFunction = [](sol::variadic_args Args)
-		{
-			FString Message;
+	if (!State)
+	{
+		return;
+	}
 
-			for (const auto& Argument : Args)
-			{
-				if (!Message.empty())
-				{
-					Message += " ";
-				}
-
-				const sol::object Value = Argument;
-				Message += LuaValueToString(Value);
-			}
-
-			HTR_LOG(Info, "[Lua] {}", Message);
-
-			Message += "\n";
-			OutputDebugStringA(Message.c_str());
-		};
-
-	// Lua에서 Log("Score:", 100, true)처럼 호출할 수 있습니다.
-	State->set_function("Log", LogFunction);
-
-	// 기본 Lua print도 에디터 Output Log 쪽으로 연결합니다.
-	State->set_function("print", LogFunction);
+	BindLoggingAPI(*State);
+	BindVectorAPI(*State);
+	BindRotatorAPI(*State);
+	BindActorAPI(*State);
 }
 
 bool FLuaVM::ExecuteString(

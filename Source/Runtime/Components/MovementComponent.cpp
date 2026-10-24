@@ -1,6 +1,7 @@
 #include "EnginePCH.h"
 #include "MovementComponent.h"
 #include "GameFramework/Actor.h"
+#include "Components/ShapeComponent.h"
 
 void UMovementComponent::InitializeComponent()
 {
@@ -67,6 +68,19 @@ bool UMovementComponent::MoveUpdatedComponent(const FVector& Delta, const FRotat
 {
 	if (UpdatedComponent)
 	{
+		if (bSweep && !bWarnedSweepWithoutShape && !Cast<UShapeComponent>(UpdatedComponent) && GetOwner())
+		{
+			for (UActorComponent* Component : GetOwner()->GetComponents())
+			{
+				if (Cast<UShapeComponent>(Component))
+				{
+					HTR_LOG(Warning, "[Collision] {}: 움직이는 컴포넌트가 Shape가 아니라 스윕되지 않습니다. Shape를 루트로 두세요.", GetOwner()->GetName());
+					bWarnedSweepWithoutShape = true;
+					break;
+				}
+			}
+		}
+
 		return UpdatedComponent->MoveComponent(Delta, NewRotation, bSweep, Hit);		
 	}
 

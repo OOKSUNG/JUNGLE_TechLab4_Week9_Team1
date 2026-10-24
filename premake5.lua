@@ -1,3 +1,34 @@
+local function Shell(Command)
+	return '"' .. Command .. '"'
+end
+
+local function FindVcpkg()
+	local Root = os.getenv("VCPKG_ROOT")
+	if Root and os.isfile(Root .. "/vcpkg.exe") then
+		return Root .. "/vcpkg.exe"
+	end
+
+	local VsWhere = os.getenv("ProgramFiles(x86)") .. "/Microsoft Visual Studio/Installer/vswhere.exe"
+	if os.isfile(VsWhere) then
+		local VsPath = os.outputof(Shell('"' .. VsWhere .. '" -latest -property installationPath'))
+		if VsPath and os.isfile(VsPath .. "/VC/vcpkg/vcpkg.exe") then
+			return VsPath .. "/VC/vcpkg/vcpkg.exe"
+		end
+	end
+end
+
+local RepoRoot = _MAIN_SCRIPT_DIR
+if _ACTION and _ACTION:match("^vs") and not os.isdir(RepoRoot .. "/vcpkg_installed/x64-windows/lib") then
+	local Vcpkg = FindVcpkg()
+	if Vcpkg then
+		os.execute(Shell('"' .. Vcpkg .. '" install --triplet x64-windows'
+			.. ' --x-manifest-root="' .. RepoRoot .. '"'
+			.. ' --x-install-root="' .. RepoRoot .. '/vcpkg_installed"'))
+	else
+		print("vcpkg를 찾지 못했습니다. VCPKG_ROOT를 설정하거나 Visual Studio의 vcpkg 구성 요소를 설치하세요.")
+	end
+end
+
 workspace "Hitori"
 	architecture "x64"
 	startproject "HitoriEditor"

@@ -36,6 +36,8 @@
 #include "PlayInEditorDataTypes.h"
 #include "Core/Misc/Optional.h"
 
+#include "Core/CoroutineScheduler.h"
+
 //Temp
 #include "Text/Font.h"
 #include "Text/TextRenderer.h"
@@ -78,6 +80,8 @@ public:
 	//void RestoreEditorWorld(UWorld* EditorWorld);            // GWorld를 에디터 월드로 복구
 	//void DestroyWorldContext(UWorld* PlayWorld);
 
+	sol::state lua;
+	CoroutineScheduler FCoroutineScheduler;
 private:
 	bool ExecShadowCommand(const FString& CommandLine, FString& OutMessage);
 	bool ExecShadowResolutionCommand(const FString& CommandLine, FString& OutMessage);
@@ -211,4 +215,5 @@ private:
 	void OpenScene();
 	void SaveCurrentScene();
 	void SaveSceneAs();
+
 };
