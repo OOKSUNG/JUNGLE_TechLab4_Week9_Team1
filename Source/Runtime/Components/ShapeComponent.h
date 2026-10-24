@@ -1,6 +1,7 @@
 #pragma once
 
 #include "PrimitiveComponent.h"
+#include "Core/TDelegate.h"
 
 struct FCollisionShape;
 struct FCollisionContact;
@@ -16,6 +17,16 @@ class UShapeComponent : public UPrimitiveComponent
 	REFLECT_END()
 
 public:
+	UShapeComponent();
+
+	DECLARE_DELEGATE(DelegateWhenBeginOverlap)
+	DECLARE_DELEGATE(DelegateWhenEndOverlap)
+	DECLARE_DELEGATE(DelegateWhenHit)
+
+	void OnBeginOverlap();
+	void OnEndOverlap();
+	void OnHit();
+
 	virtual FCollisionShape GetCollisionShape() const = 0;
 	void DrawDebug(FLineBatcher& LineBatcher, bool bHighlight) const;
 

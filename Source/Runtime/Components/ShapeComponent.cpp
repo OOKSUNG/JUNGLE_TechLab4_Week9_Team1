@@ -25,6 +25,27 @@ namespace
 	}
 }
 
+UShapeComponent::UShapeComponent()
+{
+	DelegateWhenBeginOverlap.Add([]() { HTR_LOG(Info, "BeginOverlap"); });
+	DelegateWhenEndOverlap.Add([]() { HTR_LOG(Info, "EndOverlap"); });
+}
+
+void UShapeComponent::OnBeginOverlap()
+{
+	DelegateWhenBeginOverlap.Broadcast();
+}
+
+void UShapeComponent::OnEndOverlap()
+{
+	DelegateWhenEndOverlap.Broadcast();
+}
+
+void UShapeComponent::OnHit()
+{
+	
+}
+
 bool UShapeComponent::ShouldCreateRenderState() const
 {
 	return false;

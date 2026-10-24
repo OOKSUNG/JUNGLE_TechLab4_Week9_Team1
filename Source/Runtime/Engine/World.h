@@ -17,6 +17,7 @@
 #include "Containers/Queue.h"
 //class ACameraActor;
 class ULevel;
+class UShapeComponent;
 class UBillboardComponent;
 class FProjectedShadowInfo;
 struct FLODViewContext;
@@ -149,7 +150,7 @@ public:
 	void GatherOverlap();
 	void AddOverlap(uint32 OverlapFirst, uint32 OverlapSecond);
 	void ResetOverlap();
-	UPrimitiveComponent* FindPrimitiveByUUID(uint32 UUID);
+	UShapeComponent* FindShapeByUUID(uint32 UUID);
 private:
 	// 활성 Lit View 중 하나에서 Receiver 후보가 보이면 유지한다.
 	// LocalLight와 ReceiverFrustum은 지정한 경우에만 영향 구와 투영 범위를 제한한다.
