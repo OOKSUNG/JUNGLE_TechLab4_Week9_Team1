@@ -83,7 +83,6 @@ namespace Collision
 		FCollisionContact Contact;
 	};
 
-	// Shape를 Start에서 Start + Delta로 밀며 처음 막히는 지점을 찾는다. 회전은 Rot로 고정한다.
 	FSweepResult Sweep(const FCollisionShape& Shape, const FVector& Start, const FVector& Delta, const FQuat& Rot,
 	                   const TArray<FSweepTarget>& Targets);
 }

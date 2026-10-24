@@ -1,4 +1,3 @@
--- cmd는 따옴표로 시작하는 명령의 바깥 따옴표를 벗기므로 한 번 더 감싼다
 local function Shell(Command)
 	return '"' .. Command .. '"'
 end
@@ -18,7 +17,6 @@ local function FindVcpkg()
 	end
 end
 
--- 처음 생성할 때 vcpkg.json의 의존성(LuaJIT, sol2)을 설치한다
 local RepoRoot = _MAIN_SCRIPT_DIR
 if _ACTION and _ACTION:match("^vs") and not os.isdir(RepoRoot .. "/vcpkg_installed/x64-windows/lib") then
 	local Vcpkg = FindVcpkg()

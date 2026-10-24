@@ -91,7 +91,6 @@ bool Collision::Overlap(const FCollisionShape& A, const FVector& PosA, const FQu
 		const bool bOverlap = OverlapCapsuleBox(CapB, BoxA, OutContact);
 		if (bOverlap && OutContact)
 		{
-			// 박스→캡슐 결과를 캡슐(B)→박스(A)로 뒤집고, 접촉점을 B 표면으로 옮긴다.
 			OutContact->Normal = -OutContact->Normal;
 			OutContact->Point += OutContact->Normal * OutContact->PenetrationDepth;
 		}
@@ -126,7 +125,6 @@ bool Collision::OverlapCapsuleCapsule(const FCapsuleSegment& A, const FCapsuleSe
 		}
 		else
 		{
-			// 선분이 교차하면 두 선분 모두에 수직인 방향으로 민다.
 			const FVector CenterDiff = (A.A + A.B - B.A - B.B) * 0.5f;
 			const FVector Perp = (A.B - A.A).Cross(B.B - B.A);
 			const float PerpLen = Perp.Length();
@@ -155,7 +153,6 @@ bool Collision::OverlapCapsuleBox(const FCapsuleSegment& Capsule, const FOriente
 		return D.Dot(D);
 	};
 
-	// 선분 위치 t에 대한 박스까지 거리는 볼록 함수라 삼분 탐색으로 최솟값을 찾는다.
 	float Lo = 0.0f;
 	float Hi = 1.0f;
 	for (int32 Iter = 0; Iter < 30; ++Iter)
@@ -185,7 +182,6 @@ bool Collision::OverlapCapsuleBox(const FCapsuleSegment& Capsule, const FOriente
 		return true;
 	}
 
-	// 선분이 박스 안을 지나면 가장 가까운 면으로 밀어낸다.
 	const FVector Local = P - Box.Center;
 	int32 MinAxis = 0;
 	float MinGap = FLT_MAX;
@@ -240,7 +236,6 @@ bool Collision::OverlapBoxBox(const FOrientedBox& A, const FOrientedBox& B, FCol
 		}
 	};
 
-	// A의 축
 	for (int32 i = 0; i < 3; ++i)
 	{
 		const float RA = EA[i];
@@ -250,7 +245,6 @@ bool Collision::OverlapBoxBox(const FOrientedBox& A, const FOrientedBox& B, FCol
 		TrackMin(RA + RB - std::abs(T[i]), A.Axis[i]);
 	}
 
-	// B의 축
 	for (int32 j = 0; j < 3; ++j)
 	{
 		const float RA = EA[0] * AbsR[0][j] + EA[1] * AbsR[1][j] + EA[2] * AbsR[2][j];
@@ -261,7 +255,6 @@ bool Collision::OverlapBoxBox(const FOrientedBox& A, const FOrientedBox& B, FCol
 		TrackMin(RA + RB - std::abs(Dist), B.Axis[j]);
 	}
 
-	// A[i] x B[j]
 	for (int32 i = 0; i < 3; ++i)
 	{
 		const int32 I1 = (i + 1) % 3;
@@ -277,7 +270,6 @@ bool Collision::OverlapBoxBox(const FOrientedBox& A, const FOrientedBox& B, FCol
 			if (std::abs(Dist) > RA + RB)
 				return false;
 
-			// 외적 축은 단위 벡터가 아니므로 길이로 나눠 실제 겹친 양으로 비교한다.
 			const float AxisLen = std::sqrt(std::max(0.0f, 1.0f - R[i][j] * R[i][j]));
 			if (AxisLen > 1e-3f)
 				TrackMin((RA + RB - std::abs(Dist)) / AxisLen, A.Axis[i].Cross(B.Axis[j]) / AxisLen);
@@ -411,7 +403,6 @@ Collision::FSweepResult Collision::Sweep(const FCollisionShape& Shape, const FVe
 		return -1;
 	};
 
-	// 시작부터 겹친 대상: 빠져나가는 방향이면 무시하고, 파고드는 방향이면 바로 막는다.
 	for (int32 i = 0; i < static_cast<int32>(Targets.Num()); ++i)
 	{
 		FCollisionContact Contact;
@@ -433,7 +424,6 @@ Collision::FSweepResult Collision::Sweep(const FCollisionShape& Shape, const FVe
 		return Result;
 	}
 
-	// 도형의 가장 작은 반 크기보다 짧은 조각으로 나눠 얇은 벽을 건너뛰지 않게 한다.
 	float MinHalfSize = Shape.Radius;
 	if (Shape.IsBox())
 		MinHalfSize = std::min({ Shape.BoxHalfExtent.X, Shape.BoxHalfExtent.Y, Shape.BoxHalfExtent.Z });

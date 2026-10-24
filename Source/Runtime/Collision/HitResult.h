@@ -9,12 +9,12 @@ struct FHitResult
 {
 	int32 FaceIndex = -1;
 
-	float Time = 1.0f;          // 스윕: Delta 중 실제로 이동한 비율 (0~1)
+	float Time = 1.0f;
 	float Distance = FLT_MAX;
 
-	FVector Location;           // 스윕: 멈춘 위치
-	FVector ImpactPoint;        // 맞은 물체 표면의 접촉점
-	FVector Normal;             // 스윕: 움직인 도형을 밀어내는 방향
+	FVector Location;
+	FVector ImpactPoint;
+	FVector Normal;
 	FVector ImpactNormal;
 
 	FVector TraceStart;

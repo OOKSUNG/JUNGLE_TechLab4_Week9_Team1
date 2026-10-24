@@ -1010,7 +1010,6 @@ void UEditorEngine::RenderOverlayPass(const int32 ViewIndex, UWorld& ViewWorld, 
 				Shapes.Add(*Iter);
 		}
 
-		// 임시: 3번의 Overlap 단계가 붙으면 그 결과로 교체
 		const AActor* SelectedActor = Gizmo->GetTarget() ? Gizmo->GetTarget()->GetOwner() : nullptr;
 		for (UShapeComponent* Shape : Shapes)
 		{

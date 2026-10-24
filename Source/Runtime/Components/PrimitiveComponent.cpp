@@ -136,7 +136,6 @@ bool UPrimitiveComponent::MoveComponent(const FVector& Delta, const FRotator& Ne
 	const FCollisionShape MyShape = Shape->GetCollisionShape();
 	const FBox SweepBounds = MakeSweepBounds(MyShape, Start, Delta);
 
-	// TODO: 3번의 bBlockComponent가 병합되면 양쪽 모두 Block일 때만 후보로 넣는다.
 	TArray<Collision::FSweepTarget> Targets;
 	TArray<UShapeComponent*> TargetComponents;
 	for (AActor* Actor : World->GetPersistentLevel()->GetActors())
