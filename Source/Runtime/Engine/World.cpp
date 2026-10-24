@@ -16,6 +16,7 @@
 #include "Components/ExponentialHeightFogComponent.h"
 
 #include "Components/StaticMeshComponent.h"
+#include "Components/ShapeComponent.h"
 #include "Asset/LOD/StaticMeshLODSelector.h"
 
 #include "Math/Frustum.h"
@@ -128,9 +129,11 @@ void UWorld::Tick(float DeltaTime)
 			// 모든 Actor를 도는 대신 등록된 Tick 함수(메인 카메라 포함)만 실행한다.
 			TickTaskManager.RunAllTickGroups(DeltaTime);
 		}
+
+		GatherOverlap(); // 게임 중에만 충돌처리
 	}
 
-
+	
 }
 
 void UWorld::ClearWorld()
@@ -1114,4 +1117,109 @@ bool UWorld::HasVisibleShadowReceiver(const TArray<FFrustumPlanes>& ActiveViewFr
 			bHasReceiver = true;
 		});
 	return bHasReceiver;
+}
+
+void UWorld::GatherOverlap()
+{
+	LastFrameOverlapInfo = OverlapInfo;	// 이전 FrameOverlapInfo에 OverlapInfo 저장
+	ResetOverlap(); // 현재 FrameOverlapInfo를 리셋
+	TArray<UShapeComponent*> Shapes;
+	for (ULevel* Level : Levels)
+	{
+		if (!Level) continue;
+		for (AActor* Actor : Level->GetActors())
+		{
+			if (!Actor) continue;
+			for (UActorComponent* Component : Actor->GetComponents())
+			{
+				if (UShapeComponent* Shape = Cast<UShapeComponent>(Component))
+				{
+					if (Shape->IsEnableCollision())
+						Shapes.Add(Shape);	// Shape 판정을 위해 월드에 존재하는 전체 Shape배열에 추가
+				}
+			}
+		}
+	}
+
+	for (int i = 0; i < Shapes.Num(); ++i)
+	{
+		for (int j = i + 1; j < Shapes.Num(); ++j)
+		{
+			UShapeComponent* First = Shapes[i];
+			UShapeComponent* Second = Shapes[j];
+			// IsOverlapping 내부에서 AABB 검사 후 정밀 판정을 수행한다.
+			if (First->IsOverlapping(*Second))
+			{
+				// 프레임마다 같은 쌍을 유지하도록 작은 UUID부터 저장, 전체 충돌 쌍 저장
+				AddOverlap(std::min(First->GetUUID(), Second->GetUUID()),
+				           std::max(First->GetUUID(), Second->GetUUID()));
+			}
+		}
+	}
+
+
+	for (int i = 0; i < OverlapInfo.Num();i++)
+	{
+		if (LastFrameOverlapInfo.Find(OverlapInfo[i]) == -1)
+		{
+			if (FindPrimitiveByUUID(OverlapInfo[i].OverlapFirst))
+			{
+				FindPrimitiveByUUID(OverlapInfo[i].OverlapFirst)->OnBeginOverlap();	// 새로운 OverlapInfo의 요소를 이전 OverlapInfo에서 찾지 못함 => BeginOverlap()
+			}
+			if (FindPrimitiveByUUID(OverlapInfo[i].OverlapSecond))
+			{
+				FindPrimitiveByUUID(OverlapInfo[i].OverlapSecond)->OnBeginOverlap();
+			}
+		}
+	}
+
+	for (int i = 0; i < LastFrameOverlapInfo.Num();i++)
+	{
+		if (OverlapInfo.Find(LastFrameOverlapInfo[i]) == -1)
+		{
+			if (FindPrimitiveByUUID(LastFrameOverlapInfo[i].OverlapFirst))
+			{
+				FindPrimitiveByUUID(LastFrameOverlapInfo[i].OverlapFirst)->OnEndOverlap(); // 이전 OverlapInfo의 요소를 새로운 OverlapInfo에서 찾지 못함 => EndOverlap()
+			}
+			if (FindPrimitiveByUUID(LastFrameOverlapInfo[i].OverlapSecond))
+			{
+				FindPrimitiveByUUID(LastFrameOverlapInfo[i].OverlapSecond)->OnEndOverlap();
+			}
+		}
+	}
+}
+
+void UWorld::AddOverlap(uint32 OverlapFirst, uint32 OverlapSecond)
+{
+	FOverlapInfo OverlapInf;
+	OverlapInf.OverlapFirst = OverlapFirst;
+	OverlapInf.OverlapSecond = OverlapSecond;
+	OverlapInfo.Add(OverlapInf);
+}
+
+void UWorld::ResetOverlap()
+{
+	OverlapInfo.Reset();
+}
+
+UPrimitiveComponent* UWorld::FindPrimitiveByUUID(uint32 UUID)
+{
+	// 렌더 프록시가 없는 Shape도 찾고, 비활성화된 컴포넌트에도 EndOverlap을 전달한다.
+	for (ULevel* Level : Levels)
+	{
+		if (!Level) continue;
+		for (AActor* Actor : Level->GetActors())
+		{
+			if (!Actor) continue;
+			for (UActorComponent* Component : Actor->GetComponents())
+			{
+				if (UPrimitiveComponent* Primitive = Cast<UPrimitiveComponent>(Component))
+				{
+					if (Primitive->GetUUID() == UUID)
+						return Primitive;
+				}
+			}
+		}
+	}
+	return nullptr;
 }
