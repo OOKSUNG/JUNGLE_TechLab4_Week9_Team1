@@ -150,7 +150,7 @@ bool UEditorEngine::Init()
 		});
 
 	auto result = lua.safe_script_file(
-		R"(C:\Users\JUNGLE\Documents\GitHub\JUNGLE_TechLab4_Week9_Team1\Coroutine.lua)",
+		"Coroutine.lua",
 		sol::script_pass_on_error
 	);
 
