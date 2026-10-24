@@ -77,9 +77,21 @@ bool Collision::Overlap(const FCollisionShape& A, const FVector& PosA, const FQu
 
 		return OverlapCapsuleCapsule(CapA, CapB, &C);
 	}
-	else if ((A.IsSphere() || A.IsCapsule()) && B.IsBox() ||
-	         A.IsBox() && (B.IsSphere() || B.IsCapsule()))
+	else if ((A.IsSphere() || A.IsCapsule()) && B.IsBox())
 	{
+		FCapsuleSegment CapA = Collision::ToCapsuleSegment(A, PosA, RotA);
+		FOrientedBox BoxB = Collision::ToOrientedBox(B, PosB, RotB);
+		FCollisionContact C;
+
+		return OverlapCapsuleBox(CapA, BoxB, &C);
+	}
+	else if (A.IsBox() && (B.IsSphere() || B.IsCapsule()))
+	{
+		FOrientedBox BoxA = Collision::ToOrientedBox(A, PosA, RotA);
+		FCapsuleSegment CapB = Collision::ToCapsuleSegment(B, PosB, RotB);
+		FCollisionContact C;
+
+		return OverlapCapsuleBox(CapB, BoxA, &C);
 	}
 	else if (A.IsBox() && B.IsBox())
 	{
@@ -103,7 +115,28 @@ bool Collision::OverlapCapsuleCapsule(const FCapsuleSegment& A, const FCapsuleSe
 
 bool Collision::OverlapCapsuleBox(const FCapsuleSegment& Capsule, const FOrientedBox& Box, FCollisionContact* OutContact)
 {
-	return false;
+	const FVector Dir = Capsule.B - Capsule.A;
+	auto DistSqAt = [&](float T)
+	{
+		const FVector P = Capsule.A + Dir * T;
+		const FVector D = P - ClosestPointOnBox(P, Box);
+		return D.Dot(D);
+	};
+
+	// 선분 위치 t에 대한 박스까지 거리는 볼록 함수라 삼분 탐색으로 최솟값을 찾는다.
+	float Lo = 0.0f;
+	float Hi = 1.0f;
+	for (int32 Iter = 0; Iter < 30; ++Iter)
+	{
+		const float M1 = Lo + (Hi - Lo) / 3.0f;
+		const float M2 = Hi - (Hi - Lo) / 3.0f;
+		if (DistSqAt(M1) <= DistSqAt(M2))
+			Hi = M2;
+		else
+			Lo = M1;
+	}
+
+	return DistSqAt((Lo + Hi) * 0.5f) <= Capsule.Radius * Capsule.Radius;
 }
 
 bool Collision::OverlapBoxBox(const FOrientedBox& A, const FOrientedBox& B, FCollisionContact* OutContact)
@@ -246,5 +279,13 @@ float Collision::ClosestPointsSegmentSegment(const FVector& P1, const FVector& Q
 
 FVector Collision::ClosestPointOnBox(const FVector& P, const FOrientedBox& Box)
 {
-	return FVector();
+	const FVector D = P - Box.Center;
+
+	FVector Result = Box.Center;
+	for (int32 i = 0; i < 3; ++i)
+	{
+		const float S = std::clamp(D.Dot(Box.Axis[i]), -Box.Extent[i], Box.Extent[i]);
+		Result += Box.Axis[i] * S;
+	}
+	return Result;
 }

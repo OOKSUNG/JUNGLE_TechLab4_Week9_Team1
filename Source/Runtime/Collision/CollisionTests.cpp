@@ -254,6 +254,64 @@ namespace
 		CHECK_TRUE(!Collision::Overlap(Unit, FVector(0, 0, 0), Identity, Stick, FVector(1.7f, 1.7f, 0), Tilted));
 		CHECK_TRUE(Collision::Overlap(Unit, FVector(0, 0, 0), Identity, Stick, FVector(1.2f, 1.2f, 0), Tilted));
 	}
+
+	void TestClosestPointOnBox()
+	{
+		const FCollisionShape Unit = FCollisionShape::MakeBox(FVector(1.0f, 1.0f, 1.0f));
+
+		const Collision::FOrientedBox Moved = Collision::ToOrientedBox(Unit, FVector(10, 0, 0), FQuat());
+		CHECK_VECTOR(Collision::ClosestPointOnBox(FVector(10.5f, 0, 0), Moved), FVector(10.5f, 0, 0));
+		CHECK_VECTOR(Collision::ClosestPointOnBox(FVector(13, 0.5f, 0), Moved), FVector(11, 0.5f, 0));
+		CHECK_VECTOR(Collision::ClosestPointOnBox(FVector(13, 3, 0), Moved), FVector(11, 1, 0));
+
+		// Yaw 45° 박스의 꼭짓점
+		const Collision::FOrientedBox Rotated = Collision::ToOrientedBox(Unit, FVector(0, 0, 0), MakeRotation(0.0f, 45.0f, 0.0f));
+		CHECK_VECTOR(Collision::ClosestPointOnBox(FVector(3, 0, 0), Rotated), FVector(std::sqrt(2.0f), 0, 0));
+	}
+
+	void TestCapsuleBoxOverlap()
+	{
+		const FCollisionShape Unit = FCollisionShape::MakeBox(FVector(1.0f, 1.0f, 1.0f));
+		const FCollisionShape Sphere = FCollisionShape::MakeSphere(0.5f);
+		const FQuat Identity;
+		const FQuat Lying = MakeRotation(90.0f, 0.0f, 0.0f);
+		const FVector Origin(0, 0, 0);
+
+		// 면
+		CHECK_TRUE(Collision::Overlap(Sphere, FVector(1.5f, 0, 0), Identity, Unit, Origin, Identity));
+		CHECK_TRUE(!Collision::Overlap(Sphere, FVector(1.51f, 0, 0), Identity, Unit, Origin, Identity));
+
+		// 모서리 대각선: AABB로는 둘 다 겹친다
+		CHECK_TRUE(Collision::Overlap(Sphere, FVector(1.3f, 1.3f, 0), Identity, Unit, Origin, Identity));
+		CHECK_TRUE(!Collision::Overlap(Sphere, FVector(1.4f, 1.4f, 0), Identity, Unit, Origin, Identity));
+
+		// 안쪽, 순서 바꿈
+		CHECK_TRUE(Collision::Overlap(Sphere, FVector(0.2f, 0.1f, 0), Identity, Unit, Origin, Identity));
+		CHECK_TRUE(Collision::Overlap(Unit, Origin, Identity, Sphere, FVector(1.3f, 1.3f, 0), Identity));
+		CHECK_TRUE(!Collision::Overlap(Unit, Origin, Identity, Sphere, FVector(1.4f, 1.4f, 0), Identity));
+
+		// 관통하는 긴 캡슐
+		CHECK_TRUE(Collision::Overlap(FCollisionShape::MakeCapsule(0.2f, 3.0f), Origin, Lying, Unit, Origin, Identity));
+
+		// 눕힌 캡슐이 윗면 위
+		const FCollisionShape Long = FCollisionShape::MakeCapsule(0.5f, 2.0f);
+		CHECK_TRUE(Collision::Overlap(Long, FVector(0, 0, 1.4f), Lying, Unit, Origin, Identity));
+		CHECK_TRUE(!Collision::Overlap(Long, FVector(0, 0, 1.6f), Lying, Unit, Origin, Identity));
+
+		// 세운 캡슐이 세로 모서리 옆: 선분 중간이 가장 가깝다
+		const FCollisionShape Upright = FCollisionShape::MakeCapsule(0.5f, 1.0f);
+		CHECK_TRUE(Collision::Overlap(Upright, FVector(1.3f, 1.3f, 0), Identity, Unit, Origin, Identity));
+		CHECK_TRUE(!Collision::Overlap(Upright, FVector(1.4f, 1.4f, 0), Identity, Unit, Origin, Identity));
+
+		// 양 끝점은 멀고 선분 중간이 모서리에 가깝다 (최단 거리 0.793)
+		const Collision::FOrientedBox Box = Collision::ToOrientedBox(Unit, Origin, Identity);
+		CHECK_TRUE(Collision::OverlapCapsuleBox({ FVector(-2, 2.2f, 0), FVector(4, 1.4f, 0), 0.80f }, Box, nullptr));
+		CHECK_TRUE(!Collision::OverlapCapsuleBox({ FVector(-2, 2.2f, 0), FVector(4, 1.4f, 0), 0.78f }, Box, nullptr));
+
+		// 면과 거의 평행한 선분 (최단 거리 0.908)
+		CHECK_TRUE(Collision::OverlapCapsuleBox({ FVector(-4, 3, 0), FVector(3, 1.5f, 0), 0.92f }, Box, nullptr));
+		CHECK_TRUE(!Collision::OverlapCapsuleBox({ FVector(-4, 3, 0), FVector(3, 1.5f, 0), 0.90f }, Box, nullptr));
+	}
 }
 
 int32 Collision::RunSelfTests()
@@ -268,6 +326,8 @@ int32 Collision::RunSelfTests()
 	TestSegmentClosestPoints();
 	TestCapsuleOverlap();
 	TestBoxOverlap();
+	TestClosestPointOnBox();
+	TestCapsuleBoxOverlap();
 
 	if (NumFailed == 0)
 	{
