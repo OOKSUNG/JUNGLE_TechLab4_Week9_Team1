@@ -40,18 +40,18 @@ public:
 
 	const char* Items[13] ={
 		"Actor",
-		"StaticMesh",
-		"Particle",
-		"Text",
-		"SkyLight",
+		"Box",
+		"Capsule",
 		"DirectionalLight",
+		"ExponentialHeightFog",
+		"Particle",
 		"PointLight",
 		"RectLight",
-		"SpotLight",
-		"ExponentialHeightFog",
-		"Box",
+		"SkyLight",
 		"Sphere",
-		"Capsule"};
+		"SpotLight",
+		"StaticMesh",
+		"Text"};
 
 	FGizmo* Gizmo = nullptr;
 	int32 GizmoSelectedIndex = 0;
@@ -63,18 +63,18 @@ public:
 	TArray<UClass*> Classes
 	{
 		AActor::StaticClass(),
-		AStaticMeshActor::StaticClass(),  
-		AParticleActor::StaticClass(),
-		ATextRenderActor::StaticClass(),
-		ASkyLightActor::StaticClass(),
+		ABoxActor::StaticClass(),
+		ACapsuleActor::StaticClass(),
 		ADirectionalLightActor::StaticClass(),
+		AExponentialHeightFogActor::StaticClass(),
+		AParticleActor::StaticClass(),
 		APointLightActor::StaticClass(),
 		ARectLightActor::StaticClass(),
-		ASpotLightActor::StaticClass(),
-		AExponentialHeightFogActor::StaticClass(),
-		ABoxActor::StaticClass(),
+		ASkyLightActor::StaticClass(),
 		ASphereActor::StaticClass(),
-		ACapsuleActor::StaticClass()
+		ASpotLightActor::StaticClass(),
+		AStaticMeshActor::StaticClass(),
+		ATextRenderActor::StaticClass()
 	};
 
     void SetViewportAdapter(FMultipleViewportsAdapter* InAdapter) { ViewportAdapter = InAdapter; }

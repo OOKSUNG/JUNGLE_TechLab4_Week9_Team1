@@ -27,23 +27,23 @@ namespace
 
 UShapeComponent::UShapeComponent()
 {
-	DelegateWhenBeginOverlap.Add([]() { HTR_LOG(Info, "BeginOverlap"); });
-	DelegateWhenEndOverlap.Add([]() { HTR_LOG(Info, "EndOverlap"); });
+	OnComponentBeginOverlap.Add([](UPrimitiveComponent*, AActor*, UPrimitiveComponent*) { HTR_LOG(Info, "BeginOverlap"); });
+	OnComponentEndOverlap.Add([](UPrimitiveComponent*, AActor*, UPrimitiveComponent*) { HTR_LOG(Info, "EndOverlap"); });
 }
 
-void UShapeComponent::OnBeginOverlap()
+void UShapeComponent::OnBeginOverlap(UShapeComponent* Other)
 {
-	DelegateWhenBeginOverlap.Broadcast();
+	OnComponentBeginOverlap.Broadcast(this, Other ? Other->GetOwner() : nullptr, Other);
 }
 
-void UShapeComponent::OnEndOverlap()
+void UShapeComponent::OnEndOverlap(UShapeComponent* Other)
 {
-	DelegateWhenEndOverlap.Broadcast();
+	OnComponentEndOverlap.Broadcast(this, Other ? Other->GetOwner() : nullptr, Other);
 }
 
-void UShapeComponent::OnHit()
+void UShapeComponent::OnHit(AActor* OtherActor, UPrimitiveComponent* OtherComp, const FHitResult& Hit)
 {
-	
+	OnComponentHit.Broadcast(this, OtherActor, OtherComp, Hit);
 }
 
 bool UShapeComponent::ShouldCreateRenderState() const

@@ -5,4 +5,5 @@ ABoxActor::ABoxActor()
 {
 	BoxComponent = CreateDefaultSubobject<UBoxComponent>("CollisionComponent");
 	SetRootComponent(BoxComponent);
+	BoxComponent->SetBlockComponent(true);
 }
