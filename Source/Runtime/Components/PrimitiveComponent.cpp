@@ -178,8 +178,19 @@ bool UPrimitiveComponent::MoveComponent(const FVector& Delta, const FRotator& Ne
 	Hit->HitComponent = HitComponent;
 	Hit->HitActor = HitComponent->GetOwner();
 
+	const uint32 ShapeUUID = Shape->GetUUID();
+	const uint32 HitComponentUUID = HitComponent->GetUUID();
+	// 첫 콜백에서 이동 컴포넌트/Actor가 삭제될 수 있으므로 필요한 값을 먼저 복사한다.
+	FHitResult ReversedHit = FHitResult::GetReversedHit(*Hit, this, GetOwner());
 	Shape->OnHit(Hit->HitActor, HitComponent, *Hit);
-	HitComponent->OnHit(GetOwner(), this, FHitResult::GetReversedHit(*Hit, this, GetOwner()));
+	Shape = World->FindShapeByUUID(ShapeUUID);
+	HitComponent = World->FindShapeByUUID(HitComponentUUID);
+	if (HitComponent)
+	{
+		ReversedHit.HitComponent = Shape;
+		ReversedHit.HitActor = Shape ? Shape->GetOwner() : nullptr;
+		HitComponent->OnHit(ReversedHit.HitActor, Shape, ReversedHit);
+	}
 
 	return Sweep.Time > 0.0f;
 }

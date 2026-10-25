@@ -4,6 +4,13 @@
 
 #include "Engine/Engine.h"
 #include "Scripting/LuaVM.h"
+#include "Components/ShapeComponent.h"
+#include "GameFramework/Actor.h"
+
+UScriptComponent::~UScriptComponent()
+{
+    UnbindCollisionEvents();
+}
 
 void UScriptComponent::InitializeComponent()
 {
@@ -25,6 +32,8 @@ void UScriptComponent::BeginPlay()
 	Super::BeginPlay();
 
     LoadScript();
+    // 함수 객체 대신 this를 통해 현재 Lua 함수를 조회하므로 Hot Reload에도 유지된다.
+    BindCollisionEvents();
 
     std::error_code ErrorCode;
 
@@ -72,12 +81,16 @@ void UScriptComponent::TickComponent(float DeltaTime)
 
 void UScriptComponent::EndPlay()
 {
+    UnbindCollisionEvents();
+    Super::EndPlay();
+
     if (!EndPlayFunction.valid())
     {
         return;
     }
 
-    sol::protected_function_result Result = EndPlayFunction();
+    sol::protected_function Function = EndPlayFunction;
+    sol::protected_function_result Result = Function();
 
     if (!Result.valid())
     {
@@ -93,13 +106,106 @@ void UScriptComponent::OnOverlap(AActor* OtherActor)
         return;
     }
 
-    sol::protected_function_result Result = OverlapFunction(OtherActor);
+    // Lua에서 DestroySelf()를 호출해도 실행 중인 함수 참조는 살아 있어야 한다.
+    sol::protected_function Function = OverlapFunction;
+    sol::protected_function_result Result = Function(OtherActor);
 
     if (!Result.valid())
     {
         sol::error Error = Result;
         HTR_LOG(Error, "[Lua] {}", Error.what());
     }
+}
+
+void UScriptComponent::OnEndOverlap(AActor* OtherActor)
+{
+    if (!EndOverlapFunction.valid())
+        return;
+
+    sol::protected_function Function = EndOverlapFunction;
+    sol::protected_function_result Result = Function(OtherActor);
+    if (!Result.valid())
+    {
+        sol::error Error = Result;
+        HTR_LOG(Error, "[Lua] OnEndOverlap: {}", Error.what());
+    }
+}
+
+void UScriptComponent::OnHit(AActor* OtherActor, const FHitResult& Hit)
+{
+    if (!HitFunction.valid())
+        return;
+
+    sol::protected_function Function = HitFunction;
+    // Sweep의 임시 HitResult를 Lua에 참조로 남기지 않는다.
+    sol::protected_function_result Result = Function(OtherActor, FHitResult(Hit));
+    if (!Result.valid())
+    {
+        sol::error Error = Result;
+        HTR_LOG(Error, "[Lua] OnHit: {}", Error.what());
+    }
+}
+
+void UScriptComponent::BindCollisionEvents()
+{
+    UnbindCollisionEvents();
+    AActor* Owner = GetOwner();
+    if (!Owner)
+        return;
+
+    CollisionCallbackLifetime = MakeShared<bool>(true);
+    TWeakPtr<bool> Lifetime = CollisionCallbackLifetime;
+    for (UActorComponent* Component : Owner->GetComponents())
+    {
+        UShapeComponent* Shape = Cast<UShapeComponent>(Component);
+        if (!Shape)
+            continue;
+
+        FCollisionBinding Binding{};
+        Binding.ShapeUUID = Shape->GetUUID();
+        Binding.BeginOverlapHandle = Shape->OnComponentBeginOverlap.Add(
+            [this, Lifetime](UPrimitiveComponent*, AActor* OtherActor, UPrimitiveComponent*)
+            {
+                if (!Lifetime.expired())
+                    OnOverlap(OtherActor);
+            });
+        Binding.EndOverlapHandle = Shape->OnComponentEndOverlap.Add(
+            [this, Lifetime](UPrimitiveComponent*, AActor* OtherActor, UPrimitiveComponent*)
+            {
+                if (!Lifetime.expired())
+                    OnEndOverlap(OtherActor);
+            });
+        Binding.HitHandle = Shape->OnComponentHit.Add(
+            [this, Lifetime](UPrimitiveComponent*, AActor* OtherActor, UPrimitiveComponent*, const FHitResult& Hit)
+            {
+                if (!Lifetime.expired())
+                    OnHit(OtherActor, Hit);
+            });
+        CollisionBindings.Add(Binding);
+    }
+}
+
+void UScriptComponent::UnbindCollisionEvents()
+{
+    CollisionCallbackLifetime.reset();
+    for (const FCollisionBinding& Binding : CollisionBindings)
+    {
+        // Shape가 먼저 삭제되었거나 Actor의 소멸자가 Components를 비운 경우도 처리한다.
+        for (UObject* Object : GUObjectArray)
+        {
+            if (Object->GetUUID() != Binding.ShapeUUID)
+                continue;
+
+            if (UShapeComponent* Shape = Cast<UShapeComponent>(Object))
+            {
+                Shape->OnComponentBeginOverlap.RemoveHandler(Binding.BeginOverlapHandle);
+                Shape->OnComponentEndOverlap.RemoveHandler(Binding.EndOverlapHandle);
+                Shape->OnComponentHit.RemoveHandler(Binding.HitHandle);
+            }
+            break;
+        }
+    }
+    CollisionBindings.Reset();
 }
 
 bool UScriptComponent::CreateScriptFromTemplate(const FString& SceneName, const FString& ActorName)
@@ -182,6 +288,8 @@ bool UScriptComponent::LoadScript()
     TickFunction = Environment["Tick"];
     EndPlayFunction = Environment["EndPlay"];
     OverlapFunction = Environment["OnOverlap"];
+    EndOverlapFunction = Environment["OnEndOverlap"];
+    HitFunction = Environment["OnHit"];
 
     return true;
 }
@@ -288,6 +396,8 @@ bool UScriptComponent::ReloadScript()
 	TickFunction = Environment["Tick"];
 	EndPlayFunction = Environment["EndPlay"];
 	OverlapFunction = Environment["OnOverlap"];
+	EndOverlapFunction = Environment["OnEndOverlap"];
+	HitFunction = Environment["OnHit"];
     
     sol::protected_function ReloadFunction = Environment["OnReload"];
 

@@ -1165,9 +1165,13 @@ void UWorld::GatherOverlap()
 	{
 		if (LastFrameOverlapInfo.Find(OverlapInfo[i]) == -1)
 		{
-			UShapeComponent* First = FindShapeByUUID(OverlapInfo[i].OverlapFirst);
-			UShapeComponent* Second = FindShapeByUUID(OverlapInfo[i].OverlapSecond);
+			const FOverlapInfo Pair = OverlapInfo[i];
+			UShapeComponent* First = FindShapeByUUID(Pair.OverlapFirst);
+			UShapeComponent* Second = FindShapeByUUID(Pair.OverlapSecond);
 			if (First) First->OnBeginOverlap(Second);
+			// 첫 Lua 콜백에서 어느 쪽 Actor든 삭제할 수 있다.
+			First = FindShapeByUUID(Pair.OverlapFirst);
+			Second = FindShapeByUUID(Pair.OverlapSecond);
 			if (Second) Second->OnBeginOverlap(First);
 		}
 	}
@@ -1176,9 +1180,12 @@ void UWorld::GatherOverlap()
 	{
 		if (OverlapInfo.Find(LastFrameOverlapInfo[i]) == -1)
 		{
-			UShapeComponent* First = FindShapeByUUID(LastFrameOverlapInfo[i].OverlapFirst);
-			UShapeComponent* Second = FindShapeByUUID(LastFrameOverlapInfo[i].OverlapSecond);
+			const FOverlapInfo Pair = LastFrameOverlapInfo[i];
+			UShapeComponent* First = FindShapeByUUID(Pair.OverlapFirst);
+			UShapeComponent* Second = FindShapeByUUID(Pair.OverlapSecond);
 			if (First) First->OnEndOverlap(Second);
+			First = FindShapeByUUID(Pair.OverlapFirst);
+			Second = FindShapeByUUID(Pair.OverlapSecond);
 			if (Second) Second->OnEndOverlap(First);
 		}
 	}
