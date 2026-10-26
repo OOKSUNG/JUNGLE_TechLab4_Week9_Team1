@@ -29,7 +29,7 @@ public:
 	void OnEndOverlap(AActor* OtherActor);
 	void OnHit(AActor* OtherActor, const FHitResult& Hit);
 
-	bool CreateScriptFromTemplate(const FString& SceneName, const FString& ActorName);
+	bool CreateScriptFromTemplate(const std::filesystem::path& NewScriptPath);
 	bool LoadScript();
 	bool EnsureScriptFile();
 	bool SetScriptPath(const FString& NewFileName);

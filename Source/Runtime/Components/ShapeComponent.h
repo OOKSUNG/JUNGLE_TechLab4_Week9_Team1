@@ -33,6 +33,7 @@ public:
 	bool IsOverlapping(const UShapeComponent& Other) const;
 	bool ComputeContact(const UShapeComponent& Other, FCollisionContact& OutContact) const;
 	bool ShouldDrawOnlyIfSelected() const;
+	void SetDrawOnlyIfSelected(bool bInDrawOnlyIfSelected) { bDrawOnlyIfSelected = bInDrawOnlyIfSelected; }
 	float GetShapeScale() const;
 
 protected:

@@ -15,6 +15,7 @@
 #include "Components/RectLightComponent.h"
 #include "Components/SkyLightComponent.h"
 #include "Components/ScriptComponent.h"
+#include "Editor/MapTools/MapWallGenerator.h"
 
 #include "Components/RotatingMovementComponent.h"
 #include "Components/ProjectileMovementComponent.h"
@@ -357,7 +358,7 @@ namespace
 		}
 		else
 		{
-			ImGui::TextDisabled("Script file is not created yet.");
+			ImGui::TextDisabled("No script assigned.");
 		}
 
 		// Enter를 눌렀을 때만 true
@@ -432,6 +433,34 @@ namespace
 		}
 	}
 
+
+	void DrawMapActorActions(UScriptComponent& ScriptComponent)
+	{
+		AActor* Owner = ScriptComponent.GetOwner();
+		if (!Owner || !FMapWallGenerator::IsMapActorScript(ScriptComponent))
+		{
+			return;
+		}
+
+		static FString LastMessage;
+
+		ImGui::SeparatorText("Map");
+
+		UWorld* OwnerWorld = Owner->GetWorld();
+		const bool bEditorWorld = OwnerWorld && OwnerWorld->GetWorldType() == EWorldType::Editor;
+
+		ImGui::BeginDisabled(!bEditorWorld);
+		if (ImGui::Button("Generate Map Walls", ImVec2(-FLT_MIN, 0.0f)))
+		{
+			LastMessage = FMapWallGenerator::Generate(*Owner).Message;
+		}
+		ImGui::EndDisabled();
+
+		if (!LastMessage.empty())
+		{
+			ImGui::TextWrapped("%s", LastMessage.c_str());
+		}
+	}
 
 	UMaterial* EnsureMaterialOverride(UMeshComponent* MeshComponent, int32 Slot, UMaterial* Effective, UMaterial* Override)
 	{
@@ -1246,6 +1275,7 @@ void FDetailsPanel::OnRender()
 			if (UScriptComponent* ScriptComponent = Cast<UScriptComponent>(TargetComponent))
 			{
 				DrawScriptComponentActions(*ScriptComponent);
+				DrawMapActorActions(*ScriptComponent);
 			}
 
 			// Light Component를 선택했을 때 기존 Property 아래에 Depth Map을 표시한다.

@@ -8,6 +8,38 @@
 #include "Components/ShapeComponent.h"
 #include "GameFramework/Actor.h"
 
+#include <algorithm>
+#include <cctype>
+
+namespace
+{
+    constexpr const char* ScriptRoot = "Assets/Scripts";
+
+    FString ToLower(FString Text)
+    {
+        std::transform(Text.begin(), Text.end(), Text.begin(),
+            [](unsigned char Character) { return static_cast<char>(std::tolower(Character)); });
+        return Text;
+    }
+
+    TArray<std::filesystem::path> FindScriptsByFileName(const std::filesystem::path& FileName)
+    {
+        TArray<std::filesystem::path> Matches;
+        const FString Target = ToLower(FileName.string());
+
+        std::error_code ErrorCode;
+        for (std::filesystem::recursive_directory_iterator It(ScriptRoot, ErrorCode), End; !ErrorCode && It != End; It.increment(ErrorCode))
+        {
+            if (It->is_regular_file() && ToLower(It->path().filename().string()) == Target)
+            {
+                Matches.Add(It->path().lexically_normal());
+            }
+        }
+
+        return Matches;
+    }
+}
+
 UScriptComponent::~UScriptComponent()
 {
     UnbindCollisionEvents();
@@ -27,17 +59,19 @@ void UScriptComponent::InitializeComponent()
     LuaVM = GEngine->GetLuaVM();
     State = LuaVM->GetState();
 
-    if (!EnsureScriptFile()) 
-    {
-		return;
-    }
-
     PrimaryComponentTick.bCanEverTick = true;
 }
 
 void UScriptComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+    if (ScriptPath.empty())
+    {
+        AActor* Owner = GetOwner();
+        HTR_LOG(Warning, "[Lua] No script assigned to {}", Owner ? Owner->GetName() : FString("<no owner>"));
+        return;
+    }
 
     LoadScript();
     // 함수 객체 대신 this를 통해 현재 Lua 함수를 조회하므로 Hot Reload에도 유지된다.
@@ -216,11 +250,9 @@ void UScriptComponent::UnbindCollisionEvents()
     CollisionBindings.Reset();
 }
 
-bool UScriptComponent::CreateScriptFromTemplate(const FString& SceneName, const FString& ActorName)
+bool UScriptComponent::CreateScriptFromTemplate(const std::filesystem::path& NewScriptPath)
 {
-    const std::filesystem::path TemplatePath = "Assets/Scripts/template.lua";
-    const std::filesystem::path NewScriptPath = std::filesystem::path("Assets/Scripts") / 
-        std::format("{}_{}.lua", SceneName, ActorName);
+    const std::filesystem::path TemplatePath = std::filesystem::path(ScriptRoot) / "Template.lua";
 
     if (!std::filesystem::exists(TemplatePath))
     {
@@ -251,6 +283,8 @@ bool UScriptComponent::CreateScriptFromTemplate(const FString& SceneName, const 
 
             return false;
         }
+
+        HTR_LOG(Info, "[Lua] Created script from template: {}", NewScriptPath.generic_string());
     }
 
     ScriptPath = NewScriptPath.generic_string();
@@ -452,19 +486,11 @@ bool UScriptComponent::ReloadScript()
 
 bool UScriptComponent::EnsureScriptFile()
 {
-	// 씬에서 역직렬화된 경로가 있으면 그것을 사용
 	if (!ScriptPath.empty())
 	{
-		if (std::filesystem::exists(ScriptPath))
-		{
-			return true;
-		}
-
-		HTR_LOG(Error, "[Lua] Script file not found: {}", ScriptPath);
-		return false;
+		return std::filesystem::exists(ScriptPath) || CreateScriptFromTemplate(ScriptPath);
 	}
 
-	// 처음 추가한 컴포넌트만 기본 이름으로 생성
 	AActor* Owner = GetOwner();
 	if (!Owner || !Owner->GetWorld())
 	{
@@ -472,8 +498,8 @@ bool UScriptComponent::EnsureScriptFile()
 	}
 
 	return CreateScriptFromTemplate(
-	    Owner->GetWorld()->GetSceneName(),
-	    Owner->GetName());
+	    std::filesystem::path(ScriptRoot) /
+	    std::format("{}_{}.lua", Owner->GetWorld()->GetSceneName(), Owner->GetName()));
 }
 
 bool UScriptComponent::SetScriptPath(
@@ -485,43 +511,57 @@ bool UScriptComponent::SetScriptPath(
 		return false;
 	}
 
-	std::filesystem::path NewPath = NewFileName;
-
-	// 파일명만 입력했다면 Assets/Scripts 아래로 해석
-	if (!NewPath.has_parent_path())
+	std::filesystem::path RequestedPath = NewFileName;
+	if (RequestedPath.extension() != ".lua")
 	{
-		NewPath =
-		    std::filesystem::path("Assets/Scripts") / NewPath;
+		RequestedPath.replace_extension(".lua");
 	}
+	RequestedPath = RequestedPath.lexically_normal();
 
-	if (NewPath.extension() != ".lua")
+	std::filesystem::path NewPath;
+
+	if (!RequestedPath.has_parent_path())
 	{
-		NewPath.replace_extension(".lua");
+		const TArray<std::filesystem::path> Matches = FindScriptsByFileName(RequestedPath.filename());
+
+		if (Matches.Num() > 1)
+		{
+			FString Candidates;
+			for (const std::filesystem::path& Match : Matches)
+			{
+				Candidates += "\n  " + Match.generic_string();
+			}
+			HTR_LOG(Error, "[Lua] '{}' matches several scripts, enter the full path:{}", NewFileName, Candidates);
+			return false;
+		}
+
+		NewPath = Matches.Num() == 1 ? Matches[0] : std::filesystem::path(ScriptRoot) / RequestedPath;
+	}
+	else if (std::filesystem::exists(RequestedPath))
+	{
+		NewPath = RequestedPath;
+	}
+	else if (std::filesystem::exists(std::filesystem::path(ScriptRoot) / RequestedPath))
+	{
+		NewPath = std::filesystem::path(ScriptRoot) / RequestedPath;
+	}
+	else
+	{
+		NewPath = *RequestedPath.begin() == "Assets" ? RequestedPath : std::filesystem::path(ScriptRoot) / RequestedPath;
 	}
 
 	NewPath = NewPath.lexically_normal();
 
-	// 이미 있는 파일이면 파일을 건드리지 않고 그 스크립트에 연결한다.
 	if (!std::filesystem::exists(NewPath))
 	{
-		// 없는 이름이면 현재 컴포넌트에 자동 생성된 파일의 이름을 바꾼다.
-		if (ScriptPath.empty() || !std::filesystem::exists(ScriptPath))
+		if (!std::filesystem::is_directory(NewPath.parent_path()))
 		{
-			HTR_LOG(Error, "[Lua] Current script file not found: {}", ScriptPath);
+			HTR_LOG(Error, "[Lua] Folder does not exist: {}", NewPath.parent_path().generic_string());
 			return false;
 		}
 
-		std::error_code RenameError;
-		std::filesystem::rename(ScriptPath, NewPath, RenameError);
-
-		if (RenameError)
+		if (!CreateScriptFromTemplate(NewPath))
 		{
-			HTR_LOG(
-			    Error,
-			    "[Lua] Failed to rename script '{}' to '{}': {}",
-			    ScriptPath,
-			    NewPath.string(),
-			    RenameError.message());
 			return false;
 		}
 	}
