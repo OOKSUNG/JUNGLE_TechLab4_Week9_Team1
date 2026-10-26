@@ -1,4 +1,5 @@
 local Flashlight = require("Flashlight")
+local GameManager = require("GameManager")
 
 local TOGGLE_KEY = Key.F
 local DEBUG_SMALL_BATTERY_KEY = Key.Num1
@@ -10,6 +11,10 @@ function BeginPlay()
 end
 
 function Tick(dt)
+    if not GameManager.IsPlaying() then
+        return
+    end
+
     if IsKeyPressed(TOGGLE_KEY) then
         Flashlight.RequestToggle()
     end

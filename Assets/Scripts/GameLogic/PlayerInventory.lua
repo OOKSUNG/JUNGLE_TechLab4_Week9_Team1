@@ -40,6 +40,10 @@ function BeginPlay()
 end
 
 function Tick(dt)
+    if not GameManager.IsPlaying() then
+        return
+    end
+
     if IsKeyPressed(PICKUP_KEY) then
         TryPickup()
     end

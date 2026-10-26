@@ -53,6 +53,10 @@ function BeginPlay()
 end
 
 function Tick(dt)
+    if not GameManager.IsPlaying() then
+        return
+    end
+
     if IsKeyPressed(DEBUG_KEY) then
         LogPlayerCell()
     end

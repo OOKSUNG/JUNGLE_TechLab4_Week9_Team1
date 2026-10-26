@@ -94,13 +94,16 @@ local function DrawResult()
     local title = phase == GameManager.EPhase.GameOver and "게임 오버" or ("탈출 성공 - 루트 " .. tostring(result.Route))
     AddUIText(title, LARGE, V(0.5, 0.5), V(0.5, 1), V(0, -20))
     AddUIText(string.format("시간 %.1f초   사용한 배터리 %d개", result.ElapsedTime, result.BatteriesUsed), MEDIUM, V(0.5, 0.5), V(0.5, 0), V(0, 20))
+    AddUIText("[R] 재시작", MEDIUM, V(0.5, 0.5), V(0.5, 0), V(0, 80))
 end
 
 function Tick(dt)
-    DrawTime()
-    DrawBattery()
-    DrawStamina()
-    DrawPickupPrompt()
-    DrawInventory()
+    if GameManager.IsPlaying() then
+        DrawTime()
+        DrawBattery()
+        DrawStamina()
+        DrawPickupPrompt()
+        DrawInventory()
+    end
     DrawResult()
 end

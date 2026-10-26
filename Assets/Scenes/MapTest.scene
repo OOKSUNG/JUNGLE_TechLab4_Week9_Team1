@@ -199,7 +199,7 @@
                                 "bBlockComponent": true,
                                 "bCastShadow": true,
                                 "bDrawOnlyIfSelected": false,
-                                "bGenerateOverlapEvents": false,
+                                "bGenerateOverlapEvents": true,
                                 "bReceiveShadow": true,
                                 "bVisible": true
                             }
@@ -804,6 +804,39 @@
                                 "bGenerateOverlapEvents": false,
                                 "bReceiveShadow": true,
                                 "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "EnemyOverlap",
+                            "Parent": "DefaultSceneRoot",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 0.4,
+                                    "Y": 0.4,
+                                    "Z": 0.9
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.0,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": true
                             }
                         },
                         {
