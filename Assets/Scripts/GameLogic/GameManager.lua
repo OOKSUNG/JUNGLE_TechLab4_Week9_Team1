@@ -19,6 +19,7 @@ end
 local function ClearReferences()
     GameManager.Player = nil
     GameManager.Enemies = {}
+    GameManager.Items = {}
     GameManager.Map = nil
 end
 
@@ -92,6 +93,46 @@ end
 
 function GameManager.GetEnemies()
     return GameManager.Enemies
+end
+
+function GameManager.RegisterItem(actor, itemId)
+    for _, entry in ipairs(GameManager.Items) do
+        if entry.Actor == actor then
+            entry.ItemId = itemId
+            return
+        end
+    end
+    table.insert(GameManager.Items, { Actor = actor, ItemId = itemId })
+end
+
+function GameManager.UnregisterItem(actor)
+    for index, entry in ipairs(GameManager.Items) do
+        if entry.Actor == actor then
+            table.remove(GameManager.Items, index)
+            return
+        end
+    end
+end
+
+function GameManager.GetItems()
+    return GameManager.Items
+end
+
+function GameManager.FindNearestItem(location, radius)
+    local nearest = nil
+    local nearestDistanceSquared = nil
+    local radiusSquared = radius * radius
+    for _, entry in ipairs(GameManager.Items) do
+        local itemLocation = entry.Actor:GetActorLocation()
+        local dx = itemLocation.X - location.X
+        local dy = itemLocation.Y - location.Y
+        local distanceSquared = dx * dx + dy * dy
+        if distanceSquared <= radiusSquared and (nearest == nil or distanceSquared < nearestDistanceSquared) then
+            nearest = entry
+            nearestDistanceSquared = distanceSquared
+        end
+    end
+    return nearest
 end
 
 function GameManager.SetMap(map)

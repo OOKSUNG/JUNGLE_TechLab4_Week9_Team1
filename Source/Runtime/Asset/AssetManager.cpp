@@ -30,6 +30,12 @@ namespace
 		return Extension;
 	}
 
+	FString ToUTF8String(const std::filesystem::path& Path)
+	{
+		const std::u8string UTF8Path = Path.generic_u8string();
+		return FString{ UTF8Path.begin(), UTF8Path.end() };
+	}
+
 	UStaticMesh* CreateStaticMesh(const FStaticMeshData* MeshData)
 	{
 		if (!MeshData || !MeshData->Vertices.Num() || !MeshData->Indices.Num())
@@ -158,8 +164,8 @@ void UAssetManager::ScanAssets(const fs::path& AssetRoot, const FAssetLoadProgre
 	const int32 Total = Files.Num();
 	for (int32 i = 0; i < Total; ++i)
 	{
-		FString Key = fs::relative(Files[i], AssetRoot).generic_string();
-		FString Path = Files[i].generic_string();
+		FString Key = ToUTF8String(fs::relative(Files[i], AssetRoot));
+		FString Path = ToUTF8String(Files[i]);
 		AssetPathMap.Add(Key, Path);
 		LoadAsset(Key, Path);
 

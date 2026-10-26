@@ -4,6 +4,15 @@
 #include "Text/Font.h"
 #include "Editor/HitoriEd/EditorDragDrop.h"
 
+namespace
+{
+	std::string ToUTF8String(const fs::path& Path)
+	{
+		const std::u8string UTF8Path = Path.generic_u8string();
+		return std::string{ UTF8Path.begin(), UTF8Path.end() };
+	}
+}
+
 bool FContentDrawerPanel::Init()
 {
 	return false;
@@ -80,8 +89,8 @@ void FContentDrawerPanel::OnRender()
 
 				ImGui::TableNextColumn();
 
-				std::string PathString = Path.generic_string();
-				std::string FilenameString = Path.filename().string();
+				std::string PathString = ToUTF8String(Path);
+				std::string FilenameString = ToUTF8String(Path.filename());
 
 				ImGui::PushID(PathString.c_str()); // 각 위젯에 고유 ID 부여
 				UTexture2D* Thumbnail = nullptr;
@@ -180,7 +189,7 @@ void FContentDrawerPanel::RenderFolderTree(const fs::path& Path, fs::path& Selec
 			continue;
 
 		const FString FilenameString =
-			Entry.filename().string();
+			ToUTF8String(Entry.filename());
 
 		ImGuiTreeNodeFlags Flags =
 			ImGuiTreeNodeFlags_OpenOnArrow |
