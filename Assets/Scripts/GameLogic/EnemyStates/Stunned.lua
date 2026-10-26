@@ -1,4 +1,4 @@
-local Common = require("FSMExampleStates.Common")
+local Common = require("EnemyStates.Common")
 local Stunned = {}
 
 function Stunned.Enter(Context, PreviousState)

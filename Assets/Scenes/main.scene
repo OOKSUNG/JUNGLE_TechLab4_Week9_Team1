@@ -623,7 +623,7 @@
                             "Name": "UScriptComponent",
                             "Parent": "",
                             "Properties": {
-                                "ScriptPath": "Assets/Scripts/FSMExample.lua"
+                                "ScriptPath": "Assets/Scripts/EnemyFSM.lua"
                             }
                         }
                     ],
@@ -705,7 +705,7 @@
                             "Name": "UScriptComponent",
                             "Parent": "",
                             "Properties": {
-                                "ScriptPath": "Assets/Scripts/FSMExample.lua"
+                                "ScriptPath": "Assets/Scripts/EnemyFSM.lua"
                             }
                         }
                     ],
@@ -787,7 +787,7 @@
                             "Name": "UScriptComponent",
                             "Parent": "",
                             "Properties": {
-                                "ScriptPath": "Assets/Scripts/FSMExample.lua"
+                                "ScriptPath": "Assets/Scripts/EnemyFSM.lua"
                             }
                         }
                     ],
@@ -869,7 +869,7 @@
                             "Name": "UScriptComponent",
                             "Parent": "",
                             "Properties": {
-                                "ScriptPath": "Assets/Scripts/FSMExample.lua"
+                                "ScriptPath": "Assets/Scripts/EnemyFSM.lua"
                             }
                         }
                     ],
@@ -951,7 +951,7 @@
                             "Name": "UScriptComponent",
                             "Parent": "",
                             "Properties": {
-                                "ScriptPath": "Assets/Scripts/FSMExample.lua"
+                                "ScriptPath": "Assets/Scripts/EnemyFSM.lua"
                             }
                         }
                     ],
@@ -1033,7 +1033,7 @@
                             "Name": "UScriptComponent",
                             "Parent": "",
                             "Properties": {
-                                "ScriptPath": "Assets/Scripts/FSMExample.lua"
+                                "ScriptPath": "Assets/Scripts/EnemyFSM.lua"
                             }
                         }
                     ],
@@ -1115,7 +1115,7 @@
                             "Name": "UScriptComponent",
                             "Parent": "",
                             "Properties": {
-                                "ScriptPath": "Assets/Scripts/FSMExample.lua"
+                                "ScriptPath": "Assets/Scripts/EnemyFSM.lua"
                             }
                         }
                     ],
@@ -1197,7 +1197,7 @@
                             "Name": "UScriptComponent",
                             "Parent": "",
                             "Properties": {
-                                "ScriptPath": "Assets/Scripts/FSMExample.lua"
+                                "ScriptPath": "Assets/Scripts/EnemyFSM.lua"
                             }
                         }
                     ],
@@ -1279,7 +1279,7 @@
                             "Name": "UScriptComponent",
                             "Parent": "",
                             "Properties": {
-                                "ScriptPath": "Assets/Scripts/FSMExample.lua"
+                                "ScriptPath": "Assets/Scripts/EnemyFSM.lua"
                             }
                         }
                     ],
@@ -1361,7 +1361,7 @@
                             "Name": "UScriptComponent",
                             "Parent": "",
                             "Properties": {
-                                "ScriptPath": "Assets/Scripts/FSMExample.lua"
+                                "ScriptPath": "Assets/Scripts/EnemyFSM.lua"
                             }
                         }
                     ],
@@ -1443,7 +1443,7 @@
                             "Name": "UScriptComponent",
                             "Parent": "",
                             "Properties": {
-                                "ScriptPath": "Assets/Scripts/FSMExample.lua"
+                                "ScriptPath": "Assets/Scripts/EnemyFSM.lua"
                             }
                         }
                     ],
@@ -1525,7 +1525,7 @@
                             "Name": "UScriptComponent",
                             "Parent": "",
                             "Properties": {
-                                "ScriptPath": "Assets/Scripts/FSMExample.lua"
+                                "ScriptPath": "Assets/Scripts/EnemyFSM.lua"
                             }
                         }
                     ],
