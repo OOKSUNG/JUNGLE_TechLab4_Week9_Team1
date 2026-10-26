@@ -8,6 +8,7 @@
 #include "Collision/HitResult.h"
 #include "Audio/AudioSystem.h"
 #include "Engine/Engine.h"
+#include "Input/InputSystem.h"
 
 #include <sol/sol.hpp>
 #include <luajit.h>
@@ -243,6 +244,127 @@ namespace
 				throw std::runtime_error("Failed to initialize Coroutine helpers");
 	}
 
+	void BindInputAPI(sol::state& LuaState)
+	{
+		LuaState.set_function("IsKeyDown", &FInputSystem::IsKeyDown);
+		LuaState.set_function("IsKeyPressed", &FInputSystem::IsKeyPressed);
+		LuaState.set_function("IsKeyReleased", &FInputSystem::IsKeyReleased);
+
+		// IsKeyDown(Key.W) 와 같이 호출
+
+		LuaState.new_enum("Key",
+			"LButton", EKeyCode::LButton,
+			"RButton", EKeyCode::RButton,
+			"MButton", EKeyCode::MButton,
+			"Backspace", EKeyCode::Backspace,
+			"Tab", EKeyCode::Tab,
+			"Clear", EKeyCode::Clear,
+			"Enter", EKeyCode::Enter,
+			"Shift", EKeyCode::Shift,
+			"Control", EKeyCode::Control,
+			"Alt", EKeyCode::Alt,
+			"Pause", EKeyCode::Pause,
+			"CapsLock", EKeyCode::CapsLock,
+			"Escape", EKeyCode::Escape,
+			"Space", EKeyCode::Space,
+			"PageUp", EKeyCode::PageUp,
+			"PageDown", EKeyCode::PageDown,
+			"End", EKeyCode::End,
+			"Home", EKeyCode::Home,
+			"Left", EKeyCode::Left,
+			"Up", EKeyCode::Up,
+			"Right", EKeyCode::Right,
+			"Down", EKeyCode::Down,
+			"PrintScreen", EKeyCode::PrintScreen,
+			"Insert", EKeyCode::Insert,
+			"Delete", EKeyCode::Delete,
+			"Num0", EKeyCode::Num0,
+			"Num1", EKeyCode::Num1,
+			"Num2", EKeyCode::Num2,
+			"Num3", EKeyCode::Num3,
+			"Num4", EKeyCode::Num4,
+			"Num5", EKeyCode::Num5,
+			"Num6", EKeyCode::Num6,
+			"Num7", EKeyCode::Num7,
+			"Num8", EKeyCode::Num8,
+			"Num9", EKeyCode::Num9,
+			"A", EKeyCode::A,
+			"B", EKeyCode::B,
+			"C", EKeyCode::C,
+			"D", EKeyCode::D,
+			"E", EKeyCode::E,
+			"F", EKeyCode::F,
+			"G", EKeyCode::G,
+			"H", EKeyCode::H,
+			"I", EKeyCode::I,
+			"J", EKeyCode::J,
+			"K", EKeyCode::K,
+			"L", EKeyCode::L,
+			"M", EKeyCode::M,
+			"N", EKeyCode::N,
+			"O", EKeyCode::O,
+			"P", EKeyCode::P,
+			"Q", EKeyCode::Q,
+			"R", EKeyCode::R,
+			"S", EKeyCode::S,
+			"T", EKeyCode::T,
+			"U", EKeyCode::U,
+			"V", EKeyCode::V,
+			"W", EKeyCode::W,
+			"X", EKeyCode::X,
+			"Y", EKeyCode::Y,
+			"Z", EKeyCode::Z,
+			"LWin", EKeyCode::LWin,
+			"RWin", EKeyCode::RWin,
+			"NumPad0", EKeyCode::NumPad0,
+			"NumPad1", EKeyCode::NumPad1,
+			"NumPad2", EKeyCode::NumPad2,
+			"NumPad3", EKeyCode::NumPad3,
+			"NumPad4", EKeyCode::NumPad4,
+			"NumPad5", EKeyCode::NumPad5,
+			"NumPad6", EKeyCode::NumPad6,
+			"NumPad7", EKeyCode::NumPad7,
+			"NumPad8", EKeyCode::NumPad8,
+			"NumPad9", EKeyCode::NumPad9,
+			"Multiply", EKeyCode::Multiply,
+			"Add", EKeyCode::Add,
+			"Separator", EKeyCode::Separator,
+			"Subtract", EKeyCode::Subtract,
+			"Decimal", EKeyCode::Decimal,
+			"Divide", EKeyCode::Divide,
+			"F1", EKeyCode::F1,
+			"F2", EKeyCode::F2,
+			"F3", EKeyCode::F3,
+			"F4", EKeyCode::F4,
+			"F5", EKeyCode::F5,
+			"F6", EKeyCode::F6,
+			"F7", EKeyCode::F7,
+			"F8", EKeyCode::F8,
+			"F9", EKeyCode::F9,
+			"F10", EKeyCode::F10,
+			"F11", EKeyCode::F11,
+			"F12", EKeyCode::F12,
+			"NumLock", EKeyCode::NumLock,
+			"ScrollLock", EKeyCode::ScrollLock,
+			"LShift", EKeyCode::LShift,
+			"RShift", EKeyCode::RShift,
+			"LControl", EKeyCode::LControl,
+			"RControl", EKeyCode::RControl,
+			"LAlt", EKeyCode::LAlt,
+			"RAlt", EKeyCode::RAlt,
+			"Semicolon", EKeyCode::Semicolon,
+			"Equals", EKeyCode::Equals,
+			"Comma", EKeyCode::Comma,
+			"Minus", EKeyCode::Minus,
+			"Period", EKeyCode::Period,
+			"Slash", EKeyCode::Slash,
+			"Tilde", EKeyCode::Tilde,
+			"LeftBracket", EKeyCode::LeftBracket,
+			"Backslash", EKeyCode::Backslash,
+			"RightBracket", EKeyCode::RightBracket,
+			"Quote", EKeyCode::Quote);
+	}
+
 
 	void BindActorAPI(sol::state& LuaState)
 	{
@@ -268,6 +390,16 @@ namespace
 				RootComponent->SetWorldLocation(NewLocation, false);
 				return true;
 			},
+		    "Move", [](AActor& Actor, const FVector& Delta, const FRotator& NewRotation)
+		    {
+				USceneComponent* RootComponent = Actor.GetRootComponent();
+				if (!RootComponent)
+				{
+					return false;
+				}
+
+				RootComponent->MoveComponent(Delta, NewRotation, true);
+				return true; },
 			"GetActorRotation", [](const AActor& Actor)
 			{
 				return Actor.GetActorRotation();
@@ -392,6 +524,7 @@ void FLuaVM::BindEngineAPI()
 	BindVectorAPI(*State);
 	BindRotatorAPI(*State);
 	BindCoroutineAPI(*State, FCoroutineScheduler);
+	BindInputAPI(*State);
 	State->new_usertype<FHitResult>(
 		"FHitResult",
 		sol::no_constructor,

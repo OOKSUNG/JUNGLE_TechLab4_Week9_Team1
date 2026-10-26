@@ -4,6 +4,7 @@
 #include "Editor/Gizmo/Gizmo.h"
 
 #include "GameFramework/Actor/ParticleActor.h"
+#include "GameFramework/Actor/PlayerActor.h"
 #include "GameFramework/Actor/StaticMeshActor.h"
 #include "GameFramework/Actor/LightActorBase.h"
 #include "GameFramework/Actor/TextRenderActor.h"
@@ -38,13 +39,14 @@ public:
 
 	int32 SelectedIndex = 0;
 
-	const char* Items[13] ={
+	const char* Items[14] ={
 		"Actor",
 		"Box",
 		"Capsule",
 		"DirectionalLight",
 		"ExponentialHeightFog",
 		"Particle",
+		"Player",
 		"PointLight",
 		"RectLight",
 		"SkyLight",
@@ -68,6 +70,7 @@ public:
 		ADirectionalLightActor::StaticClass(),
 		AExponentialHeightFogActor::StaticClass(),
 		AParticleActor::StaticClass(),
+		APlayerActor::StaticClass(),
 		APointLightActor::StaticClass(),
 		ARectLightActor::StaticClass(),
 		ASkyLightActor::StaticClass(),
