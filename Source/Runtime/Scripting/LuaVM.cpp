@@ -198,6 +198,13 @@ namespace
 					Audio->SetVolume(Handle, Volume);
 				} });
 
+		LuaState.set_function("SetSoundPitch", [](uint32 Handle, float Pitch)
+		                      {
+				if (FAudioSystem* Audio = GetAudio())
+				{
+					Audio->SetPitch(Handle, Pitch);
+				} });
+
 		LuaState.set_function("FadeSound", [](uint32 Handle, float TargetVolume, float Duration)
 		                      {
 				if (FAudioSystem* Audio = GetAudio())

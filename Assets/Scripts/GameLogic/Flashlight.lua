@@ -13,6 +13,8 @@ Flashlight.Config = {
     FlickerMaxDuration = 0.15,
     FlickerMinScale = 0.15,
     FlickerMaxScale = 0.6,
+    ToggleSound = "Assets/Sounds/손전등키는소리.mp3",
+    ToggleSoundVolume = 0.8,
 }
 
 local light = nil
@@ -103,6 +105,9 @@ function Flashlight.RequestToggle()
         return false
     end
     toggleTimer = Flashlight.Config.ToggleDelay
+    if Flashlight.Config.ToggleSound then
+        PlaySound(Flashlight.Config.ToggleSound, false, Flashlight.Config.ToggleSoundVolume)
+    end
     return true
 end
 

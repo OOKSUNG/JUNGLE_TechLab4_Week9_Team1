@@ -30,6 +30,7 @@ public:
 	void StopAll();
 
 	void SetVolume(uint32 Handle, float Volume);
+	void SetPitch(uint32 Handle, float Pitch);
 	void FadeTo(uint32 Handle, float TargetVolume, float Duration);
 	bool IsPlaying(uint32 Handle) const;
 

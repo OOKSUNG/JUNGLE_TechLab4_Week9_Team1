@@ -7,6 +7,8 @@ local NEXT_KEY = Key.Down
 local PREV_KEY = Key.Up
 local USE_KEY = Key.Enter
 local PICKUP_RADIUS = 2.0
+local PICKUP_SOUND = "Assets/Sounds/아이템획득.mp3"
+local PICKUP_VOLUME = 0.8
 
 local function LogSlots()
     local lines = {}
@@ -29,6 +31,7 @@ local function TryPickup()
         local actor = entry.Actor
         GameManager.UnregisterItem(actor)
         actor:Destroy()
+        PlaySound(PICKUP_SOUND, false, PICKUP_VOLUME)
         print("[Inventory] Picked up", entry.ItemId)
     end
 end

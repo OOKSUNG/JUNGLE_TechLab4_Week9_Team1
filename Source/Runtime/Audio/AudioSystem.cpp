@@ -155,6 +155,17 @@ void FAudioSystem::SetVolume(uint32 Handle, float Volume)
 	ma_sound_set_volume(Entry->Sound.get(), std::max(Volume, 0.0f));
 }
 
+void FAudioSystem::SetPitch(uint32 Handle, float Pitch)
+{
+	FSoundEntry* Entry = FindEntry(Handle);
+	if (!Entry)
+	{
+		return;
+	}
+
+	ma_sound_set_pitch(Entry->Sound.get(), std::max(Pitch, 0.01f));
+}
+
 void FAudioSystem::FadeTo(uint32 Handle, float TargetVolume, float Duration)
 {
 	FSoundEntry* Entry = FindEntry(Handle);

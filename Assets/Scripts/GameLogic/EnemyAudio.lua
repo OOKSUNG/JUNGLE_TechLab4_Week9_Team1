@@ -3,17 +3,15 @@ local GameManager = require("GameManager")
 local EnemyAudio = {}
 
 EnemyAudio.Config = {
-    FootstepSound = "Assets/Sounds/발소리.mp3",
-    TensionSound = "Assets/Sounds/공포배경음.mp3",
-    HeartbeatSound = nil,
+    FootstepSound = "Assets/Sounds/괴물발소리.mp3",
+    HeartbeatSound = "Assets/Sounds/심장소리.mp3",
 
     FootstepFullDistance = 3.0,
     FootstepSilentDistance = 25.0,
-    TensionDistance = 10.0,
     HeartbeatDistance = 5.0,
 
     FootstepMaxVolume = 1.0,
-    TensionMaxVolume = 0.7,
+    FootstepPitch = 1.0,
     HeartbeatMaxVolume = 1.0,
 
     VolumeChangePerSecond = 2.0,
@@ -24,7 +22,7 @@ local layers = {}
 local enemyStates = setmetatable({}, { __mode = "k" })
 local nearestDistance = math.huge
 
-local function StartLayer(name, path)
+local function StartLayer(name, path, pitch)
     if not path then
         return
     end
@@ -32,6 +30,9 @@ local function StartLayer(name, path)
     if handle == 0 then
         print("[EnemyAudio] Cannot play", name, path)
         return
+    end
+    if pitch then
+        SetSoundPitch(handle, pitch)
     end
     layers[name] = { Handle = handle, Volume = 0.0 }
 end
@@ -101,8 +102,7 @@ end
 function EnemyAudio.Start()
     EnemyAudio.Stop()
     local config = EnemyAudio.Config
-    StartLayer("Footstep", config.FootstepSound)
-    StartLayer("Tension", config.TensionSound)
+    StartLayer("Footstep", config.FootstepSound, config.FootstepPitch)
     StartLayer("Heartbeat", config.HeartbeatSound)
 end
 
@@ -144,7 +144,6 @@ function EnemyAudio.Tick(dt)
     end
 
     UpdateLayer("Footstep", footstepTarget * config.FootstepMaxVolume, dt)
-    UpdateLayer("Tension", nearestDistance <= config.TensionDistance and config.TensionMaxVolume or 0.0, dt)
     UpdateLayer("Heartbeat", nearestDistance <= config.HeartbeatDistance and config.HeartbeatMaxVolume or 0.0, dt)
 end
 

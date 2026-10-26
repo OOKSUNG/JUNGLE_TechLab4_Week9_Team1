@@ -1,7 +1,13 @@
+local Inventory = require("Inventory")
+local Stamina = require("Stamina")
+
 local MouseSensitivity = 0.2
+local WalkSpeed = 3.0
+local RunSpeed = 5.0
 
 function BeginPlay()
 print("BeginPlay!\n")
+    Stamina.Reset()
 end
 
 function EndPlay()
@@ -48,13 +54,17 @@ function Tick(DeltaTime)
         Direction.Y = Direction.Y - 1
     end
 
-    if Direction:SizeSquared() > 0 then
+    local bMoving = Direction:SizeSquared() > 0
+    local bRunning = Stamina.Tick(DeltaTime, IsKeyDown(Key.Shift), bMoving)
+
+    if bMoving then
+        local Speed = (bRunning and RunSpeed or WalkSpeed) * Inventory.GetSpeedMultiplier()
         local Rotation = self:GetActorRotation()
         local YawRadians = math.rad(Rotation.Yaw)
         local CosYaw = math.cos(YawRadians)
         local SinYaw = math.sin(YawRadians)
         local WorldDirection = FVector.new(Direction.X * CosYaw - Direction.Y * SinYaw, Direction.X * SinYaw + Direction.Y * CosYaw, 0)
-        local Delta = WorldDirection:Normalized() * 2 * DeltaTime
+        local Delta = WorldDirection:Normalized() * Speed * DeltaTime
         self:Move(Delta, Rotation)
     end
 end
