@@ -27,8 +27,7 @@ function Chase.Tick(Context, DeltaTime)
 
     local Map = GameManager.GetMap()
     local LightOn = GameManager.IsLightOn()
-    local PreviousTarget = Data.mChaseTargetLocation
-    local TargetMoved = PreviousTarget == nil or PreviousTarget.X ~= TargetLocation.X or PreviousTarget.Y ~= TargetLocation.Y or PreviousTarget.Z ~= TargetLocation.Z
+    local TargetMoved = EnemyPursuit.HasTargetMoved(Data, Map, TargetLocation)
     Data.mChaseReplanElapsed = Data.mChaseReplanElapsed + DeltaTime
     if Data.mChaseMap ~= Map or (Map ~= nil and (Data.mChaseNavigation == nil or not Data.mChaseNavigation:IsCurrent(Map))) or ((TargetMoved or Data.mChasePath == nil) and Data.mChaseReplanElapsed >= (Data.mChaseReplanInterval or 0.5) and not Data.mChaseTurning) then
         EnemyPursuit.BuildPath(Context, Map, TargetLocation)

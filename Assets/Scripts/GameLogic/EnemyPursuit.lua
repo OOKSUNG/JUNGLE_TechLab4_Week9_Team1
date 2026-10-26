@@ -4,6 +4,17 @@ local EnemyPursuit = {}
 local WaypointTolerance = 0.001
 local AngleTolerance = 0.01
 
+function EnemyPursuit.HasTargetMoved(Data, Map, TargetLocation)
+    local Previous = Data.mChaseTargetLocation
+    if Previous == nil or TargetLocation == nil then
+        return Previous ~= TargetLocation
+    end
+    local Spacing = Map and Map.CellSize * 0.5 or 0.5
+    local Origin = Map and Map.Origin or { X = 0.0, Y = 0.0, Z = 0.0 }
+    local FloorHeight = Map and Map.FloorHeight or 4.0
+    return math.floor((Previous.X - Origin.X) / Spacing + 0.5) ~= math.floor((TargetLocation.X - Origin.X) / Spacing + 0.5) or math.floor((Previous.Y - Origin.Y) / Spacing + 0.5) ~= math.floor((TargetLocation.Y - Origin.Y) / Spacing + 0.5) or math.floor((Previous.Z - Origin.Z) / FloorHeight) ~= math.floor((TargetLocation.Z - Origin.Z) / FloorHeight)
+end
+
 function EnemyPursuit.BuildPath(Context, Map, TargetLocation)
     local Data = Context.mData
     Data.mChaseMap = Map

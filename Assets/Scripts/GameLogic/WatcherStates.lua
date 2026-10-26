@@ -54,8 +54,7 @@ function Stalking.Tick(Context, DeltaTime)
     local Data = Context.mData
     local Map = GameManager.GetMap()
     local Target = GameManager.GetPlayerLocation()
-    local PreviousTarget = Data.mChaseTargetLocation
-    local TargetMoved = Target ~= nil and (PreviousTarget == nil or Target.X ~= PreviousTarget.X or Target.Y ~= PreviousTarget.Y or Target.Z ~= PreviousTarget.Z)
+    local TargetMoved = Target ~= nil and EnemyPursuit.HasTargetMoved(Data, Map, Target)
     Data.mChaseReplanElapsed = Data.mChaseReplanElapsed + DeltaTime
     if Data.mChaseMap ~= Map or (Map ~= nil and (Data.mChaseNavigation == nil or not Data.mChaseNavigation:IsCurrent(Map))) or ((Data.mChasePath == nil or TargetMoved) and Data.mChaseReplanElapsed >= (Data.mChaseReplanInterval or 0.35) and not Data.mChaseTurning) then
         EnemyPursuit.BuildPath(Context, Map, Target)
@@ -66,10 +65,6 @@ function Stalking.Tick(Context, DeltaTime)
 
     local RemainingTime = math.min(DeltaTime, 0.25)
     while RemainingTime > 0.0 and GameManager.IsPlaying() do
-        if IsObserved(Context) then
-            Context.mMachine:RequestState("Observed")
-            return
-        end
         local StepTime = math.min(RemainingTime, 1.0 / 60.0)
         local Finished = EnemyPursuit.Advance(Context, StepTime)
         if Data.mChaseInterrupted or not Context.mMachine:IsRunning() then
