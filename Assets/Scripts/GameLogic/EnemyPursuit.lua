@@ -1,4 +1,5 @@
 local EnemyNavigation = require("EnemyNavigation")
+local Door = require("Door")
 local EnemyPursuit = {}
 
 local WaypointTolerance = 0.001
@@ -59,6 +60,7 @@ function EnemyPursuit.Advance(Context, DeltaTime)
         local TargetYaw = Point.Heading * 90.0
         local Angle = (TargetYaw - Rotation.Yaw + 180.0) % 360.0 - 180.0
         if math.abs(Angle) > AngleTolerance then
+            Door.CancelEnemyWait(Context)
             if RemainingTime <= 0.0 or TurnSpeed <= 0.0 then
                 return false
             end
@@ -90,7 +92,15 @@ function EnemyPursuit.Advance(Context, DeltaTime)
                 local Scale = Step / Distance
                 local Destination = FVector.new(Location.X + DeltaX * Scale, Location.Y + DeltaY * Scale, Location.Z + DeltaZ * Scale)
                 if not Navigation:CanMove(Location, Destination, Point.Floor, Point.Heading) then
+                    Door.CancelEnemyWait(Context)
                     Data.mChasePath = nil
+                    return false
+                end
+                local Fraction, Waiting = Door.AdvanceEnemy(Context, Location, Destination, Navigation.mHalfLength, Navigation.mHalfWidth, TargetYaw, Speed, RemainingTime)
+                if Waiting then
+                    if Fraction > 0.0 then
+                        MoveOwner(Context, FVector.new(DeltaX * Scale * Fraction, DeltaY * Scale * Fraction, DeltaZ * Scale * Fraction), FRotator.new(Rotation.Pitch, TargetYaw, Rotation.Roll))
+                    end
                     return false
                 end
                 if not MoveOwner(Context, FVector.new(DeltaX * Scale, DeltaY * Scale, DeltaZ * Scale), FRotator.new(Rotation.Pitch, TargetYaw, Rotation.Roll)) then
@@ -100,6 +110,7 @@ function EnemyPursuit.Advance(Context, DeltaTime)
                 local NewLocation = Owner:GetActorLocation()
                 local NewDistance = math.sqrt((Target.X - NewLocation.X) ^ 2 + (Target.Y - NewLocation.Y) ^ 2 + (Target.Z + Data.mChaseHeightOffset - NewLocation.Z) ^ 2)
                 if Distance - NewDistance < Step - WaypointTolerance then
+                    Door.CancelEnemyWait(Context)
                     Data.mChasePath = nil
                     return false
                 end
@@ -108,6 +119,7 @@ function EnemyPursuit.Advance(Context, DeltaTime)
         end
     end
 
+    Door.CancelEnemyWait(Context)
     return true
 end
 

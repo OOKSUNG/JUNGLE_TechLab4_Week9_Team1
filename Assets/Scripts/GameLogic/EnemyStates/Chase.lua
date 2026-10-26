@@ -1,6 +1,7 @@
 local Common = require("EnemyStates.Common")
 local GameManager = require("GameManager")
 local EnemyPursuit = require("EnemyPursuit")
+local Door = require("Door")
 local Chase = {}
 
 local function UpdateLastKnownLocation(Data)
@@ -34,6 +35,7 @@ function Chase.Tick(Context, DeltaTime)
         TargetMoved = false
     end
     if Map == nil or Data.mChasePath == nil then
+        Door.CancelEnemyWait(Context)
         if not LightOn then
             Context.mMachine:RequestState("Search")
         end
@@ -55,6 +57,7 @@ function Chase.Tick(Context, DeltaTime)
 end
 
 function Chase.Exit(Context, NextState)
+    Door.CancelEnemyWait(Context)
     Context.mData.mPatrolPath = nil
     Context.mData.mChasePath = nil
 end

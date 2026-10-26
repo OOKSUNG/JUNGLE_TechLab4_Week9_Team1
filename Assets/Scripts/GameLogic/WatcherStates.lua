@@ -1,5 +1,6 @@
 local GameManager = require("GameManager")
 local EnemyPursuit = require("EnemyPursuit")
+local Door = require("Door")
 local Observed = {}
 local Stalking = {}
 local Stunned = {}
@@ -60,6 +61,7 @@ function Stalking.Tick(Context, DeltaTime)
         EnemyPursuit.BuildPath(Context, Map, Target)
     end
     if Map == nil or Data.mChasePath == nil then
+        Door.CancelEnemyWait(Context)
         return
     end
 
@@ -86,6 +88,7 @@ function Stalking.Tick(Context, DeltaTime)
 end
 
 function Stalking.Exit(Context, NextState)
+    Door.CancelEnemyWait(Context)
     Context.mData.mChasePath = nil
 end
 

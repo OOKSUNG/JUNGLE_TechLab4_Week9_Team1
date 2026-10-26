@@ -758,8 +758,8 @@
                             "Properties": {
                                 "Transform": {
                                     "Location": {
-                                        "X": -31.0,
-                                        "Y": 3.0,
+                                        "X": -53.0,
+                                        "Y": 46.0,
                                         "Z": 0.0
                                     },
                                     "Rotation": {
@@ -35652,8 +35652,8 @@
                             "Properties": {
                                 "Transform": {
                                     "Location": {
-                                        "X": -8.0,
-                                        "Y": 31.0,
+                                        "X": -50.0,
+                                        "Y": 14.0,
                                         "Z": 0.0
                                     },
                                     "Rotation": {
@@ -53490,6 +53490,2778 @@
                     ],
                     "Properties": {},
                     "RootComponent": "FacilityProp09_7"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor01",
+                            "Parent": "",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 0.06,
+                                    "Y": 0.92,
+                                    "Z": 1.48
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": -10.5,
+                                        "Y": 20.5,
+                                        "Z": 1.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 90.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "FacilityDoor01Panel",
+                            "Parent": "FacilityDoor01",
+                            "OverrideMaterials": [],
+                            "Properties": {
+                                "StaticMesh": "Models/Facility/SteelDoor.obj",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.0,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UScriptComponent",
+                            "Name": "FacilityDoor01Script",
+                            "Parent": "",
+                            "Properties": {
+                                "ScriptPath": "Assets/Scripts/GameLogic/DoorActor.lua"
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "FacilityDoor01"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor02",
+                            "Parent": "",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 0.06,
+                                    "Y": 0.92,
+                                    "Z": 1.48
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": -35.5,
+                                        "Y": 20.5,
+                                        "Z": 1.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 90.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "FacilityDoor02Panel",
+                            "Parent": "FacilityDoor02",
+                            "OverrideMaterials": [],
+                            "Properties": {
+                                "StaticMesh": "Models/Facility/SteelDoor.obj",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.0,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UScriptComponent",
+                            "Name": "FacilityDoor02Script",
+                            "Parent": "",
+                            "Properties": {
+                                "ScriptPath": "Assets/Scripts/GameLogic/DoorActor.lua"
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "FacilityDoor02"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor03",
+                            "Parent": "",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 0.06,
+                                    "Y": 0.92,
+                                    "Z": 1.48
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": -46.5,
+                                        "Y": 20.5,
+                                        "Z": 1.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 90.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "FacilityDoor03Panel",
+                            "Parent": "FacilityDoor03",
+                            "OverrideMaterials": [],
+                            "Properties": {
+                                "StaticMesh": "Models/Facility/SteelDoor.obj",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.0,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UScriptComponent",
+                            "Name": "FacilityDoor03Script",
+                            "Parent": "",
+                            "Properties": {
+                                "ScriptPath": "Assets/Scripts/GameLogic/DoorActor.lua"
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "FacilityDoor03"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor04",
+                            "Parent": "",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 0.06,
+                                    "Y": 0.92,
+                                    "Z": 1.48
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": -5.5,
+                                        "Y": 40.5,
+                                        "Z": 1.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 90.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "FacilityDoor04Panel",
+                            "Parent": "FacilityDoor04",
+                            "OverrideMaterials": [],
+                            "Properties": {
+                                "StaticMesh": "Models/Facility/SteelDoor.obj",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.0,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UScriptComponent",
+                            "Name": "FacilityDoor04Script",
+                            "Parent": "",
+                            "Properties": {
+                                "ScriptPath": "Assets/Scripts/GameLogic/DoorActor.lua"
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "FacilityDoor04"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor05",
+                            "Parent": "",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 0.06,
+                                    "Y": 0.92,
+                                    "Z": 1.48
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": -30.5,
+                                        "Y": 40.5,
+                                        "Z": 1.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 90.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "FacilityDoor05Panel",
+                            "Parent": "FacilityDoor05",
+                            "OverrideMaterials": [],
+                            "Properties": {
+                                "StaticMesh": "Models/Facility/SteelDoor.obj",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.0,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UScriptComponent",
+                            "Name": "FacilityDoor05Script",
+                            "Parent": "",
+                            "Properties": {
+                                "ScriptPath": "Assets/Scripts/GameLogic/DoorActor.lua"
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "FacilityDoor05"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor06",
+                            "Parent": "",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 0.06,
+                                    "Y": 0.92,
+                                    "Z": 1.48
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": -54.5,
+                                        "Y": 40.5,
+                                        "Z": 1.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 90.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "FacilityDoor06Panel",
+                            "Parent": "FacilityDoor06",
+                            "OverrideMaterials": [],
+                            "Properties": {
+                                "StaticMesh": "Models/Facility/SteelDoor.obj",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.0,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UScriptComponent",
+                            "Name": "FacilityDoor06Script",
+                            "Parent": "",
+                            "Properties": {
+                                "ScriptPath": "Assets/Scripts/GameLogic/DoorActor.lua"
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "FacilityDoor06"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor07",
+                            "Parent": "",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 0.06,
+                                    "Y": 0.92,
+                                    "Z": 1.48
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": -20.5,
+                                        "Y": 10.5,
+                                        "Z": 1.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "FacilityDoor07Panel",
+                            "Parent": "FacilityDoor07",
+                            "OverrideMaterials": [],
+                            "Properties": {
+                                "StaticMesh": "Models/Facility/SteelDoor.obj",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.0,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UScriptComponent",
+                            "Name": "FacilityDoor07Script",
+                            "Parent": "",
+                            "Properties": {
+                                "ScriptPath": "Assets/Scripts/GameLogic/DoorActor.lua"
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "FacilityDoor07"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor08",
+                            "Parent": "",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 0.06,
+                                    "Y": 0.92,
+                                    "Z": 1.48
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": -20.5,
+                                        "Y": 55.5,
+                                        "Z": 1.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "FacilityDoor08Panel",
+                            "Parent": "FacilityDoor08",
+                            "OverrideMaterials": [],
+                            "Properties": {
+                                "StaticMesh": "Models/Facility/SteelDoor.obj",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.0,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UScriptComponent",
+                            "Name": "FacilityDoor08Script",
+                            "Parent": "",
+                            "Properties": {
+                                "ScriptPath": "Assets/Scripts/GameLogic/DoorActor.lua"
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "FacilityDoor08"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor09",
+                            "Parent": "",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 0.06,
+                                    "Y": 0.92,
+                                    "Z": 1.48
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": -40.5,
+                                        "Y": 5.5,
+                                        "Z": 1.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "FacilityDoor09Panel",
+                            "Parent": "FacilityDoor09",
+                            "OverrideMaterials": [],
+                            "Properties": {
+                                "StaticMesh": "Models/Facility/SteelDoor.obj",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.0,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UScriptComponent",
+                            "Name": "FacilityDoor09Script",
+                            "Parent": "",
+                            "Properties": {
+                                "ScriptPath": "Assets/Scripts/GameLogic/DoorActor.lua"
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "FacilityDoor09"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor10",
+                            "Parent": "",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 0.06,
+                                    "Y": 0.92,
+                                    "Z": 1.48
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": -40.5,
+                                        "Y": 30.5,
+                                        "Z": 1.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "FacilityDoor10Panel",
+                            "Parent": "FacilityDoor10",
+                            "OverrideMaterials": [],
+                            "Properties": {
+                                "StaticMesh": "Models/Facility/SteelDoor.obj",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.0,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UScriptComponent",
+                            "Name": "FacilityDoor10Script",
+                            "Parent": "",
+                            "Properties": {
+                                "ScriptPath": "Assets/Scripts/GameLogic/DoorActor.lua"
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "FacilityDoor10"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor11",
+                            "Parent": "",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 0.06,
+                                    "Y": 0.92,
+                                    "Z": 1.48
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": -40.5,
+                                        "Y": 50.5,
+                                        "Z": 1.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "FacilityDoor11Panel",
+                            "Parent": "FacilityDoor11",
+                            "OverrideMaterials": [],
+                            "Properties": {
+                                "StaticMesh": "Models/Facility/SteelDoor.obj",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.0,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UScriptComponent",
+                            "Name": "FacilityDoor11Script",
+                            "Parent": "",
+                            "Properties": {
+                                "ScriptPath": "Assets/Scripts/GameLogic/DoorActor.lua"
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "FacilityDoor11"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "USceneComponent",
+                            "Name": "FacilityDoor01Frame",
+                            "Parent": "",
+                            "Properties": {
+                                "Transform": {
+                                    "Location": {
+                                        "X": -10.5,
+                                        "Y": 20.5,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 90.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "FacilityDoor01FrameMesh",
+                            "Parent": "FacilityDoor01Frame",
+                            "OverrideMaterials": [],
+                            "Properties": {
+                                "StaticMesh": "Models/Facility/SteelDoorFrame.obj",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.0,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor01FrameLeft",
+                            "Parent": "FacilityDoor01Frame",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 1.02,
+                                    "Y": 0.03,
+                                    "Z": 1.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": -0.97,
+                                        "Z": 1.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor01FrameRight",
+                            "Parent": "FacilityDoor01Frame",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 1.02,
+                                    "Y": 0.03,
+                                    "Z": 1.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.97,
+                                        "Z": 1.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor01FrameHeader",
+                            "Parent": "FacilityDoor01Frame",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 1.02,
+                                    "Y": 1.0,
+                                    "Z": 0.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.0,
+                                        "Z": 3.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "FacilityDoor01Frame"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "USceneComponent",
+                            "Name": "FacilityDoor02Frame",
+                            "Parent": "",
+                            "Properties": {
+                                "Transform": {
+                                    "Location": {
+                                        "X": -35.5,
+                                        "Y": 20.5,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 90.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "FacilityDoor02FrameMesh",
+                            "Parent": "FacilityDoor02Frame",
+                            "OverrideMaterials": [],
+                            "Properties": {
+                                "StaticMesh": "Models/Facility/SteelDoorFrame.obj",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.0,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor02FrameLeft",
+                            "Parent": "FacilityDoor02Frame",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 1.02,
+                                    "Y": 0.03,
+                                    "Z": 1.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": -0.97,
+                                        "Z": 1.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor02FrameRight",
+                            "Parent": "FacilityDoor02Frame",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 1.02,
+                                    "Y": 0.03,
+                                    "Z": 1.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.97,
+                                        "Z": 1.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor02FrameHeader",
+                            "Parent": "FacilityDoor02Frame",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 1.02,
+                                    "Y": 1.0,
+                                    "Z": 0.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.0,
+                                        "Z": 3.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "FacilityDoor02Frame"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "USceneComponent",
+                            "Name": "FacilityDoor03Frame",
+                            "Parent": "",
+                            "Properties": {
+                                "Transform": {
+                                    "Location": {
+                                        "X": -46.5,
+                                        "Y": 20.5,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 90.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "FacilityDoor03FrameMesh",
+                            "Parent": "FacilityDoor03Frame",
+                            "OverrideMaterials": [],
+                            "Properties": {
+                                "StaticMesh": "Models/Facility/SteelDoorFrame.obj",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.0,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor03FrameLeft",
+                            "Parent": "FacilityDoor03Frame",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 1.02,
+                                    "Y": 0.03,
+                                    "Z": 1.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": -0.97,
+                                        "Z": 1.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor03FrameRight",
+                            "Parent": "FacilityDoor03Frame",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 1.02,
+                                    "Y": 0.03,
+                                    "Z": 1.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.97,
+                                        "Z": 1.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor03FrameHeader",
+                            "Parent": "FacilityDoor03Frame",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 1.02,
+                                    "Y": 1.0,
+                                    "Z": 0.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.0,
+                                        "Z": 3.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "FacilityDoor03Frame"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "USceneComponent",
+                            "Name": "FacilityDoor04Frame",
+                            "Parent": "",
+                            "Properties": {
+                                "Transform": {
+                                    "Location": {
+                                        "X": -5.5,
+                                        "Y": 40.5,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 90.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "FacilityDoor04FrameMesh",
+                            "Parent": "FacilityDoor04Frame",
+                            "OverrideMaterials": [],
+                            "Properties": {
+                                "StaticMesh": "Models/Facility/SteelDoorFrame.obj",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.0,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor04FrameLeft",
+                            "Parent": "FacilityDoor04Frame",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 1.02,
+                                    "Y": 0.03,
+                                    "Z": 1.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": -0.97,
+                                        "Z": 1.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor04FrameRight",
+                            "Parent": "FacilityDoor04Frame",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 1.02,
+                                    "Y": 0.03,
+                                    "Z": 1.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.97,
+                                        "Z": 1.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor04FrameHeader",
+                            "Parent": "FacilityDoor04Frame",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 1.02,
+                                    "Y": 1.0,
+                                    "Z": 0.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.0,
+                                        "Z": 3.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "FacilityDoor04Frame"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "USceneComponent",
+                            "Name": "FacilityDoor05Frame",
+                            "Parent": "",
+                            "Properties": {
+                                "Transform": {
+                                    "Location": {
+                                        "X": -30.5,
+                                        "Y": 40.5,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 90.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "FacilityDoor05FrameMesh",
+                            "Parent": "FacilityDoor05Frame",
+                            "OverrideMaterials": [],
+                            "Properties": {
+                                "StaticMesh": "Models/Facility/SteelDoorFrame.obj",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.0,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor05FrameLeft",
+                            "Parent": "FacilityDoor05Frame",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 1.02,
+                                    "Y": 0.03,
+                                    "Z": 1.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": -0.97,
+                                        "Z": 1.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor05FrameRight",
+                            "Parent": "FacilityDoor05Frame",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 1.02,
+                                    "Y": 0.03,
+                                    "Z": 1.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.97,
+                                        "Z": 1.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor05FrameHeader",
+                            "Parent": "FacilityDoor05Frame",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 1.02,
+                                    "Y": 1.0,
+                                    "Z": 0.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.0,
+                                        "Z": 3.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "FacilityDoor05Frame"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "USceneComponent",
+                            "Name": "FacilityDoor06Frame",
+                            "Parent": "",
+                            "Properties": {
+                                "Transform": {
+                                    "Location": {
+                                        "X": -54.5,
+                                        "Y": 40.5,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 90.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "FacilityDoor06FrameMesh",
+                            "Parent": "FacilityDoor06Frame",
+                            "OverrideMaterials": [],
+                            "Properties": {
+                                "StaticMesh": "Models/Facility/SteelDoorFrame.obj",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.0,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor06FrameLeft",
+                            "Parent": "FacilityDoor06Frame",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 1.02,
+                                    "Y": 0.03,
+                                    "Z": 1.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": -0.97,
+                                        "Z": 1.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor06FrameRight",
+                            "Parent": "FacilityDoor06Frame",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 1.02,
+                                    "Y": 0.03,
+                                    "Z": 1.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.97,
+                                        "Z": 1.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor06FrameHeader",
+                            "Parent": "FacilityDoor06Frame",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 1.02,
+                                    "Y": 1.0,
+                                    "Z": 0.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.0,
+                                        "Z": 3.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "FacilityDoor06Frame"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "USceneComponent",
+                            "Name": "FacilityDoor07Frame",
+                            "Parent": "",
+                            "Properties": {
+                                "Transform": {
+                                    "Location": {
+                                        "X": -20.5,
+                                        "Y": 10.5,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "FacilityDoor07FrameMesh",
+                            "Parent": "FacilityDoor07Frame",
+                            "OverrideMaterials": [],
+                            "Properties": {
+                                "StaticMesh": "Models/Facility/SteelDoorFrame.obj",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.0,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor07FrameLeft",
+                            "Parent": "FacilityDoor07Frame",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 1.02,
+                                    "Y": 0.03,
+                                    "Z": 1.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": -0.97,
+                                        "Z": 1.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor07FrameRight",
+                            "Parent": "FacilityDoor07Frame",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 1.02,
+                                    "Y": 0.03,
+                                    "Z": 1.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.97,
+                                        "Z": 1.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor07FrameHeader",
+                            "Parent": "FacilityDoor07Frame",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 1.02,
+                                    "Y": 1.0,
+                                    "Z": 0.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.0,
+                                        "Z": 3.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "FacilityDoor07Frame"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "USceneComponent",
+                            "Name": "FacilityDoor08Frame",
+                            "Parent": "",
+                            "Properties": {
+                                "Transform": {
+                                    "Location": {
+                                        "X": -20.5,
+                                        "Y": 55.5,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "FacilityDoor08FrameMesh",
+                            "Parent": "FacilityDoor08Frame",
+                            "OverrideMaterials": [],
+                            "Properties": {
+                                "StaticMesh": "Models/Facility/SteelDoorFrame.obj",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.0,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor08FrameLeft",
+                            "Parent": "FacilityDoor08Frame",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 1.02,
+                                    "Y": 0.03,
+                                    "Z": 1.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": -0.97,
+                                        "Z": 1.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor08FrameRight",
+                            "Parent": "FacilityDoor08Frame",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 1.02,
+                                    "Y": 0.03,
+                                    "Z": 1.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.97,
+                                        "Z": 1.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor08FrameHeader",
+                            "Parent": "FacilityDoor08Frame",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 1.02,
+                                    "Y": 1.0,
+                                    "Z": 0.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.0,
+                                        "Z": 3.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "FacilityDoor08Frame"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "USceneComponent",
+                            "Name": "FacilityDoor09Frame",
+                            "Parent": "",
+                            "Properties": {
+                                "Transform": {
+                                    "Location": {
+                                        "X": -40.5,
+                                        "Y": 5.5,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "FacilityDoor09FrameMesh",
+                            "Parent": "FacilityDoor09Frame",
+                            "OverrideMaterials": [],
+                            "Properties": {
+                                "StaticMesh": "Models/Facility/SteelDoorFrame.obj",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.0,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor09FrameLeft",
+                            "Parent": "FacilityDoor09Frame",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 1.02,
+                                    "Y": 0.03,
+                                    "Z": 1.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": -0.97,
+                                        "Z": 1.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor09FrameRight",
+                            "Parent": "FacilityDoor09Frame",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 1.02,
+                                    "Y": 0.03,
+                                    "Z": 1.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.97,
+                                        "Z": 1.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor09FrameHeader",
+                            "Parent": "FacilityDoor09Frame",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 1.02,
+                                    "Y": 1.0,
+                                    "Z": 0.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.0,
+                                        "Z": 3.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "FacilityDoor09Frame"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "USceneComponent",
+                            "Name": "FacilityDoor10Frame",
+                            "Parent": "",
+                            "Properties": {
+                                "Transform": {
+                                    "Location": {
+                                        "X": -40.5,
+                                        "Y": 30.5,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "FacilityDoor10FrameMesh",
+                            "Parent": "FacilityDoor10Frame",
+                            "OverrideMaterials": [],
+                            "Properties": {
+                                "StaticMesh": "Models/Facility/SteelDoorFrame.obj",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.0,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor10FrameLeft",
+                            "Parent": "FacilityDoor10Frame",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 1.02,
+                                    "Y": 0.03,
+                                    "Z": 1.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": -0.97,
+                                        "Z": 1.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor10FrameRight",
+                            "Parent": "FacilityDoor10Frame",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 1.02,
+                                    "Y": 0.03,
+                                    "Z": 1.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.97,
+                                        "Z": 1.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor10FrameHeader",
+                            "Parent": "FacilityDoor10Frame",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 1.02,
+                                    "Y": 1.0,
+                                    "Z": 0.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.0,
+                                        "Z": 3.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "FacilityDoor10Frame"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "USceneComponent",
+                            "Name": "FacilityDoor11Frame",
+                            "Parent": "",
+                            "Properties": {
+                                "Transform": {
+                                    "Location": {
+                                        "X": -40.5,
+                                        "Y": 50.5,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "FacilityDoor11FrameMesh",
+                            "Parent": "FacilityDoor11Frame",
+                            "OverrideMaterials": [],
+                            "Properties": {
+                                "StaticMesh": "Models/Facility/SteelDoorFrame.obj",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.0,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor11FrameLeft",
+                            "Parent": "FacilityDoor11Frame",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 1.02,
+                                    "Y": 0.03,
+                                    "Z": 1.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": -0.97,
+                                        "Z": 1.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor11FrameRight",
+                            "Parent": "FacilityDoor11Frame",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 1.02,
+                                    "Y": 0.03,
+                                    "Z": 1.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.97,
+                                        "Z": 1.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "FacilityDoor11FrameHeader",
+                            "Parent": "FacilityDoor11Frame",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 1.02,
+                                    "Y": 1.0,
+                                    "Z": 0.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.0,
+                                        "Z": 3.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "FacilityDoor11Frame"
                 }
             ],
             "Properties": {}

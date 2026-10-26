@@ -1,6 +1,7 @@
 local Common = require("EnemyStates.Common")
 local GameManager = require("GameManager")
 local EnemyNavigation = require("EnemyNavigation")
+local Door = require("Door")
 local Patrol = {}
 
 local WaypointTolerance = 0.001
@@ -37,6 +38,7 @@ local function BuildPath(Context, Map)
 end
 
 local function FinishPatrol(Context)
+    Door.CancelEnemyWait(Context)
     ClearPath(Context.mData)
     Context.mMachine:RequestState("Idle")
 end
@@ -109,6 +111,7 @@ function Patrol.Tick(Context, DeltaTime)
         local TargetYaw = Point.Heading * 90.0
         local Angle = (TargetYaw - Rotation.Yaw + 180.0) % 360.0 - 180.0
         if math.abs(Angle) > AngleTolerance then
+            Door.CancelEnemyWait(Context)
             if RemainingTime <= 0.0 or TurnSpeed <= 0.0 then
                 return
             end
@@ -145,6 +148,14 @@ function Patrol.Tick(Context, DeltaTime)
                     FinishPatrol(Context)
                     return
                 end
+                local Fraction, Waiting = Door.AdvanceEnemy(Context, Location, Destination, Navigation.mHalfLength, Navigation.mHalfWidth, TargetYaw, Data.mPatrolSpeed, RemainingTime)
+                if Waiting then
+                    Data.mPatrolBlockedTime = 0.0
+                    if Fraction > 0.0 then
+                        MoveOwner(Context, FVector.new(DeltaX * Scale * Fraction, DeltaY * Scale * Fraction, DeltaZ * Scale * Fraction), FRotator.new(Rotation.Pitch, TargetYaw, Rotation.Roll))
+                    end
+                    return
+                end
                 if not MoveOwner(Context, FVector.new(DeltaX * Scale, DeltaY * Scale, DeltaZ * Scale), FRotator.new(Rotation.Pitch, TargetYaw, Rotation.Roll)) then
                     return
                 end
@@ -170,6 +181,10 @@ function Patrol.Tick(Context, DeltaTime)
     end
 
     FinishPatrol(Context)
+end
+
+function Patrol.Exit(Context, NextState)
+    Door.CancelEnemyWait(Context)
 end
 
 function Patrol.HandleEvent(Context, EventName, ...)
