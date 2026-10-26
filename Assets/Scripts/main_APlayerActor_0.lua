@@ -1,6 +1,7 @@
 local Inventory = require("Inventory")
 local Stamina = require("Stamina")
 local WalkingCamera = require("WalkingCamera")
+local GameManager = require("GameManager")
 
 local MouseSensitivityX = 0.12
 local MouseSensitivityY = 0.12
@@ -28,6 +29,9 @@ function EndPlay()
 end
 
 function OnOverlap(OtherActor)
+    if GameManager.IsEnemy(OtherActor) then
+        GameManager.GameOver("CaughtByEnemy")
+    end
 end
 
 -- Shape의 BeginOverlap은 기존 OnOverlap으로 전달됩니다.
@@ -62,6 +66,10 @@ function Tick(DeltaTime)
         if FieldOfView ~= nil then
             Log("[PlayerCamera] Vertical field of view:", FieldOfView)
         end
+    end
+
+    if not GameManager.IsPlaying() then
+        return
     end
 
     if IsMouseDown(MouseButton.Right) then

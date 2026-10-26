@@ -95,6 +95,10 @@ function GameManager.GetEnemies()
     return GameManager.Enemies
 end
 
+function GameManager.IsEnemy(actor)
+    return actor ~= nil and IndexOf(GameManager.Enemies, actor) ~= nil
+end
+
 function GameManager.RegisterItem(actor, itemId)
     for _, entry in ipairs(GameManager.Items) do
         if entry.Actor == actor then
