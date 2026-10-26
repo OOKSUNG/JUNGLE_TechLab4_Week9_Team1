@@ -98,15 +98,21 @@ void UCameraComponent::OnUnregister() {
 
 // 외부 입력 관리 시 기본 입력을 생략해 Adapter와 카메라의 중복 갱신을 막는다.
 void UCameraComponent::TickComponent(float DeltaTime) {
-	Super::TickComponent(DeltaTime);
-	UWorld* World{ GetOwner() ? GetOwner()->GetWorld() : nullptr };
-	if (mExternalInputManaged || (World && World->IsPlayInEditor() && World->GetMainCameraComponent() != this)) {
-		return;
-	}
 
-	UpdateMovement(DeltaTime);
-	UpdateRotation(DeltaTime);
-	UpdateZoom(DeltaTime);
+	Super::TickComponent(DeltaTime);
+
+	if (not GetOwner()->GetWorld()->IsPlayInEditor())
+	{
+		UWorld* World{ GetOwner() ? GetOwner()->GetWorld() : nullptr };
+		if (mExternalInputManaged || (World && World->IsPlayInEditor() && World->GetMainCameraComponent() != this))
+		{
+			return;
+		}
+
+		UpdateMovement(DeltaTime);
+		UpdateRotation(DeltaTime);
+		UpdateZoom(DeltaTime);
+	}
 }
 
 // 마우스 조작
