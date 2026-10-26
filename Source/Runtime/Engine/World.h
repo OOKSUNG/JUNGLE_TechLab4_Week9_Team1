@@ -117,6 +117,7 @@ public:
 	int32 GetActorNum();
 
 	bool DestroyActor(AActor* Actor);
+	void FlushPendingDestroyActors();
 
 	// View별 Billboard 행렬 공급자는 이 동기 호출 동안만 사용하며 저장하지 않는다.
 	using FBillboardTraceTransform = FMatrix(*)(const UBillboardComponent&, const void*);
@@ -197,6 +198,10 @@ private:
 	FTickTaskManager TickTaskManager;
 
 	TQueue<AActor*> BeginPlayList;
+
+	bool DestroyActorNow(AActor* Actor);
+	TArray<AActor*> PendingDestroyActors;
+	bool bInGameTick = false;
 
 	//메인 카메라 
 	ACameraActor* MainCamera = nullptr;

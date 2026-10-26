@@ -28,6 +28,17 @@ void UMovementComponent::TickComponent(float DeltaTime)
 	Super::TickComponent(DeltaTime);
 }
 
+void UMovementComponent::OnSiblingComponentDestroyed(UActorComponent* DestroyedComponent)
+{
+	Super::OnSiblingComponentDestroyed(DestroyedComponent);
+
+	if (UpdatedComponent != DestroyedComponent)
+		return;
+
+	USceneComponent* Root = GetOwner() ? GetOwner()->GetRootComponent() : nullptr;
+	UpdatedComponent = Root != DestroyedComponent ? Root : nullptr;
+}
+
 void UMovementComponent::SetUpdatedComponent(USceneComponent* NewComponent)
 {
 	if (NewComponent == nullptr)

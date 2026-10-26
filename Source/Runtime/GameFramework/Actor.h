@@ -27,6 +27,7 @@ public:
 	// 게임 중이던 액터가 파괴되거나 PIE가 끝날 때 한 번 불린다. 컴포넌트의 EndPlay도 여기서 부른다.
 	virtual void EndPlay();
 	bool HasActorBegunPlay() const { return bActorHasBegunPlay; }
+	bool IsActorBeingDestroyed() const { return bActorIsBeingDestroyed; }
 	// FActorTickFunction이 호출하는 진입점
 	void TickActor(float DeltaTime) { Tick(DeltaTime); }
 
@@ -35,9 +36,19 @@ public:
 
 	const TArray<UActorComponent*>& GetComponents() const { return Components; }
 	USceneComponent* GetRootComponent() const { return RootComponent; }
-	void SetRootComponent(USceneComponent* SceneComponent) { RootComponent = SceneComponent; }
+	bool SetRootComponent(USceneComponent* NewRootComponent);
+	void ReplaceRootComponent(USceneComponent* NewRootComponent);
+	USceneComponent* CreateDefaultSceneRoot();
+	bool IsDefaultSceneRoot(const UActorComponent* Component) const;
 
+	void AddOwnedComponent(UActorComponent* Component);
 	void RemoveOwnedComponent(UActorComponent* Component);
+
+	bool AttachToComponent(USceneComponent* Parent, EAttachmentRule Rule);
+	bool AttachToActor(AActor* ParentActor, EAttachmentRule Rule);
+	void DetachFromActor(EAttachmentRule Rule);
+	AActor* GetAttachParentActor() const;
+	void GetAttachedActors(TArray<AActor*>& OutActors) const;
 	
 	FVector GetActorLocation() const;
 	FRotator GetActorRotation() const;
@@ -52,7 +63,8 @@ public:
 	friend class UWorld;
 
 	UActorComponent* AddComponent(UClass* ComponentClass, FName Name);
-	void DestroyComponent(UActorComponent* Component);
+	bool CanDestroyComponent(const UActorComponent* Component) const;
+	bool DestroyComponent(UActorComponent* Component);
 
 	// bCanEverTick이 켜진 액터·컴포넌트의 Tick 함수만 World의 FTickTaskManager에 등록하거나 해제한다.
 	void RegisterAllActorTickFunctions(bool bRegister);
@@ -78,6 +90,7 @@ protected:
 	ULevel* Level = nullptr;
 private:
 	bool bActorHasBegunPlay = false;
+	bool bActorIsBeingDestroyed = false;
 	
 
 };

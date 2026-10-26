@@ -62,8 +62,10 @@ public:
 	// Attatch-To
 	USceneComponent* GetAttachParent() const { return AttachParent; }
 	const TArray<USceneComponent*>& GetAttachChildren() const { return AttachChildren; }
-	void SetupAttachment(USceneComponent* InParent, EAttachmentRule Rule = EAttachmentRule::KeepRelative);
-	void DetachFromParent(EAttachmentRule Rule = EAttachmentRule::KeepRelative);
+	void SetupAttachment(USceneComponent* InParent);
+	bool CanAttachTo(const USceneComponent* InParent) const;
+	bool AttachToComponent(USceneComponent* InParent, EAttachmentRule Rule);
+	void DetachFromComponent(EAttachmentRule Rule = EAttachmentRule::KeepRelative);
 
 	virtual FBox CalcLocalBounds() const { return FBox{ FVector(), FVector() }; }
 	FBox CalcBounds() const { return CalcLocalBounds().GetWorldAABB(GetWorldMatrix()); }
@@ -90,6 +92,8 @@ public:
 	FVector ComponentVelocity;
 
 protected:
+	void RemoveFromAttachParent();
+
 	FTransform Transform;
 
 	USceneComponent* AttachParent = nullptr; // Attach 부모 정보

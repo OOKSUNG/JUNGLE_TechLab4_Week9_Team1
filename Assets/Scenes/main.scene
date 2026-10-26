@@ -1,0 +1,978 @@
+{
+    "Version": 4,
+    "World": {
+        "PersistentLevel": {
+            "Actors": [
+                {
+                    "Class": "AStaticMeshActor",
+                    "Components": [
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "UStaticMeshComponent",
+                            "OverrideMaterials": [
+                                {
+                                    "Base": "DefaultMaterial",
+                                    "Instance": {
+                                        "BaseColor": {
+                                            "W": 1.0,
+                                            "X": 0.25999999046325684,
+                                            "Y": 0.30000001192092896,
+                                            "Z": 0.36000001430511475
+                                        },
+                                        "BlendState": "Opaque",
+                                        "Properties": {},
+                                        "SamplerState": "LinearWrap",
+                                        "Shininess": 48.0,
+                                        "Textures": [
+                                            "WhiteTexture",
+                                            "FlatNormalTexture"
+                                        ],
+                                        "UVScrollSpeed": [
+                                            0.0,
+                                            0.0
+                                        ]
+                                    }
+                                }
+                            ],
+                            "Parent": "",
+                            "Properties": {
+                                "StaticMesh": "Cube",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 11.0,
+                                        "Y": -5.0,
+                                        "Z": -0.15105324983596802
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 21.0,
+                                        "Y": 18.0,
+                                        "Z": 0.6000000238418579
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "UStaticMeshComponent"
+                },
+                {
+                    "Class": "AStaticMeshActor",
+                    "Components": [
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "UStaticMeshComponent",
+                            "OverrideMaterials": [
+                                {
+                                    "Base": "DefaultMaterial",
+                                    "Instance": {
+                                        "BaseColor": {
+                                            "W": 1.0,
+                                            "X": 0.36000001430511475,
+                                            "Y": 0.25,
+                                            "Z": 0.17000000178813934
+                                        },
+                                        "BlendState": "Opaque",
+                                        "Properties": {},
+                                        "SamplerState": "LinearWrap",
+                                        "Shininess": 48.0,
+                                        "Textures": [
+                                            "WhiteTexture",
+                                            "FlatNormalTexture"
+                                        ],
+                                        "UVScrollSpeed": [
+                                            0.0,
+                                            0.0
+                                        ]
+                                    }
+                                }
+                            ],
+                            "Parent": "",
+                            "Properties": {
+                                "StaticMesh": "Cube",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 11.0,
+                                        "Y": -10.0,
+                                        "Z": 0.3499999940395355
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 3.799999952316284,
+                                        "Y": 3.799999952316284,
+                                        "Z": 0.699999988079071
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "UStaticMeshComponent"
+                },
+                {
+                    "Class": "AStaticMeshActor",
+                    "Components": [
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "UStaticMeshComponent",
+                            "OverrideMaterials": [
+                                {
+                                    "Base": "DefaultMaterial",
+                                    "Instance": {
+                                        "BaseColor": {
+                                            "W": 1.0,
+                                            "X": 0.18000000715255737,
+                                            "Y": 0.3100000023841858,
+                                            "Z": 0.23999999463558197
+                                        },
+                                        "BlendState": "Opaque",
+                                        "Properties": {},
+                                        "SamplerState": "LinearWrap",
+                                        "Shininess": 48.0,
+                                        "Textures": [
+                                            "WhiteTexture",
+                                            "FlatNormalTexture"
+                                        ],
+                                        "UVScrollSpeed": [
+                                            0.0,
+                                            0.0
+                                        ]
+                                    }
+                                }
+                            ],
+                            "Parent": "",
+                            "Properties": {
+                                "StaticMesh": "Cube",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 11.0,
+                                        "Y": -5.0,
+                                        "Z": 0.3499999940395355
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 3.799999952316284,
+                                        "Y": 3.799999952316284,
+                                        "Z": 0.699999988079071
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "UStaticMeshComponent"
+                },
+                {
+                    "Class": "AStaticMeshActor",
+                    "Components": [
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "UStaticMeshComponent",
+                            "OverrideMaterials": [
+                                {
+                                    "Base": "DefaultMaterial",
+                                    "Instance": {
+                                        "BaseColor": {
+                                            "W": 1.0,
+                                            "X": 0.18000000715255737,
+                                            "Y": 0.27000001072883606,
+                                            "Z": 0.38999998569488525
+                                        },
+                                        "BlendState": "Opaque",
+                                        "Properties": {},
+                                        "SamplerState": "LinearWrap",
+                                        "Shininess": 48.0,
+                                        "Textures": [
+                                            "WhiteTexture",
+                                            "FlatNormalTexture"
+                                        ],
+                                        "UVScrollSpeed": [
+                                            0.0,
+                                            0.0
+                                        ]
+                                    }
+                                }
+                            ],
+                            "Parent": "",
+                            "Properties": {
+                                "StaticMesh": "Cube",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 11.0,
+                                        "Y": 0.0,
+                                        "Z": 0.3499999940395355
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 3.799999952316284,
+                                        "Y": 3.799999952316284,
+                                        "Z": 0.699999988079071
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "UStaticMeshComponent"
+                },
+                {
+                    "Class": "AStaticMeshActor",
+                    "Components": [
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "UStaticMeshComponent",
+                            "OverrideMaterials": [
+                                {
+                                    "Base": "DefaultMaterial",
+                                    "Instance": {
+                                        "BaseColor": {
+                                            "W": 1.0,
+                                            "X": 1.0,
+                                            "Y": 0.3199999928474426,
+                                            "Z": 0.09000000357627869
+                                        },
+                                        "BlendState": "Opaque",
+                                        "Properties": {},
+                                        "SamplerState": "LinearWrap",
+                                        "Shininess": 48.0,
+                                        "Textures": [
+                                            "WhiteTexture",
+                                            "FlatNormalTexture"
+                                        ],
+                                        "UVScrollSpeed": [
+                                            0.0,
+                                            0.0
+                                        ]
+                                    }
+                                }
+                            ],
+                            "Parent": "",
+                            "Properties": {
+                                "StaticMesh": "Cube",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 11.0,
+                                        "Y": -10.0,
+                                        "Z": 2.1500000953674316
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 12.0
+                                    },
+                                    "Scale": {
+                                        "X": 2.5,
+                                        "Y": 2.5,
+                                        "Z": 2.9000000953674316
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "UStaticMeshComponent"
+                },
+                {
+                    "Class": "AStaticMeshActor",
+                    "Components": [
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "UStaticMeshComponent",
+                            "OverrideMaterials": [
+                                {
+                                    "Base": "DefaultMaterial",
+                                    "Instance": {
+                                        "BaseColor": {
+                                            "W": 1.0,
+                                            "X": 0.3199999928474426,
+                                            "Y": 0.949999988079071,
+                                            "Z": 0.3799999952316284
+                                        },
+                                        "BlendState": "Opaque",
+                                        "Properties": {},
+                                        "SamplerState": "LinearWrap",
+                                        "Shininess": 48.0,
+                                        "Textures": [
+                                            "WhiteTexture",
+                                            "FlatNormalTexture"
+                                        ],
+                                        "UVScrollSpeed": [
+                                            0.0,
+                                            0.0
+                                        ]
+                                    }
+                                }
+                            ],
+                            "Parent": "",
+                            "Properties": {
+                                "StaticMesh": "Cube",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 11.0,
+                                        "Y": -5.0,
+                                        "Z": 2.4000000953674316
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 12.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 2.5,
+                                        "Y": 1.2999999523162842,
+                                        "Z": 3.0
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "URotatingMovementComponent",
+                            "Name": "RotatingMovement",
+                            "Parent": "",
+                            "Properties": {
+                                "PivotTranslation": {
+                                    "X": 0.0,
+                                    "Y": 0.0,
+                                    "Z": 0.0
+                                },
+                                "RotationRate": {
+                                    "Pitch": 0.0,
+                                    "Roll": 0.0,
+                                    "Yaw": 38.0
+                                },
+                                "bRotationInLocalSpace": true
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "UStaticMeshComponent"
+                },
+                {
+                    "Class": "AStaticMeshActor",
+                    "Components": [
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "UStaticMeshComponent",
+                            "OverrideMaterials": [
+                                {
+                                    "Base": "DefaultMaterial",
+                                    "Instance": {
+                                        "BaseColor": {
+                                            "W": 1.0,
+                                            "X": 0.14000000059604645,
+                                            "Y": 0.550000011920929,
+                                            "Z": 1.0
+                                        },
+                                        "BlendState": "Opaque",
+                                        "Properties": {},
+                                        "SamplerState": "LinearWrap",
+                                        "Shininess": 48.0,
+                                        "Textures": [
+                                            "WhiteTexture",
+                                            "FlatNormalTexture"
+                                        ],
+                                        "UVScrollSpeed": [
+                                            0.0,
+                                            0.0
+                                        ]
+                                    }
+                                }
+                            ],
+                            "Parent": "",
+                            "Properties": {
+                                "StaticMesh": "Sphere",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 11.0,
+                                        "Y": 0.0,
+                                        "Z": 2.1500000953674316
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.4500000476837158,
+                                        "Y": 1.4500000476837158,
+                                        "Z": 1.4500000476837158
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UScriptComponent",
+                            "Name": "BounceScript",
+                            "Parent": "",
+                            "Properties": {}
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "UStaticMeshComponent"
+                },
+                {
+                    "Class": "ATextRenderActor",
+                    "Components": [
+                        {
+                            "Class": "UTextRenderComponent",
+                            "Name": "TextRenderComponent",
+                            "Parent": "",
+                            "Properties": {
+                                "Font": "Resources/Fonts/Pretendard.json",
+                                "Text": "EXECUTABLE CHECK",
+                                "TextSize": 0.8500000238418579,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 13.0,
+                                        "Y": -5.0,
+                                        "Z": 6.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": false,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "TextRenderComponent"
+                },
+                {
+                    "Class": "ATextRenderActor",
+                    "Components": [
+                        {
+                            "Class": "UTextRenderComponent",
+                            "Name": "TextRenderComponent",
+                            "Parent": "",
+                            "Properties": {
+                                "Font": "Resources/Fonts/Pretendard.json",
+                                "Text": "MESH  /  ROTATION  /  LUA",
+                                "TextSize": 0.3499999940395355,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 13.0,
+                                        "Y": -5.0,
+                                        "Z": 5.199999809265137
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": false,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "TextRenderComponent"
+                },
+                {
+                    "Class": "ATextRenderActor",
+                    "Components": [
+                        {
+                            "Class": "UTextRenderComponent",
+                            "Name": "TextRenderComponent",
+                            "Parent": "",
+                            "Properties": {
+                                "Font": "Resources/Fonts/Pretendard.json",
+                                "Text": "CUBE",
+                                "TextSize": 0.44999998807907104,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 8.899999618530273,
+                                        "Y": -10.0,
+                                        "Z": 0.949999988079071
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": false,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "TextRenderComponent"
+                },
+                {
+                    "Class": "ATextRenderActor",
+                    "Components": [
+                        {
+                            "Class": "UTextRenderComponent",
+                            "Name": "TextRenderComponent",
+                            "Parent": "",
+                            "Properties": {
+                                "Font": "Resources/Fonts/Pretendard.json",
+                                "Text": "ROTATING",
+                                "TextSize": 0.41999998688697815,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 8.899999618530273,
+                                        "Y": -5.0,
+                                        "Z": 0.949999988079071
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": false,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "TextRenderComponent"
+                },
+                {
+                    "Class": "ATextRenderActor",
+                    "Components": [
+                        {
+                            "Class": "UTextRenderComponent",
+                            "Name": "TextRenderComponent",
+                            "Parent": "",
+                            "Properties": {
+                                "Font": "Resources/Fonts/Pretendard.json",
+                                "Text": "LUA BOUNCE",
+                                "TextSize": 0.3799999952316284,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 8.899999618530273,
+                                        "Y": 0.0,
+                                        "Z": 0.949999988079071
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": false,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "TextRenderComponent"
+                },
+                {
+                    "Class": "ADirectionalLightActor",
+                    "Components": [
+                        {
+                            "Class": "UDirectionalLightComponent",
+                            "Name": "UDirectionalLightComponent",
+                            "Parent": "",
+                            "Properties": {
+                                "CascadeCount": 4,
+                                "CascadeDistributionExponent": 2.0,
+                                "CascadeTransitionFraction": 0.10000000149011612,
+                                "Intensity": 2.0999999046325684,
+                                "LightColor": 4294967295,
+                                "ShadowBias": 0.0010000000474974513,
+                                "ShadowDistance": 60.0,
+                                "ShadowMapResolution": 2048,
+                                "ShadowPCFKernelSize": 2,
+                                "SourceAngle": 1.1459156274795532,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 5.0,
+                                        "Y": -8.0,
+                                        "Z": 8.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 48.0,
+                                        "Roll": 0.0,
+                                        "Yaw": -28.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bCastShadows": true,
+                                "bUseCSM": true,
+                                "bUsePCSS": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBillboardComponent",
+                            "Material": {
+                                "Base": "SubUVMaterial",
+                                "Instance": {
+                                    "BaseColor": {
+                                        "W": 1.0,
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    },
+                                    "BlendState": "AlphaBlend",
+                                    "Properties": {},
+                                    "SamplerState": "LinearClamp",
+                                    "Shininess": 32.0,
+                                    "Textures": [
+                                        "Resources/Icons/Directional.png"
+                                    ],
+                                    "UVScrollSpeed": [
+                                        0.0,
+                                        0.0
+                                    ]
+                                }
+                            },
+                            "Name": "UBillboardComponent",
+                            "Parent": "UDirectionalLightComponent",
+                            "Properties": {
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.0,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "UArrowComponent",
+                            "OverrideMaterials": [
+                                {
+                                    "Asset": "EditorArrowMaterial"
+                                }
+                            ],
+                            "Parent": "UDirectionalLightComponent",
+                            "Properties": {
+                                "StaticMesh": "Arrow",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.0,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 90.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 0.30000001192092896,
+                                        "Y": 0.30000001192092896,
+                                        "Z": 0.5
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "UDirectionalLightComponent"
+                },
+                {
+                    "Class": "ASkyLightActor",
+                    "Components": [
+                        {
+                            "Class": "USkyLightComponent",
+                            "Name": "USkyLightComponent",
+                            "Parent": "",
+                            "Properties": {
+                                "Intensity": 0.3199999928474426,
+                                "LightColor": 4294967295,
+                                "ShadowBias": 0.0010000000474974513,
+                                "ShadowMapResolution": 1024,
+                                "ShadowPCFKernelSize": 2,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 10.0,
+                                        "Y": -5.0,
+                                        "Z": 8.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bCastShadows": false,
+                                "bUsePCSS": false,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBillboardComponent",
+                            "Material": {
+                                "Base": "SubUVMaterial",
+                                "Instance": {
+                                    "BaseColor": {
+                                        "W": 1.0,
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    },
+                                    "BlendState": "AlphaBlend",
+                                    "Properties": {},
+                                    "SamplerState": "LinearClamp",
+                                    "Shininess": 32.0,
+                                    "Textures": [
+                                        "Resources/Icons/Sky.png"
+                                    ],
+                                    "UVScrollSpeed": [
+                                        0.0,
+                                        0.0
+                                    ]
+                                }
+                            },
+                            "Name": "UBillboardComponent",
+                            "Parent": "USkyLightComponent",
+                            "Properties": {
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.0,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "USkyLightComponent"
+                },
+                {
+                    "Class": "APointLightActor",
+                    "Components": [
+                        {
+                            "Class": "UPointLightComponent",
+                            "Name": "UPointLightComponent",
+                            "Parent": "",
+                            "Properties": {
+                                "AttenuationRadius": 14.0,
+                                "Intensity": 2.0,
+                                "LightColor": 4294967295,
+                                "LightFalloffExponent": 1.0,
+                                "ShadowBias": 0.0010000000474974513,
+                                "ShadowMapResolution": 1024,
+                                "ShadowPCFKernelSize": 2,
+                                "SourceRadius": 0.07999999821186066,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 6.0,
+                                        "Y": -1.0,
+                                        "Z": 5.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bCastShadows": false,
+                                "bUsePCSS": false,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBillboardComponent",
+                            "Material": {
+                                "Base": "SubUVMaterial",
+                                "Instance": {
+                                    "BaseColor": {
+                                        "W": 1.0,
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    },
+                                    "BlendState": "AlphaBlend",
+                                    "Properties": {},
+                                    "SamplerState": "LinearClamp",
+                                    "Shininess": 32.0,
+                                    "Textures": [
+                                        "Resources/Icons/Point.png"
+                                    ],
+                                    "UVScrollSpeed": [
+                                        0.0,
+                                        0.0
+                                    ]
+                                }
+                            },
+                            "Name": "UBillboardComponent",
+                            "Parent": "UPointLightComponent",
+                            "Properties": {
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.0,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "UPointLightComponent"
+                }
+            ],
+            "Properties": {}
+        },
+        "Properties": {}
+    }
+}

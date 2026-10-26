@@ -44,6 +44,7 @@ public:
 	virtual void SetMaterial(int32 SlotIndex, UMaterial* InMaterial) override { if (SlotIndex == 0) Material = InMaterial; }
 
 	void SetTintSource(const ULightComponentBase* InSource) { TintSource = InSource; }
+	virtual void OnSiblingComponentDestroyed(UActorComponent* DestroyedComponent) override;
 
 	virtual const FStaticMeshData* GetMeshData() const override { return QuadMesh ? &QuadMesh->GetMeshData() : nullptr; }
 	// View마다 카메라 쪽으로 돌아가므로 어느 방향으로 돌아도 쿼드를 감싸는 상자를 BVH에 넘긴다.

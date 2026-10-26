@@ -31,18 +31,33 @@ public:
 
     void SetWorld(UWorld* InWorld) { World = InWorld; };
 
+    struct FOutlinerRow
+    {
+        AActor* Actor;
+        int32 Depth;
+        bool bHasChildren;
+    };
+
     void DrawActors(ULevel* Level);
-    void DrawActorNode(AActor* Actor);
+    void DrawActorNode(const FOutlinerRow& Row);
     void SelectActor(AActor* Actor);
 
     AActor* GetSelectedActor() const;
 
 
 private:
+    void AddActorRows(AActor* Actor, int32 Depth);
+
     UWorld* World = nullptr;
     UObject* SelectedObject = nullptr;
 
     SelectionCallback Callback;
     DeleteActorCallback DeleteCallback;
     AActor* PendingDeleteActor = nullptr;
+
+    TArray<FOutlinerRow> Rows;
+    TSet<AActor*> CollapsedActors;
+    AActor* PendingAttachActor = nullptr;
+    AActor* PendingAttachParent = nullptr;
+    bool bPendingAttach = false;
 };

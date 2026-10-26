@@ -12,6 +12,7 @@ class ULightComponent;
 
 using DetailsSelectionCallback = std::function<void(UActorComponent*)>;
 using DetailsDeleteComponentCallback = std::function<void(UActorComponent*)>;
+using DetailsMakeRootCallback = std::function<void(USceneComponent*)>;
 
 class FDetailsPanel : public IEditorPanel
 {
@@ -37,6 +38,7 @@ public:
 
 	void SetSelectionCallback(DetailsSelectionCallback InCallback) { Callback = InCallback; }
 	void SetDeleteComponentCallback(DetailsDeleteComponentCallback InCallback) { DeleteCallback = InCallback; }
+	void SetMakeRootCallback(DetailsMakeRootCallback InCallback) { MakeRootCallback = InCallback; }
 
 	void SetWorld(UWorld* InWorld) { World = InWorld; }
 	// Renderer를 소유하지 않으며, 미리보기 조회에만 사용한다.
@@ -63,8 +65,10 @@ private:
 	UActorComponent* TargetComponent = nullptr;
 	DetailsSelectionCallback Callback;
 	DetailsDeleteComponentCallback DeleteCallback;
+	DetailsMakeRootCallback MakeRootCallback;
 
 	UActorComponent* PendingDeleteComponent = nullptr;
+	USceneComponent* PendingMakeRootComponent = nullptr;
 	UActorComponent* EditingNameComponent = nullptr;
 	char ComponentNameEditBuffer[256] = {};
 	bool bFocusNameEdit = false;
