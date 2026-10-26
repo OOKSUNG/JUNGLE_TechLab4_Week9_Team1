@@ -244,11 +244,16 @@ namespace
 				throw std::runtime_error("Failed to initialize Coroutine helpers");
 	}
 
-	void BindInputAPI(sol::state& LuaState)
-	{
+	void BindInputAPI(sol::state& LuaState) {
 		LuaState.set_function("IsKeyDown", &FInputSystem::IsKeyDown);
 		LuaState.set_function("IsKeyPressed", &FInputSystem::IsKeyPressed);
 		LuaState.set_function("IsKeyReleased", &FInputSystem::IsKeyReleased);
+
+		LuaState.set_function("IsMouseDown", &FInputSystem::IsMouseDown);
+		LuaState.set_function("GetMouseDeltaX", &FInputSystem::GetMouseDeltaX);
+		LuaState.set_function("GetMouseDeltaY", &FInputSystem::GetMouseDeltaY);
+
+		LuaState.new_enum("MouseButton", "Left", EMouseButton::Left, "Right", EMouseButton::Right, "Middle", EMouseButton::Middle, "Side1", EMouseButton::Side1, "Side2", EMouseButton::Side2);
 
 		// IsKeyDown(Key.W) 와 같이 호출
 

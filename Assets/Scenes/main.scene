@@ -48,9 +48,44 @@
                             "Class": "UStaticMeshComponent",
                             "Name": "UStaticMeshComponent",
                             "OverrideMaterials": [],
-                            "Parent": "",
+                            "Parent": "UBoxComponent_2",
                             "Properties": {
                                 "StaticMesh": "Cube",
+                                "Transform": {
+                                    "Location": {
+                                        "X": -4.76837158203125e-07,
+                                        "Y": 0.0,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": -0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 0.9999999403953552,
+                                        "Y": 0.9999999403953552,
+                                        "Z": 0.9999999403953552
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "UBoxComponent_2",
+                            "Parent": "",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 0.5,
+                                    "Y": 0.5,
+                                    "Z": 0.5
+                                },
+                                "ShapeColor": 4288517599,
                                 "Transform": {
                                     "Location": {
                                         "X": 9.416153907775879,
@@ -58,7 +93,7 @@
                                         "Z": 4.148284912109375
                                     },
                                     "Rotation": {
-                                        "Pitch": 0.0,
+                                        "Pitch": -0.0,
                                         "Roll": 0.0,
                                         "Yaw": 0.0
                                     },
@@ -68,8 +103,9 @@
                                         "Z": 9.237495422363281
                                     }
                                 },
-                                "bBlockComponent": false,
+                                "bBlockComponent": true,
                                 "bCastShadow": true,
+                                "bDrawOnlyIfSelected": false,
                                 "bGenerateOverlapEvents": false,
                                 "bReceiveShadow": true,
                                 "bVisible": true
@@ -77,7 +113,7 @@
                         }
                     ],
                     "Properties": {},
-                    "RootComponent": "UStaticMeshComponent"
+                    "RootComponent": "UBoxComponent_2"
                 },
                 {
                     "Class": "AStaticMeshActor",
@@ -194,6 +230,10 @@
                     "RootComponent": "UStaticMeshComponent"
                 },
                 {
+                    "AttachParent": {
+                        "Actor": 6,
+                        "Component": "StaticMeshComponent"
+                    },
                     "Class": "AActor",
                     "Components": [
                         {
@@ -205,7 +245,7 @@
                                     "Location": {
                                         "X": 0.0,
                                         "Y": 0.0,
-                                        "Z": 1.2507410049438477
+                                        "Z": 1.3783092498779297
                                     },
                                     "Rotation": {
                                         "Pitch": -0.0,
@@ -228,10 +268,129 @@
                                 "mOrthoWidth": 16.0,
                                 "mWheelSpeed": 0.10000000149011612
                             }
+                        },
+                        {
+                            "Class": "USpotLightComponent",
+                            "Name": "USpotLightComponent_0",
+                            "Parent": "UCameraComponent_0",
+                            "Properties": {
+                                "AttenuationRadius": 18.200000762939453,
+                                "InnerConeAngle": 15.0,
+                                "Intensity": 1.0,
+                                "LightColor": 4294967295,
+                                "LightFalloffExponent": 1.0,
+                                "OuterConeAngle": 30.0,
+                                "ShadowBias": 0.0010000000474974513,
+                                "ShadowMapResolution": 1024,
+                                "ShadowPCFKernelSize": 2,
+                                "SourceRadius": 0.029999999329447746,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.0,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bCastShadows": true,
+                                "bUsePCSS": false,
+                                "bVisible": true
+                            }
                         }
                     ],
                     "Properties": {},
                     "RootComponent": "UCameraComponent_0"
+                },
+                {
+                    "Class": "APlayerActor",
+                    "Components": [
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "StaticMeshComponent",
+                            "OverrideMaterials": [],
+                            "Parent": "UBoxComponent_1",
+                            "Properties": {
+                                "StaticMesh": "Cube",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.0,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": -0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UScriptComponent",
+                            "Name": "ScriptComponent",
+                            "Parent": "",
+                            "Properties": {
+                                "ScriptPath": "Assets/Scripts\\main_APlayerActor_0.lua"
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "UBoxComponent_1",
+                            "Parent": "",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 0.5,
+                                    "Y": 0.5,
+                                    "Z": 0.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.0,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": -0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": false,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "UBoxComponent_1"
                 }
             ],
             "Properties": {}
