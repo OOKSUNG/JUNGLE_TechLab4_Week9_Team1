@@ -780,7 +780,7 @@
                             "Name": "PatrolScript",
                             "Parent": "",
                             "Properties": {
-                                "ScriptPath": "Assets/Scripts/Tests/TestEnemyPatrol.lua"
+                                "ScriptPath": "Assets/Scripts/FSMExample.lua"
                             }
                         }
                     ],
