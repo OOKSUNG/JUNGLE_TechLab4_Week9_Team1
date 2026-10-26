@@ -4,8 +4,10 @@
 #include "MouseButton.h"
 #include "Core/Types.h"
 
-class FInputSystem
-{
+class FInputSystem {
+private:
+    FInputSystem() = delete;
+
 public:
     static bool IsKeyPressed(EKeyCode KeyCode);
     static bool IsKeyReleased(EKeyCode KeyCode);
@@ -17,39 +19,35 @@ public:
 
     static void UpdateInputStates();
     static void ClearAllStates();
-    static void SyncMousePosition(int32 x, int32 y);
+    static void SyncMousePosition(int32 X, int32 Y);
     static void OnKeyUp(int VirtualKey);
     static void OnMouseUp(EMouseButton MouseButton);
     static void OnKeyDown(int VirtualKey);
     static void OnMouseDown(EMouseButton MouseButton);
-    static void OnMouseMove(int32 x, int32 y);
+    static void OnMouseMove(int32 X, int32 Y);
+    static void OnRawMouseMove(int32 X, int32 Y);
+    static void SetRelativeMouseMode(bool Enabled);
     static void OnMouseWheelDelta(int32 Wheel);
 
-    static inline int32 GetMouseX() { return MouseX; }
-    static inline int32 GetMouseY() { return MouseY; }
+    static int32 GetMouseX();
+    static int32 GetMouseY();
 
-    static inline int32 GetMouseDeltaX() { return DeltaX; }
-    static inline int32 GetMouseDeltaY() { return DeltaY; }
+    static int32 GetMouseDeltaX();
+    static int32 GetMouseDeltaY();
 
-    static inline int32 GetWheelDelta() 
-    { 
-        int32 Delta = WheelDelta;
-        WheelDelta = 0;
-        return Delta;
-    }
+    static int32 GetWheelDelta();
 
 private:
-    FInputSystem() = delete;
-
-    static inline bool bMouseStates[5] = {};
-    static inline bool bPrevMouseStates[5] = {};
-
-    static inline bool bKeyStates[256] = {};
-    static inline bool bPrevKeyStates[256] = {};
-
-    static inline int32 MouseX = 0, MouseY = 0;
-    static inline int32 PrevMouseX = 0, PrevMouseY = 0;
-    static inline int32 DeltaX = 0, DeltaY = 0;
-
-    static inline int32 WheelDelta = 0;
+    static bool mMouseStates[5];
+    static bool mPreviousMouseStates[5];
+    static bool mKeyStates[256];
+    static bool mPreviousKeyStates[256];
+    static int32 mMouseX;
+    static int32 mMouseY;
+    static int32 mPreviousMouseX;
+    static int32 mPreviousMouseY;
+    static int32 mDeltaX;
+    static int32 mDeltaY;
+    static int32 mWheelDelta;
+    static bool mRelativeMouseMode;
 };

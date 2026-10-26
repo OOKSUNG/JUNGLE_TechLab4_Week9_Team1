@@ -35678,7 +35678,7 @@
                                 "StaticMesh": "Models/Zombie/Zombie.obj",
                                 "Transform": {
                                     "Location": {
-                                        "X": 0.2362234741449356,
+                                        "X": -0.2362234741449356,
                                         "Y": 0.0,
                                         "Z": 0.0014104212168604136
                                     },

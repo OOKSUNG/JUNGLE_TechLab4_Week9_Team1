@@ -8,6 +8,7 @@
 #include "Engine/World.h"
 #include "EngineTypes.h"
 #include "Math/Vector2.h"
+#include "Input/MouseCapture.h"
 
 #include "Asset/AssetManager.h"
 
@@ -92,6 +93,9 @@ public:
 	virtual FUIRenderer* GetUIRenderer() { return nullptr; }
     virtual FGameViewportInfo GetGameViewportInfo(const UWorld* InWorld) const;
     virtual void RequestQuitGame(const UWorld* InWorld);
+	virtual bool SetGameMouseCapture(const UWorld* InWorld, bool Enabled);
+	void SetCursorMode(ECursorMode Mode);
+	ECursorMode GetCursorMode() const;
 	FSceneTransitionManager* GetSceneTransitionManager() const { return SceneTransitionManager.get(); }
 
 protected:
@@ -107,6 +111,7 @@ protected:
 	int32 NextWorldContextHandle = 0;
 private:
 	FEngineLoop* EngineLoop = nullptr;
+	ECursorMode mCursorMode{ ECursorMode::Free };
 };
 
 // FEngineLoop::PreInit에서 설정되고 Exit에서 해제된다.

@@ -7,112 +7,95 @@
 
 #include <algorithm>
 
-namespace
-{
-	struct FUIImageConstants
-	{
-		FVector2 ClipOrigin;
-		FVector2 ClipSize;
-		float Ratio;
-		float Padding[3] = {};
+namespace {
+	struct FUIImageConstants {
+		FVector2 mClipOrigin{};
+		FVector2 mClipSize{};
+		float mRatio{};
+		float mPadding[3]{};
 	};
 	static_assert(sizeof(FUIImageConstants) == 32);
 
-	FVector2 ResolveUIPosition(const FVector2& Size,
-		const FVector2& Anchor, const FVector2& Alignment, const FVector2& Offset,
-		float Width, float Height)
-	{
-		return FVector2(Width * Anchor.X + Offset.X - Size.X * Alignment.X,
-			Height * Anchor.Y + Offset.Y - Size.Y * Alignment.Y);
+	FVector2 ResolveUIPosition(const FVector2& Size, const FVector2& Anchor, const FVector2& Alignment, const FVector2& Offset, float Width, float Height) {
+		return FVector2{ Width * Anchor.X + Offset.X - Size.X * Alignment.X, Height * Anchor.Y + Offset.Y - Size.Y * Alignment.Y };
 	}
 }
 
-void FUIRenderer::Init(FTextRenderer& TextRender)
-{
-	TextRenderer = &TextRender;
-	UIPipeline = TextRender.GetPipelineState();
-	UIPipeline.RasterizerState = ERasterizerState::SolidNone;
-	UIPipeline.BlendState = EBlendState::AlphaBlend;
-	UIPipeline.DepthStencilState = EDepthStencilState::Disabled;
+void FUIRenderer::Init(FTextRenderer& TextRender) {
+	mTextRenderer = &TextRender;
+	mUIPipeline = TextRender.GetPipelineState();
+	mUIPipeline.RasterizerState = ERasterizerState::SolidNone;
+	mUIPipeline.BlendState = EBlendState::AlphaBlend;
+	mUIPipeline.DepthStencilState = EDepthStencilState::Disabled;
 
-	UIImagePipeline = UIPipeline;
-	UIImagePipeline.Shader = FRenderResourceManager::GetShaderProgram("Resources/Shader/UIImageShader.hlsl");
-	UIImageConstants = RenderCommand::CreateConstantBuffer(sizeof(FUIImageConstants));
+	mUIImagePipeline = mUIPipeline;
+	mUIImagePipeline.Shader = FRenderResourceManager::GetShaderProgram("Resources/Shader/UIImageShader.hlsl");
+	mUIImageConstants = RenderCommand::CreateConstantBuffer(sizeof(FUIImageConstants));
+	mMinimapRenderer.Init();
 }
 
-void FUIRenderer::DrawUIText(const UITextInfo& TextInfo, float Width, float Height)
-{
-	if (!TextRenderer || !TextInfo.Atlas || !TextInfo.Atlas->AtlasTexture ||
-		TextInfo.Atlas->Width <= 0.0f || TextInfo.Atlas->Height <= 0.0f ||
-		TextInfo.TextSize <= 0.0f || Width <= 0.0f || Height <= 0.0f)
-	{
+void FUIRenderer::DrawUIText(const UITextInfo& TextInfo, float Width, float Height) {
+	if (!mTextRenderer || !TextInfo.mAtlas || !TextInfo.mAtlas->AtlasTexture || TextInfo.mAtlas->Width <= 0.0f || TextInfo.mAtlas->Height <= 0.0f || TextInfo.mTextSize <= 0.0f || Width <= 0.0f || Height <= 0.0f) {
 		return;
 	}
 
-	float MinY, MaxY, MinZ, MaxZ;
-	if (!FTextRenderer::ComputeTextBounds(TextInfo.Text, TextInfo.TextSize, *TextInfo.Atlas,
-		MinY, MaxY, MinZ, MaxZ))
-	{
+	float MinY{};
+	float MaxY{};
+	float MinZ{};
+	float MaxZ{};
+	if (!FTextRenderer::ComputeTextBounds(TextInfo.mText, TextInfo.mTextSize, *TextInfo.mAtlas, MinY, MaxY, MinZ, MaxZ)) {
 		return;
 	}
 
-	const FVector2 TextSize(MaxY - MinY, MaxZ - MinZ);
-	const FVector2 Position = ResolveUIPosition(TextSize,
-		TextInfo.Anchor, TextInfo.Alignment, TextInfo.Offset, Width, Height);
+	const FVector2 TextSize{ MaxY - MinY, MaxZ - MinZ };
+	const FVector2 Position{ ResolveUIPosition(TextSize, TextInfo.mAnchor, TextInfo.mAlignment, TextInfo.mOffset, Width, Height) };
 
 	// 기존 글자 메시의 로컬 Y/Z를 화면의 X/Y 픽셀 좌표로 바꾼다.
-	FMatrix UIWorld;
+	FMatrix UIWorld{};
 	UIWorld.SetIdentity();
-	for (int Row = 0; Row < 3; ++Row)
-		for (int Col = 0; Col < 3; ++Col)
+	for (int Row{ 0 }; Row < 3; ++Row) {
+		for (int Col{ 0 }; Col < 3; ++Col) {
 			UIWorld.M[Row][Col] = 0.0f;
+		}
+	}
 	UIWorld.M[1][0] = 1.0f;
 	UIWorld.M[2][1] = -1.0f;
 	UIWorld.M[0][2] = 1.0f;
 	UIWorld.M[3][0] = Position.X - MinY;
 	UIWorld.M[3][1] = Position.Y + MaxZ;
-	FMatrix UIProjection;
+	FMatrix UIProjection{};
 	UIProjection.SetIdentity();
 	UIProjection.M[0][0] = 2.0f / Width;
 	UIProjection.M[1][1] = -2.0f / Height;
 	UIProjection.M[3][0] = -1.0f;
 	UIProjection.M[3][1] = 1.0f;
-	TextRenderer->OnRender(TextInfo.Text, UIWorld, TextInfo.TextSize, *TextInfo.Atlas, UIProjection, UIPipeline);
+	mTextRenderer->OnRender(TextInfo.mText, UIWorld, TextInfo.mTextSize, *TextInfo.mAtlas, UIProjection, mUIPipeline);
 }
 
-void FUIRenderer::RenderUIText(float Width, float Height)
-{
-	if (TextRenderer && Width > 0.0f && Height > 0.0f)
-	{
-		for (const UITextInfo& TextInfo : UITextArray)
-		{
+void FUIRenderer::RenderUIText(float Width, float Height) {
+	if (mTextRenderer && Width > 0.0f && Height > 0.0f) {
+		for (const UITextInfo& TextInfo : mUITextArray) {
 			DrawUIText(TextInfo, Width, Height);
 		}
 	}
-	UITextArray.Reset();
+	mUITextArray.Reset();
 }
 
-void FUIRenderer::DrawUIImage(const UIImageInfo& ImageInfo, float Width, float Height)
-{
-	if (!UIImagePipeline.Shader || !UIImageConstants || !ImageInfo.Texture ||
-		!ImageInfo.Texture->GetResource() || ImageInfo.Size.X <= 0.0f || ImageInfo.Size.Y <= 0.0f ||
-		Width <= 0.0f || Height <= 0.0f || ImageInfo.Ratio <= 0.0f)
-	{
+void FUIRenderer::DrawUIImage(const UIImageInfo& ImageInfo, float Width, float Height) {
+	if (!mUIImagePipeline.Shader || !mUIImageConstants || !ImageInfo.mTexture || !ImageInfo.mTexture->GetResource() || ImageInfo.mSize.X <= 0.0f || ImageInfo.mSize.Y <= 0.0f || Width <= 0.0f || Height <= 0.0f || ImageInfo.mRatio <= 0.0f) {
 		return;
 	}
 
-	const FVector2 Position = ResolveUIPosition(ImageInfo.Size,
-		ImageInfo.Anchor, ImageInfo.Alignment, ImageInfo.Offset, Width, Height);
+	const FVector2 Position{ ResolveUIPosition(ImageInfo.mSize, ImageInfo.mAnchor, ImageInfo.mAlignment, ImageInfo.mOffset, Width, Height) };
 	FUIImageConstants Constants{};
-	Constants.ClipOrigin = FVector2(2.0f * Position.X / Width - 1.0f,
-		1.0f - 2.0f * Position.Y / Height);
-	Constants.ClipSize = FVector2(2.0f * ImageInfo.Size.X / Width, -2.0f * ImageInfo.Size.Y / Height);
-	Constants.Ratio = std::clamp(ImageInfo.Ratio, 0.0f, 1.0f);
+	Constants.mClipOrigin = FVector2{ 2.0f * Position.X / Width - 1.0f, 1.0f - 2.0f * Position.Y / Height };
+	Constants.mClipSize = FVector2{ 2.0f * ImageInfo.mSize.X / Width, -2.0f * ImageInfo.mSize.Y / Height };
+	Constants.mRatio = std::clamp(ImageInfo.mRatio, 0.0f, 1.0f);
 
-	RenderCommand::BindPipelineState(UIImagePipeline);
-	RenderCommand::UpdateBufferData(UIImageConstants.get(), &Constants);
-	RenderCommand::BindConstantBuffer(0, UIImageConstants.get(), EShaderBindFlagBits::Vertex | EShaderBindFlagBits::Pixel);
-	RenderCommand::BindShaderResource(0, ImageInfo.Texture, EShaderBindFlagBits::Pixel);
+	RenderCommand::BindPipelineState(mUIImagePipeline);
+	RenderCommand::UpdateBufferData(mUIImageConstants.get(), &Constants);
+	RenderCommand::BindConstantBuffer(0, mUIImageConstants.get(), EShaderBindFlagBits::Vertex | EShaderBindFlagBits::Pixel);
+	RenderCommand::BindShaderResource(0, ImageInfo.mTexture, EShaderBindFlagBits::Pixel);
 	RenderCommand::BindSamplerState(0, ESamplerState::LinearClamp, EShaderBindFlagBits::Pixel);
 	// 정점은 셰이더의 SV_VertexID로 만든다.
 	RenderCommand::BindVertexBuffer(nullptr);
@@ -121,11 +104,31 @@ void FUIRenderer::DrawUIImage(const UIImageInfo& ImageInfo, float Width, float H
 	RenderCommand::UnbindShaderResource(0, EShaderBindFlagBits::Pixel);
 }
 
-void FUIRenderer::RenderUIImage(float Width, float Height)
-{
-	for (const UIImageInfo& ImageInfo : UIImageArray)
-	{
+void FUIRenderer::RenderUIImage(float Width, float Height) {
+	for (const UIImageInfo& ImageInfo : mUIImageArray) {
 		DrawUIImage(ImageInfo, Width, Height);
 	}
-	UIImageArray.Reset();
+	mUIImageArray.Reset();
+	mMinimapRenderer.Render(Width, Height);
+}
+
+void FUIRenderer::AddUIText(UITextInfo TextInfo) {
+	mUITextArray.Add(TextInfo);
+}
+
+void FUIRenderer::AddUIImage(UIImageInfo ImageInfo) {
+	mUIImageArray.Add(ImageInfo);
+}
+
+void FUIRenderer::AddUIMinimap(const FUIMinimapInfo& Info) {
+	mMinimapRenderer.AddMinimap(Info);
+}
+
+void FUIRenderer::ResetUIText() {
+	mUITextArray.Reset();
+}
+
+void FUIRenderer::ResetUIImage() {
+	mUIImageArray.Reset();
+	mMinimapRenderer.Reset();
 }

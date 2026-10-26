@@ -1,5 +1,6 @@
 local Flashlight = require("Flashlight")
 local GameManager = require("GameManager")
+local JumpScare = require("JumpScare")
 
 local TOGGLE_KEY = Key.F
 local DEBUG_SMALL_BATTERY_KEY = Key.Num1
@@ -7,6 +8,7 @@ local DEBUG_LARGE_BATTERY_KEY = Key.Num2
 local DEBUG_LOG_KEY = Key.Num3
 
 function BeginPlay()
+    JumpScare.RegisterView(self)
     Flashlight.Start(self:GetSpotLight())
 end
 
@@ -36,5 +38,6 @@ function Tick(dt)
 end
 
 function EndPlay()
+    JumpScare.UnregisterView(self)
     Flashlight.Stop()
 end

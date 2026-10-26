@@ -6,6 +6,7 @@
 #include "Core/Window.h"
 #include "Core/Windows/WindowsPlatformTime.h"
 #include "Input/InputSystem.h"
+#include "Input/MouseCapture.h"
 #include "UObject/Casts.h"
 #include "UObject/Class.h"
 #include "Render/RenderCommand.h"
@@ -156,6 +157,9 @@ bool FEngineLoop::Tick()
 	{
 		SCOPE_CYCLE_COUNTER(STAT_EngineTick);
 		GEngine->Tick(EngineTimer::GetDeltaTime());
+#if defined(EXECUTABLE)
+		FMouseCapture::Center();
+#endif
 
 		if (FAudioSystem* AudioSystem = GEngine->GetAudioSystem())
 		{
@@ -178,6 +182,9 @@ bool FEngineLoop::Tick()
 // UObject(에셋 포함)의 GPU 자원은 Device가 살아 있을 때 해제한다.
 void FEngineLoop::Exit()
 {
+#if defined(EXECUTABLE)
+	FMouseCapture::Release();
+#endif
 	FTaskPool::Get().Shutdown();
 
 

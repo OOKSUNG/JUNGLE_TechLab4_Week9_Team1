@@ -9,7 +9,7 @@ local function Initialize()
     end
     local Data = { mPatrolExtent = self:GetNavigationExtent(), mPatrolWallMargin = 0.04, mPatrolTurnSpeed = 540.0, mChaseSpeed = 2.5, mChaseReplanInterval = 0.35, mUnobservedDelay = 0.75, mStunDuration = 1.5 }
     Runtime.mMachine = FSM.New(self, States, Data)
-    GameManager.RegisterEnemy(self, Runtime.mMachine)
+    GameManager.RegisterEnemy(self, Runtime.mMachine, "Watcher")
     Runtime.mMachine:Start("Observed")
 end
 
@@ -29,7 +29,7 @@ end
 
 function OnOverlap(OtherActor)
     if OtherActor == GameManager.GetPlayer() then
-        GameManager.GameOver("CaughtByWatcher")
+        GameManager.GameOver("CaughtByWatcher", self)
     end
 end
 

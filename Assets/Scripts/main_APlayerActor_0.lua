@@ -28,12 +28,15 @@ function BeginPlay()
 end
 
 function EndPlay()
+    if IsExecutableGame() then
+        SetCursorMode(CursorMode.Free)
+    end
     WalkingCamera.Stop(WalkingStateKey)
 end
 
 function OnOverlap(OtherActor)
     if GameManager.IsEnemy(OtherActor) then
-        GameManager.GameOver("CaughtByEnemy")
+        GameManager.GameOver("CaughtByEnemy", OtherActor)
     end
 end
 
@@ -47,7 +50,15 @@ function OnHit(OtherActor, Hit)
 end
 
 function Tick(DeltaTime)
+    local ExecutableGame = IsExecutableGame()
+    if ExecutableGame and GameManager.IsPlaying() and (IsKeyPressed(Key.Num0) or IsKeyPressed(Key.NumPad0)) then
+        SetCursorMode(GetCursorMode() == CursorMode.Locked and CursorMode.Free or CursorMode.Locked)
+    end
+    local MouseCaptured = ExecutableGame and SetGameMouseCapture(GameManager.IsPlaying() and GetCursorMode() == CursorMode.Locked) or false
     if DeltaTime <= 0.0 then
+        return
+    end
+    if GameManager.IsJumpScaring() or GameManager.Phase == GameManager.EPhase.GameOver then
         return
     end
 
@@ -110,7 +121,7 @@ function Tick(DeltaTime)
         return
     end
 
-    if IsMouseDown(MouseButton.Right) then
+    if MouseCaptured or (not ExecutableGame and IsMouseDown(MouseButton.Right)) then
         local MouseDeltaX = GetMouseDeltaX()
         local MouseDeltaY = GetMouseDeltaY()
 

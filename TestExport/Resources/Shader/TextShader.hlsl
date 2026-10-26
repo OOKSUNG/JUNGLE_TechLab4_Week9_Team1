@@ -62,8 +62,8 @@ float4 mainPS(PSInput Input) : SV_TARGET
     float ScreenPxDistance = PxRangeScreen * SignedDist;
     float Opacity = saturate(ScreenPxDistance + 0.5f);
 
-	// 가장자리가 완전히 0인 픽셀은 discard (배경 겹침 방지, 알파 블렌딩 안 쓸 경우 유용)
+	// 완전히 투명한 픽셀만 버리고, 나머지 가장자리는 알파 값으로 부드럽게 그린다.
     clip(Opacity - 0.001f);
 
-    return float4(1.0f, 1.0f, 1.0f, 1.0f);
+    return float4(1.0f, 1.0f, 1.0f, Opacity);
 }

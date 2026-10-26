@@ -3,6 +3,7 @@
 #include "Window.h"
 #include "../resource.h"
 #include "Input/InputSystem.h"
+#include "Input/MouseCapture.h"
 
 namespace
 {
@@ -32,6 +33,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	}
 
 	// 훅을 받지 않는 창의 메시지는 ImGui 입력 상태에 섞이지 않게 바로 창이 처리한다.
+#if defined(EXECUTABLE)
+	if (msg == WM_KILLFOCUS || (msg == WM_ACTIVATEAPP && wParam == FALSE) || msg == WM_DESTROY) {
+		FMouseCapture::Release(hWnd);
+	}
+	if (msg == WM_INPUT) {
+		FMouseCapture::ProcessRawInput(hWnd, reinterpret_cast<HRAWINPUT>(lParam));
+		return DefWindowProc(hWnd, msg, wParam, lParam);
+	}
+	if (msg == WM_SETCURSOR && LOWORD(lParam) == HTCLIENT && FMouseCapture::IsActive(hWnd)) {
+		SetCursor(nullptr);
+		return TRUE;
+	}
+#endif
 	if ((!window || window->ReceivesWndProcHook()) &&
 		GWndProcHook && GWndProcHook(hWnd, msg, wParam, lParam))
 		return true;
@@ -53,6 +67,9 @@ bool FWindow::Create(HINSTANCE hInstance, int InWidth, int InHeight, const wchar
 	wc.hInstance = hInstance;
 	wc.lpszClassName = CLASS_NAME;
 	wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON2));
+#if defined(EXECUTABLE)
+	wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
+#endif
 	RegisterClassW(&wc);
 
 	DWORD style = bBorderless ? WS_POPUP : WS_OVERLAPPEDWINDOW;

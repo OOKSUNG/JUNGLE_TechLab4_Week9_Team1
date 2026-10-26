@@ -1,8 +1,10 @@
+local JumpScare = require("JumpScare")
 local GameManager = {}
 
 GameManager.EPhase = {
     Ready = "Ready",
     Playing = "Playing",
+    JumpScare = "JumpScare",
     GameOver = "GameOver",
     Escaped = "Escaped",
 }
@@ -20,6 +22,7 @@ local function ClearReferences()
     GameManager.Player = nil
     GameManager.Enemies = {}
     GameManager.EnemyMachines = {}
+    GameManager.EnemyScareProfiles = {}
     GameManager.Items = {}
     GameManager.Map = nil
 end
@@ -33,25 +36,41 @@ local function IndexOf(list, value)
     return nil
 end
 
+local function FindRegisteredEnemy(Actor)
+    local Index = IndexOf(GameManager.Enemies, Actor)
+    return Index and GameManager.Enemies[Index] or nil, Index
+end
+
 function GameManager.Reset()
+    SetCursorMode(CursorMode.Free)
+    JumpScare.Stop()
     ResetProgress()
     ClearReferences()
 end
 
 function GameManager.StartGame()
+    JumpScare.Stop()
     ResetProgress()
     GameManager.Phase = GameManager.EPhase.Playing
+    SetCursorMode(CursorMode.Locked)
     print("[GameManager] StartGame")
 end
 
 function GameManager.Tick(dt)
     if GameManager.Phase == GameManager.EPhase.Playing then
         GameManager.ElapsedTime = GameManager.ElapsedTime + dt
+    elseif GameManager.IsJumpScaring() and JumpScare.Update(dt) then
+        GameManager.Phase = GameManager.EPhase.GameOver
+        SetCursorMode(CursorMode.Free)
     end
 end
 
 function GameManager.IsPlaying()
     return GameManager.Phase == GameManager.EPhase.Playing
+end
+
+function GameManager.IsJumpScaring()
+    return GameManager.Phase == GameManager.EPhase.JumpScare
 end
 
 function GameManager.RegisterPlayer(actor)
@@ -61,8 +80,9 @@ function GameManager.RegisterPlayer(actor)
     GameManager.Player = actor
 end
 
-function GameManager.UnregisterPlayer(actor)
-    if GameManager.Player == actor then
+function GameManager.UnregisterPlayer(Actor)
+    JumpScare.ReleaseActor(Actor)
+    if GameManager.Player == Actor then
         GameManager.Player = nil
     end
 end
@@ -94,26 +114,31 @@ function GameManager.ReportPlayerFootstep(Actor, Radius)
     return true
 end
 
-function GameManager.RegisterEnemy(Actor, Machine)
+function GameManager.RegisterEnemy(Actor, Machine, ScareProfile)
+    local Enemy = FindRegisteredEnemy(Actor)
+    if Enemy == nil then
+        Enemy = Actor
+        table.insert(GameManager.Enemies, Enemy)
+    end
+    GameManager.EnemyScareProfiles[Enemy] = ScareProfile or GameManager.EnemyScareProfiles[Enemy] or "Monster"
     if Machine ~= nil then
-        GameManager.EnemyMachines[Actor] = Machine
+        GameManager.EnemyMachines[Enemy] = Machine
     end
-    if IndexOf(GameManager.Enemies, Actor) then
-        return
-    end
-    table.insert(GameManager.Enemies, Actor)
 end
 
 function GameManager.UnregisterEnemy(Actor)
-    GameManager.EnemyMachines[Actor] = nil
-    local Index = IndexOf(GameManager.Enemies, Actor)
-    if Index then
+    JumpScare.ReleaseActor(Actor)
+    local Enemy, Index = FindRegisteredEnemy(Actor)
+    if Enemy ~= nil then
+        GameManager.EnemyMachines[Enemy] = nil
+        GameManager.EnemyScareProfiles[Enemy] = nil
         table.remove(GameManager.Enemies, Index)
     end
 end
 
 function GameManager.GetEnemyState(Actor)
-    local Machine = GameManager.EnemyMachines[Actor]
+    local Enemy = FindRegisteredEnemy(Actor)
+    local Machine = Enemy ~= nil and GameManager.EnemyMachines[Enemy] or nil
     return Machine and Machine:IsRunning() and Machine:GetCurrentState() or nil
 end
 
@@ -185,13 +210,18 @@ function GameManager.AddBatteryUsed()
     GameManager.BatteriesUsed = GameManager.BatteriesUsed + 1
 end
 
-function GameManager.GameOver(reason)
+function GameManager.GameOver(Reason, Killer)
     if not GameManager.IsPlaying() then
         return
     end
     GameManager.Phase = GameManager.EPhase.GameOver
-    GameManager.GameOverReason = reason
-    print("[GameManager] GameOver:", reason)
+    GameManager.GameOverReason = Reason
+    SetCursorMode(CursorMode.Free)
+    local Enemy = FindRegisteredEnemy(Killer)
+    if Enemy ~= nil and JumpScare.Start(GameManager.Player, Enemy, GameManager.EnemyScareProfiles[Enemy]) then
+        GameManager.Phase = GameManager.EPhase.JumpScare
+    end
+    print("[GameManager] GameOver:", Reason)
 end
 
 function GameManager.Escape(route)
@@ -199,6 +229,7 @@ function GameManager.Escape(route)
         return
     end
     GameManager.Phase = GameManager.EPhase.Escaped
+    SetCursorMode(CursorMode.Free)
     GameManager.Route = route
     print("[GameManager] Escaped:", route)
 end

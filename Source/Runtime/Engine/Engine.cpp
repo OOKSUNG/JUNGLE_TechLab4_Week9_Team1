@@ -4,6 +4,7 @@
 #include "Components/ScriptComponent.h"
 #include "Launch/LaunchEngineLoop.h"
 #include "Core/Window.h"
+#include "Input/MouseCapture.h"
 
 UEngine* GEngine = nullptr;
 UEngine::~UEngine() = default;
@@ -105,4 +106,42 @@ void UEngine::RequestQuitGame(const UWorld* InWorld)
 {
     if (InWorld && InWorld->GetWorldType() == EWorldType::Game)
         GetEngineLoop().RequestExit();
+}
+
+bool UEngine::SetGameMouseCapture(const UWorld* InWorld, bool Enabled) {
+#if defined(EXECUTABLE)
+	FWindow* Window{ EngineLoop ? EngineLoop->GetMainWindow() : nullptr };
+	if (!Window || !InWorld || InWorld->GetWorldType() != EWorldType::Game) {
+		return false;
+	}
+	RECT Bounds{};
+	::GetClientRect(Window->GetHandle(), &Bounds);
+	::MapWindowPoints(Window->GetHandle(), nullptr, reinterpret_cast<POINT*>(&Bounds), 2);
+	return FMouseCapture::Update(Window->GetHandle(), Bounds, Enabled);
+#else
+	return false;
+#endif
+}
+
+void UEngine::SetCursorMode(ECursorMode Mode) {
+#if defined(EXECUTABLE)
+	mCursorMode = Mode;
+	for (FWorldContext& Context : WorldList) {
+		UWorld* World{ Context.World() };
+		if (World && World->GetWorldType() == EWorldType::Game) {
+			SetGameMouseCapture(World, Mode == ECursorMode::Locked);
+		}
+	}
+	if (Mode == ECursorMode::Free) {
+		FMouseCapture::Release();
+	}
+#endif
+}
+
+ECursorMode UEngine::GetCursorMode() const {
+#if defined(EXECUTABLE)
+	return mCursorMode;
+#else
+	return ECursorMode::Free;
+#endif
 }

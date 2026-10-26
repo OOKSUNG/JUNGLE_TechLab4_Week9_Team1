@@ -824,7 +824,7 @@ void UWorld::SetMainCamera(ACameraActor* Camera)
 }
 
 UCameraComponent* UWorld::GetMainCameraComponent() {
-	if (WorldType == EWorldType::PIE) {
+	if (WorldType == EWorldType::PIE || WorldType == EWorldType::Game) {
 		if (!mPlayCameraComponent) {
 			InitializePlayCamera();
 		}

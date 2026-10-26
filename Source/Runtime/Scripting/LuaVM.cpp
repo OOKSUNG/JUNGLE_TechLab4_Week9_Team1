@@ -272,6 +272,16 @@ namespace
 		LuaState.set_function("GetMouseDeltaX", &FInputSystem::GetMouseDeltaX);
 		LuaState.set_function("GetMouseDeltaY", &FInputSystem::GetMouseDeltaY);
 
+		LuaState.new_enum("CursorMode", "Free", ECursorMode::Free, "Locked", ECursorMode::Locked);
+		LuaState.set_function("SetCursorMode", [](ECursorMode Mode) {
+			if (GEngine) {
+				GEngine->SetCursorMode(Mode);
+			}
+		});
+		LuaState.set_function("GetCursorMode", []() {
+			return GEngine ? GEngine->GetCursorMode() : ECursorMode::Free;
+		});
+
 		LuaState.new_enum("MouseButton", "Left", EMouseButton::Left, "Right", EMouseButton::Right, "Middle", EMouseButton::Middle, "Side1", EMouseButton::Side1, "Side2", EMouseButton::Side2);
 
 		// IsKeyDown(Key.W) 와 같이 호출
@@ -409,12 +419,12 @@ namespace
 				return false;
 
 			UITextInfo Info{};
-			Info.TextSize = TextSize;
-			Info.Text = Text;
-			Info.Atlas = Font;
-			Info.Anchor = Anchor;
-			Info.Alignment = Alignment;
-			Info.Offset = Offset.value_or(FVector2());
+			Info.mTextSize = TextSize;
+			Info.mText = Text;
+			Info.mAtlas = Font;
+			Info.mAnchor = Anchor;
+			Info.mAlignment = Alignment;
+			Info.mOffset = Offset.value_or(FVector2());
 			UIRenderer->AddUIText(Info);
 			return true;
 		});
@@ -432,13 +442,44 @@ namespace
 				return false;
 
 			UIImageInfo Info{};
-			Info.Size = Size;
-			Info.Texture = Texture;
-			Info.Ratio = std::clamp(Ratio.value_or(1.0f), 0.0f, 1.0f);
-			Info.Anchor = Anchor;
-			Info.Alignment = Alignment;
-			Info.Offset = Offset.value_or(FVector2());
+			Info.mSize = Size;
+			Info.mTexture = Texture;
+			Info.mRatio = std::clamp(Ratio.value_or(1.0f), 0.0f, 1.0f);
+			Info.mAnchor = Anchor;
+			Info.mAlignment = Alignment;
+			Info.mOffset = Offset.value_or(FVector2());
 			UIRenderer->AddUIImage(Info);
+			return true;
+		});
+
+		LuaState.set_function("AddUIMinimap", [](const UCameraComponent* Camera, const sol::table& Rows, const FVector2& PlayerCell, float CellSize, float Radius, float Size, const FVector2& Offset) -> bool {
+			FUIRenderer* UIRenderer{ GEngine ? GEngine->GetUIRenderer() : nullptr };
+			if (!UIRenderer || !Camera || Rows.size() == 0 || Rows.size() > 32) {
+				return false;
+			}
+
+			FUIMinimapInfo Info{};
+			Info.mPlayerCell = PlayerCell;
+			Info.mCellSize = CellSize;
+			Info.mRadius = Radius;
+			Info.mSize = Size;
+			Info.mOffset = Offset;
+			Info.mViewYaw = FMath::DegreesToRadians(Camera->GetWorldRotation().Yaw);
+			Info.mVerticalFieldOfView = Camera->GetFieldOfView();
+			Info.mRowCount = static_cast<uint32>(Rows.size());
+			for (uint32 Y{ 0 }; Y < Info.mRowCount; ++Y) {
+				const sol::optional<FString> Row{ Rows.get<sol::optional<FString>>(Y + 1) };
+				if (!Row || Row->empty() || Row->size() > 32 || (Y > 0 && Row->size() != Info.mColumnCount)) {
+					return false;
+				}
+				Info.mColumnCount = static_cast<uint32>(Row->size());
+				for (uint32 X{ 0 }; X < Info.mColumnCount; ++X) {
+					if ((*Row)[X] == '#') {
+						Info.mBlockedRows[Y] |= uint32{ 1 } << X;
+					}
+				}
+			}
+			UIRenderer->AddUIMinimap(Info);
 			return true;
 		});
 	}

@@ -40,6 +40,7 @@ local function DrawButton(label, rect, hovered, textSize, viewport)
 end
 
 function BeginPlay()
+    SetCursorMode(CursorMode.Free)
     bActionRequested = false
 end
 
@@ -89,5 +90,6 @@ function Tick(dt)
 end
 
 function OnReload()
+    SetCursorMode(CursorMode.Free)
     bActionRequested = false
 end

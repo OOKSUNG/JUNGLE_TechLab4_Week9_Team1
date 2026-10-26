@@ -10,7 +10,7 @@ local bFadingOut = false
 
 local function IsGameFinished()
     local phase = GameManager.Phase
-    return phase == GameManager.EPhase.GameOver or phase == GameManager.EPhase.Escaped
+    return GameManager.IsJumpScaring() or phase == GameManager.EPhase.GameOver or phase == GameManager.EPhase.Escaped
 end
 
 function BeginPlay()

@@ -360,6 +360,18 @@ void UScriptComponent::BindScriptContext(sol::environment& TargetEnvironment)
     TargetEnvironment.set_function("GetViewportSize", [GetViewportInfo]() { return GetViewportInfo().Size; });
     TargetEnvironment.set_function("GetMousePosition", [GetViewportInfo]() { return GetViewportInfo().MousePosition; });
     TargetEnvironment.set_function("IsMouseOverGameViewport", [GetViewportInfo]() { return GetViewportInfo().bAcceptsMouseInput; });
+	TargetEnvironment.set_function("IsExecutableGame", [this]() {
+#if defined(EXECUTABLE)
+		AActor* Actor{ GetOwner() };
+		return Actor && Actor->GetWorld() && Actor->GetWorld()->GetWorldType() == EWorldType::Game;
+#else
+		return false;
+#endif
+	});
+	TargetEnvironment.set_function("SetGameMouseCapture", [this](bool Enabled) {
+		AActor* Actor{ GetOwner() };
+		return GEngine && Actor && GEngine->SetGameMouseCapture(Actor->GetWorld(), Enabled);
+	});
     TargetEnvironment.set_function("QuitGame", [this]()
     {
         if (GEngine && GetOwner())
