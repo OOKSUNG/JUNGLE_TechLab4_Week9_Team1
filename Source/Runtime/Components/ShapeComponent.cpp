@@ -27,8 +27,6 @@ namespace
 
 UShapeComponent::UShapeComponent()
 {
-	OnComponentBeginOverlap.Add([](UPrimitiveComponent*, AActor*, UPrimitiveComponent*) { HTR_LOG(Info, "BeginOverlap"); });
-	OnComponentEndOverlap.Add([](UPrimitiveComponent*, AActor*, UPrimitiveComponent*) { HTR_LOG(Info, "EndOverlap"); });
 }
 
 void UShapeComponent::OnBeginOverlap(UShapeComponent* Other)
