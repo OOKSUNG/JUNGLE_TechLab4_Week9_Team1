@@ -11,6 +11,7 @@ class UScriptComponent : public UActorComponent
 	DECLARE_CLASS(UScriptComponent, UActorComponent)
 
 	REFLECT_START(ClassName)
+		PROPERTY_FLAGS(ScriptPath, CPF_None)
 		REFLECT_END()
 
 public:
@@ -27,6 +28,7 @@ public:
 	bool CreateScriptFromTemplate(const FString& SceneName, const FString& ActorName);
 	bool LoadScript();
 	bool EnsureScriptFile();
+	bool SetScriptPath(const FString& NewFileName);
 
 	void BindScriptContext(sol::environment& TargetEnvironment);
 

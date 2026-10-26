@@ -421,24 +421,88 @@ bool UScriptComponent::ReloadScript()
 
 bool UScriptComponent::EnsureScriptFile()
 {
+	// 씬에서 역직렬화된 경로가 있으면 그것을 사용
+	if (!ScriptPath.empty())
+	{
+		if (std::filesystem::exists(ScriptPath))
+		{
+			return true;
+		}
+
+		HTR_LOG(Error, "[Lua] Script file not found: {}", ScriptPath);
+		return false;
+	}
+
+	// 처음 추가한 컴포넌트만 기본 이름으로 생성
 	AActor* Owner = GetOwner();
-
-	if (!Owner)
+	if (!Owner || !Owner->GetWorld())
 	{
-		HTR_LOG(Error, "[Lua] ScriptComponent has no owner");
 		return false;
 	}
 
-	UWorld* World = Owner->GetWorld();
+	return CreateScriptFromTemplate(
+	    Owner->GetWorld()->GetSceneName(),
+	    Owner->GetName());
+}
 
-	if (!World)
+bool UScriptComponent::SetScriptPath(
+    const FString& NewFileName)
+{
+	if (NewFileName.empty())
 	{
-		HTR_LOG(Error, "[Lua] ScriptComponent owner has no world");
+		HTR_LOG(Error, "[Lua] Script file name cannot be empty");
 		return false;
 	}
 
-	const FString SceneName = World->GetSceneName();
-	const FString ActorName = Owner->GetName();
+	std::filesystem::path NewPath = NewFileName;
 
-	return CreateScriptFromTemplate(SceneName, ActorName);
+	// 파일명만 입력했다면 Assets/Scripts 아래로 해석
+	if (!NewPath.has_parent_path())
+	{
+		NewPath =
+		    std::filesystem::path("Assets/Scripts") / NewPath;
+	}
+
+	if (NewPath.extension() != ".lua")
+	{
+		NewPath.replace_extension(".lua");
+	}
+
+	NewPath = NewPath.lexically_normal();
+
+	// 이미 있는 파일이면 파일을 건드리지 않고 그 스크립트에 연결한다.
+	if (!std::filesystem::exists(NewPath))
+	{
+		// 없는 이름이면 현재 컴포넌트에 자동 생성된 파일의 이름을 바꾼다.
+		if (ScriptPath.empty() || !std::filesystem::exists(ScriptPath))
+		{
+			HTR_LOG(Error, "[Lua] Current script file not found: {}", ScriptPath);
+			return false;
+		}
+
+		std::error_code RenameError;
+		std::filesystem::rename(ScriptPath, NewPath, RenameError);
+
+		if (RenameError)
+		{
+			HTR_LOG(
+			    Error,
+			    "[Lua] Failed to rename script '{}' to '{}': {}",
+			    ScriptPath,
+			    NewPath.string(),
+			    RenameError.message());
+			return false;
+		}
+	}
+
+	ScriptPath = NewPath.generic_string();
+
+	std::error_code ErrorCode;
+	LastWriteTime = std::filesystem::last_write_time(ScriptPath, ErrorCode);
+	if (ErrorCode)
+	{
+		HTR_LOG(Warning, "[Lua] Cannot read script timestamp: {}", ScriptPath);
+	}
+
+	return true;
 }

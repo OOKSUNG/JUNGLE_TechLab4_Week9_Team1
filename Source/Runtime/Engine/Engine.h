@@ -10,7 +10,6 @@
 
 #include "Asset/AssetManager.h"
 
-// TODO: 전방 선언으로 바꿔야 한다.
 #include "Scripting/LuaVM.h"
 #include "Audio/AudioSystem.h"
 
