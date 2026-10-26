@@ -7,6 +7,7 @@
 
 #include "Engine/World.h"
 #include "EngineTypes.h"
+#include "Math/Vector2.h"
 
 #include "Asset/AssetManager.h"
 
@@ -37,6 +38,12 @@ private:
 	UWorld* ThisCurrentWorld = nullptr;
 };
 
+struct FGameViewportInfo
+{
+    FVector2 Size;
+    FVector2 MousePosition = FVector2(-1.0f, -1.0f);
+    bool bAcceptsMouseInput = false;
+};
 class FEngineLoop;
 class FUIRenderer;
 
@@ -83,6 +90,8 @@ public:
 	FLuaVM* GetLuaVM() const { return LuaVM.get(); }
 	FAudioSystem* GetAudioSystem() const { return AudioSystem.get(); }
 	virtual FUIRenderer* GetUIRenderer() { return nullptr; }
+    virtual FGameViewportInfo GetGameViewportInfo(const UWorld* InWorld) const;
+    virtual void RequestQuitGame(const UWorld* InWorld);
 	FSceneTransitionManager* GetSceneTransitionManager() const { return SceneTransitionManager.get(); }
 
 protected:

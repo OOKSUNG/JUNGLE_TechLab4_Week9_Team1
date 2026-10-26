@@ -53,6 +53,8 @@ public:
 	void Tick(float DeltaTime) override;
 	void PreExit() override;
 	FUIRenderer* GetUIRenderer() override { return UIRenderer.get(); }
+    FGameViewportInfo GetGameViewportInfo(const UWorld* InWorld) const override;
+    void RequestQuitGame(const UWorld* InWorld) override;
 
 	// Active View의 입력과 Picking 결과만 Gizmo 및 선택 상태에 반영한다.
 	void UpdateGizmoAndPicking();

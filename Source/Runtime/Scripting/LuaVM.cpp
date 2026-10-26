@@ -266,6 +266,8 @@ namespace
 		LuaState.set_function("IsKeyReleased", &FInputSystem::IsKeyReleased);
 
 		LuaState.set_function("IsMouseDown", &FInputSystem::IsMouseDown);
+        LuaState.set_function("IsMousePressed", &FInputSystem::IsMousePressed);
+        LuaState.set_function("IsMouseReleased", &FInputSystem::IsMouseReleased);
 		LuaState.set_function("GetMouseDeltaX", &FInputSystem::GetMouseDeltaX);
 		LuaState.set_function("GetMouseDeltaY", &FInputSystem::GetMouseDeltaY);
 

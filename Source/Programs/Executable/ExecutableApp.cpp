@@ -22,7 +22,7 @@
 #include <utility>
 
 namespace {
-	constexpr const char* MainScenePath{ "Assets/Scenes/main.scene" };
+	constexpr const char* MainScenePath{ "Assets/Scenes/Title.scene" };
 	constexpr uint32 MainViewId{ 1 };
 }
 
