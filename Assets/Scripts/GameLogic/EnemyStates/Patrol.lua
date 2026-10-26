@@ -82,6 +82,9 @@ function Patrol.Enter(Context, PreviousState)
 end
 
 function Patrol.Tick(Context, DeltaTime)
+    if Common.TryChase(Context) then
+        return
+    end
     local Data = Context.mData
     local Owner = Context.mOwner
     local Map = GameManager.GetMap()

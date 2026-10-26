@@ -4,6 +4,7 @@ local FSM = require("FSM")
 local States = require("EnemyStates")
 local Map = require("Map")
 local GameManager = require("GameManager")
+local Flashlight = require("Flashlight")
 local Ffi = require("ffi")
 local Actor = {}
 Actor.__index = Actor
@@ -517,7 +518,237 @@ local function TestBackOutBeforeTurning()
     assert(Owner.mTurned > 45.0 and Owner.mDistance > 2.0)
 end
 
-local Tests = { TestCorridor, TestStunResume, TestLateMap, TestInvalidStart, TestDisconnectedMap, TestMapReplacement, TestBlockedMovement, TestInvalidatedPath, TestScriptLifecycle, TestScaledUpperFloor, TestActualMap, TestDoorwayClearance, TestNarrowDoorway, TestTurnRate, TestCollisionEvents, TestReplanBeforeWall, TestTurnCommitment, TestBackOutBeforeTurning }
+local function TestChaseTransitions()
+    for _, InitialState in ipairs({ "Idle", "Patrol" }) do
+        GameManager.Reset()
+        local CurrentMap = BuildMap(Corridor)
+        GameManager.SetMap(CurrentMap)
+        local Owner = Actor.New(CurrentMap, StartCell)
+        local Player = Actor.New(CurrentMap, { Floor = 1, X = 6, Y = 6 })
+        GameManager.RegisterPlayer(Player)
+        local Machine, Data = NewMachine(Owner)
+        Machine:Start(InitialState)
+        Machine:Tick(0.25)
+        local PreviousDistance = Owner.mDistance
+        local PreviousPath = Data.mPatrolPath
+        GameManager.SetLightOn(true)
+        Machine:Tick(0.0)
+        assert(Machine:GetCurrentState() == "Chase")
+        Near(Owner.mDistance, PreviousDistance)
+        Machine:Tick(100.0)
+        Near(Owner.mLocation.X, Player.mLocation.X)
+        Near(Owner.mLocation.Y, Player.mLocation.Y)
+        Near(Owner.mLocation.Z, 4.25)
+        GameManager.SetLightOn(false)
+        Machine:Tick(0.0)
+        assert(Machine:GetCurrentState() == "Patrol")
+        assert(Data.mPatrolPath ~= PreviousPath)
+        Machine:Stop()
+    end
+    GameManager.Reset()
+end
+
+local function TestChaseMovingPlayer()
+    local CurrentMap = BuildOpenMap()
+    GameManager.SetMap(CurrentMap)
+    local Owner = Actor.New(CurrentMap, { Floor = 1, X = 20, Y = 15 })
+    Owner.mExtent = FVector.new(0.6, 0.4, 0.5)
+    local Player = Actor.New(CurrentMap, { Floor = 1, X = 30, Y = 20 })
+    GameManager.RegisterPlayer(Player)
+    GameManager.SetLightOn(true)
+    local Machine, Data = NewMachine(Owner)
+    Data.mChaseSpeed = 3.0
+    Data.mPatrolTurnSpeed = 180.0
+    Machine:Start("Idle")
+    Machine:Tick(0.0)
+    for Phase = 1, 2 do
+        for Frame = 1, 800 do
+            if Frame <= 100 then
+                Player.mLocation.X = Player.mLocation.X + 0.02
+                Player.mLocation.Y = Player.mLocation.Y - 0.02
+            end
+            local PreviousDistance = Owner.mDistance
+            local PreviousTurned = Owner.mTurned
+            Machine:Tick(0.05)
+            assert(Machine:GetCurrentState() == "Chase")
+            assert(Owner.mDistance - PreviousDistance <= 0.151, "Chase exceeded its movement budget")
+            assert(Owner.mTurned - PreviousTurned <= 9.001, "Chase snapped its facing direction")
+        end
+        Near(Owner.mLocation.X, Player.mLocation.X)
+        Near(Owner.mLocation.Y, Player.mLocation.Y)
+        Player.mLocation = CurrentMap:CellToWorld({ Floor = 1, X = 10, Y = 10 })
+    end
+    Machine:Stop()
+    GameManager.Reset()
+end
+
+local function TestChaseStunResume()
+    local CurrentMap = BuildMap(Corridor)
+    GameManager.SetMap(CurrentMap)
+    local Owner = Actor.New(CurrentMap, StartCell)
+    GameManager.RegisterPlayer(Actor.New(CurrentMap, { Floor = 1, X = 6, Y = 6 }))
+    local Machine = NewMachine(Owner)
+    Machine:Start("Idle")
+    Machine:HandleEvent("Stun")
+    GameManager.SetLightOn(true)
+    Machine:Tick(0.75)
+    assert(Machine:GetCurrentState() == "Stunned")
+    Near(Owner.mDistance, 0.0)
+    Machine:Tick(0.75)
+    assert(Machine:GetCurrentState() == "Chase")
+    Machine:Tick(0.25)
+    Machine:HandleEvent("Stun")
+    local PreviousDistance = Owner.mDistance
+    Machine:Tick(1.5)
+    assert(Machine:GetCurrentState() == "Chase")
+    Near(Owner.mDistance, PreviousDistance)
+    Machine:HandleEvent("Stun")
+    GameManager.SetLightOn(false)
+    Machine:Tick(1.5)
+    assert(Machine:GetCurrentState() == "Patrol")
+    Near(Owner.mDistance, PreviousDistance)
+    GameManager.SetLightOn(true)
+    Machine:Tick(0.0)
+    Owner.mMachine = Machine
+    Owner.mAfterMove = InterruptMovement
+    Machine:Tick(100.0)
+    assert(Machine:GetCurrentState() == "Stunned")
+    assert(Owner.mDistance < PreviousDistance + 8.0, "Chase continued through waypoints after being stunned")
+    Machine:Stop()
+    GameManager.Reset()
+end
+
+local function TestChaseDoorway()
+    local CurrentMap = BuildMap("##################\n#.....######.....#\n#.....######.....#\n#................#\n#................#\n#.....######.....#\n#.....######.....#\n##################")
+    GameManager.SetMap(CurrentMap)
+    local Owner = Actor.New(CurrentMap, { Floor = 1, X = 4, Y = 4 })
+    Owner.mLocation.X = Owner.mLocation.X - 0.5
+    Owner.mExtent = FVector.new(0.9414, 0.6947, 1.893)
+    Owner.mRotation.Yaw = 90.0
+    local Player = Actor.New(CurrentMap, { Floor = 1, X = 15, Y = 4 })
+    GameManager.RegisterPlayer(Player)
+    GameManager.SetLightOn(true)
+    local Machine, Data = NewMachine(Owner)
+    Data.mPatrolTurnSpeed = 360.0
+    Machine:Start("Chase")
+    for Frame = 1, 800 do
+        Machine:Tick(0.05)
+    end
+    assert(CurrentMap:WorldToCell(Owner.mLocation).X >= 13, "Chase did not cross the two-cell doorway")
+    Near(Owner.mLocation.Y, Player.mLocation.Y)
+    Machine:Stop()
+    GameManager.Reset()
+end
+
+local function TestChaseMissingReferences()
+    local CurrentMap = BuildMap(Corridor)
+    GameManager.SetMap(nil)
+    GameManager.SetLightOn(true)
+    local Owner = Actor.New(CurrentMap, StartCell)
+    local Machine = NewMachine(Owner)
+    Machine:Start("Idle")
+    Machine:Tick(0.25)
+    assert(Machine:GetCurrentState() == "Idle")
+    local Player = Actor.New(CurrentMap, { Floor = 1, X = 6, Y = 6 })
+    GameManager.RegisterPlayer(Player)
+    Machine:Tick(0.0)
+    Machine:Tick(1.0)
+    assert(Machine:GetCurrentState() == "Chase")
+    Near(Owner.mDistance, 0.0)
+    GameManager.SetMap(CurrentMap)
+    Machine:Tick(0.25)
+    assert(Owner.mDistance > 0.0)
+    GameManager.UnregisterPlayer(Player)
+    Machine:Tick(0.0)
+    assert(Machine:GetCurrentState() == "Patrol")
+    Machine:Stop()
+    GameManager.Reset()
+end
+
+local function TestChaseActualMap()
+    local MapData = require("MapData")
+    local CurrentMap = Map.New(MapData)
+    for Floor, Text in pairs(MapData.Floors) do
+        CurrentMap:LoadFloor(Floor, Text)
+    end
+    GameManager.SetMap(CurrentMap)
+    local Owner = Actor.New(CurrentMap, { Floor = 1, X = 6, Y = 24 })
+    Owner.mLocation = FVector.new(-22.5, 4.5, 0.0)
+    Owner.mExtent = FVector.new(0.9414, 0.6947, 1.893)
+    local Player = Actor.New(CurrentMap, { Floor = 1, X = 46, Y = 24 })
+    GameManager.RegisterPlayer(Player)
+    GameManager.SetLightOn(true)
+    local Machine, Data = NewMachine(Owner)
+    Data.mPatrolTurnSpeed = 360.0
+    Data.mPatrolWallMargin = 0.04
+    Machine:Start("Idle")
+    for Frame = 1, 2000 do
+        Machine:Tick(0.05)
+    end
+    assert(Machine:GetCurrentState() == "Chase")
+    Near(Owner.mLocation.X, Player.mLocation.X)
+    Near(Owner.mLocation.Y, Player.mLocation.Y)
+    Near(Owner.mLocation.Z, 0.0)
+    Machine:Stop()
+    GameManager.Reset()
+end
+
+local function TestFlashlightChaseLifecycle()
+    local CurrentMap = BuildMap(Corridor)
+    GameManager.SetMap(CurrentMap)
+    GameManager.RegisterPlayer(Actor.New(CurrentMap, { Floor = 1, X = 6, Y = 6 }))
+    local Owner = Actor.New(CurrentMap, StartCell)
+    local Script = setmetatable({ self = Owner }, { __index = _G })
+    local OriginalNew = FSM.New
+    local Machine = nil
+    local function CaptureMachine(...)
+        Machine = OriginalNew(...)
+        return Machine
+    end
+    FSM.New = CaptureMachine
+    setfenv(assert(loadfile("Assets/Scripts/EnemyFSM.lua")), Script)()
+    Script.BeginPlay()
+    FSM.New = OriginalNew
+    local ToggleSound = Flashlight.Config.ToggleSound
+    Flashlight.Config.ToggleSound = nil
+    Flashlight.Start(nil)
+    assert(Flashlight.RequestToggle())
+    Flashlight.Tick(Flashlight.Config.ToggleDelay * 0.5)
+    Script.Tick(0.0)
+    assert(Machine:GetCurrentState() == "Idle" and not GameManager.IsLightOn())
+    Flashlight.Tick(Flashlight.Config.ToggleDelay)
+    Script.Tick(0.0)
+    assert(Machine:GetCurrentState() == "Idle" and GameManager.IsLightOn())
+    GameManager.StartGame()
+    Flashlight.Stop()
+    Flashlight.Start(nil)
+    assert(Flashlight.RequestToggle())
+    Flashlight.Tick(Flashlight.Config.ToggleDelay + 0.01)
+    Script.Tick(0.0)
+    assert(Machine:GetCurrentState() == "Chase")
+    Script.Tick(0.25)
+    local PreviousDistance = Owner.mDistance
+    Flashlight.Tick(Flashlight.Config.MaxBattery + 1.0)
+    assert(not Flashlight.IsOn() and not GameManager.IsLightOn())
+    Script.Tick(0.0)
+    assert(Machine:GetCurrentState() == "Patrol")
+    assert(Flashlight.RequestBatterySwap(45.0))
+    Flashlight.Tick(Flashlight.Config.SwapTime)
+    assert(Flashlight.RequestToggle())
+    Flashlight.Tick(Flashlight.Config.ToggleDelay + 0.01)
+    Script.Tick(0.0)
+    assert(Machine:GetCurrentState() == "Chase")
+    GameManager.GameOver("FlashlightChaseTest")
+    Script.Tick(5.0)
+    Near(Owner.mDistance, PreviousDistance)
+    Script.EndPlay()
+    assert(#GameManager.GetEnemies() == 0)
+    Flashlight.Stop()
+    Flashlight.Config.ToggleSound = ToggleSound
+    GameManager.Reset()
+end
+
+local Tests = { TestCorridor, TestStunResume, TestLateMap, TestInvalidStart, TestDisconnectedMap, TestMapReplacement, TestBlockedMovement, TestInvalidatedPath, TestScriptLifecycle, TestScaledUpperFloor, TestActualMap, TestDoorwayClearance, TestNarrowDoorway, TestTurnRate, TestCollisionEvents, TestReplanBeforeWall, TestTurnCommitment, TestBackOutBeforeTurning, TestChaseTransitions, TestChaseMovingPlayer, TestChaseStunResume, TestChaseDoorway, TestChaseMissingReferences, TestChaseActualMap, TestFlashlightChaseLifecycle }
 for Index, Test in ipairs(Tests) do
     Test()
     print("[EnemyPatrolTests] PASS", Index)

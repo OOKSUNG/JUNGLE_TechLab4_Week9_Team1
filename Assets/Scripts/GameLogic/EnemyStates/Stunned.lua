@@ -7,7 +7,10 @@ end
 
 function Stunned.Tick(Context, DeltaTime)
     if Context.mMachine:GetElapsedTime() >= Context.mData.mStunDuration then
-        Context.mMachine:RequestState(Context.mData.mResumeState)
+        if not Common.TryChase(Context) then
+            local ResumeState = Context.mData.mResumeState
+            Context.mMachine:RequestState(ResumeState == "Chase" and "Patrol" or ResumeState)
+        end
     end
 end
 

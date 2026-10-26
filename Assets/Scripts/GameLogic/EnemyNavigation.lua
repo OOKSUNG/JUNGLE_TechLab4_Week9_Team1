@@ -100,11 +100,14 @@ function EnemyNavigation.CanMove(Navigation, From, To, Floor, Heading)
     return IsAreaClear(Navigation, Floor, (From.X + To.X) * 0.5, (From.Y + To.Y) * 0.5, ExtentX + math.abs(To.X - From.X) * 0.5, ExtentY + math.abs(To.Y - From.Y) * 0.5)
 end
 
-function EnemyNavigation.FindPatrolPath(Navigation, Location, Yaw, MinimumDistance, ChangeDirection)
+local function FindPath(Navigation, Location, Yaw, MinimumDistance, ChangeDirection, TargetLocation)
     local Map = Navigation.mMap
     local Floor = Map:WorldToCell(Location).Floor
     local FloorData = Map.Floors[Floor]
     if FloorData == nil then
+        return nil
+    end
+    if TargetLocation ~= nil and Map:WorldToCell(TargetLocation).Floor ~= Floor then
         return nil
     end
 
@@ -142,15 +145,27 @@ function EnemyNavigation.FindPatrolPath(Navigation, Location, Yaw, MinimumDistan
     local SideGoals = {}
     local NearbySideGoals = {}
     local MaximumDepth = math.ceil(MinimumDistance * 2.0 / Navigation.mSpacing) + 4
+    local ChaseGoal = nil
+    local ChaseDistance = math.huge
     local Index = 1
     while Index <= #Nodes do
         local Node = Nodes[Index]
-        if Node.Depth > MaximumDepth and #NearbyGoals > 0 then
+        if TargetLocation ~= nil then
+            local Position = Navigation:ToWorld(Floor, Node.X, Node.Y)
+            local Distance = (Position.X - TargetLocation.X) ^ 2 + (Position.Y - TargetLocation.Y) ^ 2
+            if Distance < ChaseDistance then
+                ChaseGoal = Index
+                ChaseDistance = Distance
+            end
+            if ChaseDistance <= Navigation.mSpacing * Navigation.mSpacing * 0.5 + 0.000001 then
+                break
+            end
+        elseif Node.Depth > MaximumDepth and #NearbyGoals > 0 then
             break
         end
         local CanTurn = Navigation:CanTurnAtNode(Floor, Node.X, Node.Y)
         local Distance = ((Node.X - Start.X) ^ 2 + (Node.Y - Start.Y) ^ 2) * Navigation.mSpacing * Navigation.mSpacing
-        if Node.Moved and CanTurn and Distance >= Map.CellSize * Map.CellSize and (not ChangeDirection or Node.FirstHeading ~= Heading) then
+        if TargetLocation == nil and Node.Moved and CanTurn and Distance >= Map.CellSize * Map.CellSize and (not ChangeDirection or Node.FirstHeading ~= Heading) then
             NearbyGoals[#NearbyGoals + 1] = Index
             local Sideways = Node.FirstHeading % 2 ~= Heading % 2
             if Sideways then
@@ -189,12 +204,12 @@ function EnemyNavigation.FindPatrolPath(Navigation, Location, Yaw, MinimumDistan
     elseif #Goals == 0 then
         Goals = NearbyGoals
     end
-    if #Goals == 0 then
+    if TargetLocation == nil and #Goals == 0 then
         return nil
     end
 
     local ReversePath = {}
-    local GoalIndex = Goals[math.random(1, #Goals)]
+    local GoalIndex = ChaseGoal or Goals[math.random(1, #Goals)]
     while GoalIndex ~= nil do
         local Node = Nodes[GoalIndex]
         ReversePath[#ReversePath + 1] = { Location = Navigation:ToWorld(Floor, Node.X, Node.Y), Floor = Floor, Heading = Node.Heading }
@@ -215,6 +230,14 @@ function EnemyNavigation.FindPatrolPath(Navigation, Location, Yaw, MinimumDistan
         table.remove(Path, 1)
     end
     return Path
+end
+
+function EnemyNavigation.FindPatrolPath(Navigation, Location, Yaw, MinimumDistance, ChangeDirection)
+    return FindPath(Navigation, Location, Yaw, MinimumDistance, ChangeDirection, nil)
+end
+
+function EnemyNavigation.FindChasePath(Navigation, Location, Yaw, TargetLocation)
+    return FindPath(Navigation, Location, Yaw, 0.0, false, TargetLocation)
 end
 
 return EnemyNavigation
