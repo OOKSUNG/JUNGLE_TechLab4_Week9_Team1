@@ -18,8 +18,8 @@ namespace
 	const FString GeneratedPrefix = "MapGen_";
 	const FString MapActorScriptName = "MapActor.lua";
 	const FString MapDataModule = "MapData";
-	constexpr float WallHeight = 3.0f;
 	constexpr float FloorThickness = 1.0f;
+	constexpr float CeilingThickness = 0.2f;
 	constexpr char WallCharacter = '#';
 	constexpr char FloorCharacter = '.';
 
@@ -33,6 +33,8 @@ namespace
 	{
 		float CellSize = 1.0f;
 		float FloorHeight = 4.0f;
+		float WallHeight = 4.0f;
+		bool bCeiling = true;
 		TArray<FMapFloor> Floors;
 	};
 
@@ -105,6 +107,8 @@ namespace
 		sol::table Data = Loaded.get<sol::table>(0);
 		OutData.CellSize = Data.get_or("CellSize", 1.0f);
 		OutData.FloorHeight = Data.get_or("FloorHeight", 4.0f);
+		OutData.WallHeight = Data.get_or("WallHeight", OutData.FloorHeight);
+		OutData.bCeiling = Data.get_or("bCeiling", true);
 
 		sol::optional<sol::table> Floors = Data["Floors"];
 		if (!Floors)
@@ -164,7 +168,7 @@ namespace
 		return ToRemove.Num();
 	}
 
-	AActor* SpawnCubeActor(UWorld& World, const FVector& Location, const FVector& Scale, const FString& MeshName, const FString& BoxName)
+	AActor* SpawnCubeActor(UWorld& World, AActor& Parent, const FVector& Location, const FVector& Scale, const FString& MeshName, const FString& BoxName)
 	{
 		const FTransform Transform(FRotator(0.0f, 0.0f, 0.0f), Location, Scale);
 		AActor* Actor = World.SpawnActor(AActor::StaticClass(), NAME_None, &Transform);
@@ -183,6 +187,7 @@ namespace
 			}
 		}
 
+		Actor->AttachToActor(&Parent, EAttachmentRule::KeepWorld);
 		return Actor;
 	}
 
@@ -284,10 +289,10 @@ FMapWallGenerateResult FMapWallGenerator::Generate(AActor& MapActor)
 				const FVector Location(
 					Origin.X - static_cast<float>(Y - 1) * Cell,
 					Origin.Y + (static_cast<float>(Start + End) * 0.5f - 1.0f) * Cell,
-					BaseZ + WallHeight * 0.5f);
-				const FVector Scale(Cell, static_cast<float>(End - Start + 1) * Cell, WallHeight);
+					BaseZ + Data.WallHeight * 0.5f);
+				const FVector Scale(Cell, static_cast<float>(End - Start + 1) * Cell, Data.WallHeight);
 
-				if (SpawnCubeActor(*World, Location, Scale, GeneratedPrefix + "WallMesh", GeneratedPrefix + "WallBox"))
+				if (SpawnCubeActor(*World, MapActor, Location, Scale, GeneratedPrefix + "WallMesh", GeneratedPrefix + "WallBox"))
 					++Result.WallActors;
 			}
 		}
@@ -301,16 +306,24 @@ FMapWallGenerateResult FMapWallGenerator::Generate(AActor& MapActor)
 				BaseZ - FloorThickness * 0.5f);
 			const FVector Scale(static_cast<float>(Height) * Cell, static_cast<float>(Width) * Cell, FloorThickness);
 
-			if (SpawnCubeActor(*World, Location, Scale, GeneratedPrefix + "FloorMesh", FString()))
+			if (SpawnCubeActor(*World, MapActor, Location, Scale, GeneratedPrefix + "FloorMesh", FString()))
 				++Result.FloorActors;
+
+			if (Data.bCeiling)
+			{
+				const FVector CeilingLocation(Location.X, Location.Y, BaseZ + Data.WallHeight + CeilingThickness * 0.5f);
+				const FVector CeilingScale(Scale.X, Scale.Y, CeilingThickness);
+				if (SpawnCubeActor(*World, MapActor, CeilingLocation, CeilingScale, GeneratedPrefix + "CeilingMesh", FString()))
+					++Result.CeilingActors;
+			}
 		}
 
 		Result.OpenEdgeCells += CountOpenEdgeCells(Floor, FirstOpenCell);
 	}
 
 	Result.bSuccess = true;
-	Result.Message = std::format("Removed {}, added {} walls and {} floors",
-		Result.RemovedActors, Result.WallActors, Result.FloorActors);
+	Result.Message = std::format("Removed {}, added {} walls, {} floors and {} ceilings",
+		Result.RemovedActors, Result.WallActors, Result.FloorActors, Result.CeilingActors);
 	if (Result.OpenEdgeCells > 0)
 		Result.Message += std::format("\n{} floor cells are open to the map edge (first: {})", Result.OpenEdgeCells, FirstOpenCell);
 

@@ -12,6 +12,7 @@ struct FMapWallGenerateResult
 	int32 RemovedActors = 0;
 	int32 WallActors = 0;
 	int32 FloorActors = 0;
+	int32 CeilingActors = 0;
 	int32 OpenEdgeCells = 0;
 	FString Message;
 };
