@@ -53,6 +53,14 @@
                             "Properties": {
                                 "ScriptPath": "Assets/Scripts/GameLogic/BackgroundMusic.lua"
                             }
+                        },
+                        {
+                            "Class": "UScriptComponent",
+                            "Name": "HUDScript",
+                            "Parent": "",
+                            "Properties": {
+                                "ScriptPath": "Assets/Scripts/GameLogic/HUD.lua"
+                            }
                         }
                     ],
                     "Properties": {},

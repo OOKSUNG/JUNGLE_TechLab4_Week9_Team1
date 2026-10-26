@@ -6,6 +6,7 @@ local Inventory = {}
 Inventory.Config = {
     SlowdownPerWeight = 0.05,
     MinSpeedMultiplier = 0.5,
+    PickupRadius = 2.0,
 }
 
 local counts = {}

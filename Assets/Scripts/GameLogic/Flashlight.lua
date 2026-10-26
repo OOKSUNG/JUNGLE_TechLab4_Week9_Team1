@@ -4,6 +4,7 @@ local Flashlight = {}
 
 Flashlight.Config = {
     StartBattery = 90.0,
+    MaxBattery = 90.0,
     DrainPerSecond = 1.0,
     ToggleDelay = 0.3,
     SwapTime = 1.5,
@@ -115,6 +116,9 @@ function Flashlight.RequestBatterySwap(seconds)
     if swapTimer > 0.0 or not seconds or seconds <= 0.0 then
         return false
     end
+    if battery >= Flashlight.Config.MaxBattery then
+        return false
+    end
     toggleTimer = 0.0
     SetOn(false)
     swapTimer = Flashlight.Config.SwapTime
@@ -127,7 +131,7 @@ function Flashlight.Tick(dt)
         swapTimer = swapTimer - dt
         if swapTimer <= 0.0 then
             swapTimer = 0.0
-            battery = battery + pendingBattery
+            battery = math.min(Flashlight.Config.MaxBattery, battery + pendingBattery)
             pendingBattery = 0.0
             GameManager.AddBatteryUsed()
         end
@@ -172,7 +176,7 @@ function Flashlight.GetBattery()
 end
 
 function Flashlight.GetBatteryRatio()
-    return math.min(1.0, battery / Flashlight.Config.StartBattery)
+    return battery / Flashlight.Config.MaxBattery
 end
 
 return Flashlight

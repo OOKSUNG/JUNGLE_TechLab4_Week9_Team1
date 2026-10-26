@@ -6,7 +6,6 @@ local TOGGLE_KEY = Key.Tab
 local NEXT_KEY = Key.Down
 local PREV_KEY = Key.Up
 local USE_KEY = Key.Enter
-local PICKUP_RADIUS = 2.0
 local PICKUP_SOUND = "Assets/Sounds/아이템획득.mp3"
 local PICKUP_VOLUME = 0.8
 
@@ -22,7 +21,7 @@ local function LogSlots()
 end
 
 local function TryPickup()
-    local entry = GameManager.FindNearestItem(self:GetActorLocation(), PICKUP_RADIUS)
+    local entry = GameManager.FindNearestItem(self:GetActorLocation(), Inventory.Config.PickupRadius)
     if not entry then
         return
     end
