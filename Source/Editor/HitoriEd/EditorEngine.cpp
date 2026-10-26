@@ -132,36 +132,6 @@ bool UEditorEngine::Init()
 	}
 	HTR_LOG(Info, "Initialize ImGui Success!");
 	
-
-	// Lua Coroutine용 함수 Binding
-	lua.open_libraries(sol::lib::base, sol::lib::coroutine);
-	lua.set_function("RegisterCoroutine", [this](sol::thread LuaCouroutine)	// Coroutine에 대한 정보를 Scheduler에서 저장 (Coroutine이 다수일경우 구분해서 처리 필요)
-		{
-			FCoroutineScheduler.RegisterLuaCoroutine(LuaCouroutine);	
-		});
-	lua.set_function("StartCoroutine", [this](sol::thread LuaCoroutine)	// Coroutine 시작 후 Yield결과를 판정, Wait 및 WaitUntil 처리
-		{
-			sol::protected_function resume = lua["coroutine"]["resume"];
-			FCoroutineScheduler.RunCoroutine(lua, resume, LuaCoroutine);
-		});
-	lua.set_function("print", [](const std::string& message)
-		{
-			HTR_LOG(Info, "[Lua] {}", message);
-		});
-
-	auto result = lua.safe_script_file(
-		"Coroutine.lua",
-		sol::script_pass_on_error
-	);
-
-	if (!result.valid())
-	{
-		sol::error error = result;
-		HTR_LOG(Error, "[Lua] {}", error.what());
-	}
-
-	
-
 	GridRenderer = MakeUnique<FGridRenderer>();
 	GridRenderer->Init(Renderer);
 
@@ -398,7 +368,6 @@ void UEditorEngine::Tick(const float DeltaTime)
 				A->GetName(), A->GetWorld() == PIEWorld, A->GetLevel() == PIEWorld->GetPersistentLevel(),
 				A->GetRootComponent() && A->GetRootComponent()->GetOwner() == A);
 	}
-	FCoroutineScheduler.Update(DeltaTime);
 	UpdateMultipleViewportState(DeltaTime);
 	TickWorldAndEditor(DeltaTime);
 	RenderMultipleViewports();

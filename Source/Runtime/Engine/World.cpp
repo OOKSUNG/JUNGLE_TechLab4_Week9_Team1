@@ -1,6 +1,7 @@
 #include "EnginePCH.h"
 #include "World.h"
 #include "Level.h"
+#include "Engine/Engine.h"
 
 #include "Core/EngineStatics.h"
 #include "Engine/Engine.h"
@@ -128,6 +129,10 @@ void UWorld::Tick(float DeltaTime)
 			BeginPlayList.Peek()->BeginPlay();
 			BeginPlayList.Dequeue();
 		}
+
+		// 액터 수와 관계없이 게임 월드 프레임마다 한 번만 갱신한다.
+		if (FLuaVM* LuaVM = GEngine ? GEngine->GetLuaVM() : nullptr)
+			LuaVM->UpdateCoroutine(DeltaTime);
 
 		{
 			SCOPE_CYCLE_COUNTER(STAT_ActorTick);
@@ -1023,6 +1028,14 @@ void UWorld::EndPlay()
 	{
 		GEngine->GetAudioSystem()->StopAll();
 	}
+	// 현재 단일 게임 월드의 대기가 다음 Play까지 남지 않도록 정리한다.
+
+	if (WorldType != EWorldType::Editor)
+	{
+		if (FLuaVM* LuaVM = GEngine ? GEngine->GetLuaVM() : nullptr)
+			LuaVM->ResetCoroutines();
+	}
+
 }
 
 UWorld* UWorld::CreateWorld(const EWorldType InWorldType, bool bInformEngineOfWorld, FName WorldName)

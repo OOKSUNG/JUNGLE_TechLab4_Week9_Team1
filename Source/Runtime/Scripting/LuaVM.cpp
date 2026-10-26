@@ -11,6 +11,7 @@
 
 #include <sol/sol.hpp>
 #include <luajit.h>
+#include <stdexcept>
 
 namespace
 {
@@ -161,58 +162,80 @@ namespace
 	void BindAudioAPI(sol::state& LuaState)
 	{
 		LuaState.set_function("PlaySound",
-			[](const FString& Path, sol::optional<bool> bLoop, sol::optional<float> Volume) -> uint32
-			{
-				FAudioSystem* Audio = GetAudio();
-				return Audio ? Audio->Play(Path, bLoop.value_or(false), Volume.value_or(1.0f)) : 0;
-			});
+		                      [](const FString& Path, sol::optional<bool> bLoop, sol::optional<float> Volume) -> uint32
+		                      {
+			                      FAudioSystem* Audio = GetAudio();
+			                      return Audio ? Audio->Play(Path, bLoop.value_or(false), Volume.value_or(1.0f)) : 0;
+		                      });
 
 		LuaState.set_function("StopSound", [](uint32 Handle)
-			{
+		                      {
 				if (FAudioSystem* Audio = GetAudio())
 				{
 					Audio->Stop(Handle);
-				}
-			});
+				} });
 
 		LuaState.set_function("StopAllSounds", []()
-			{
+		                      {
 				if (FAudioSystem* Audio = GetAudio())
 				{
 					Audio->StopAll();
-				}
-			});
+				} });
 
 		LuaState.set_function("SetSoundVolume", [](uint32 Handle, float Volume)
-			{
+		                      {
 				if (FAudioSystem* Audio = GetAudio())
 				{
 					Audio->SetVolume(Handle, Volume);
-				}
-			});
+				} });
 
 		LuaState.set_function("FadeSound", [](uint32 Handle, float TargetVolume, float Duration)
-			{
+		                      {
 				if (FAudioSystem* Audio = GetAudio())
 				{
 					Audio->FadeTo(Handle, TargetVolume, Duration);
-				}
-			});
+				} });
 
 		LuaState.set_function("IsSoundPlaying", [](uint32 Handle)
-			{
+		                      {
 				FAudioSystem* Audio = GetAudio();
-				return Audio && Audio->IsPlaying(Handle);
-			});
+				return Audio && Audio->IsPlaying(Handle); });
 
 		LuaState.set_function("SetMasterVolume", [](float Volume)
-			{
+		                      {
 				if (FAudioSystem* Audio = GetAudio())
 				{
 					Audio->SetMasterVolume(Volume);
-				}
-			});
+				} });
 	}
+
+	void BindCoroutineAPI(sol::state& LuaState, CoroutineScheduler& Scheduler)
+	{
+		LuaState.set_function("RegisterCoroutine", [&Scheduler](sol::thread Co)
+		{
+			Scheduler.RegisterLuaCoroutine(Co);
+		});
+
+		LuaState.set_function("StartCoroutine", [&LuaState, &Scheduler](sol::thread Co)
+		{
+			sol::protected_function Resume = LuaState["coroutine"]["resume"];
+			Scheduler.RunCoroutine(LuaState, Resume, Co);
+		});
+
+		// 액터별 Environment는 이 State의 공통 함수를 상속한다.
+		sol::protected_function_result Result = LuaState.safe_script(R"lua(
+		function Wait(seconds)
+		coroutine.yield("wait", seconds)
+		end
+
+		function WaitUntil(condition)
+		coroutine.yield("wait_until", condition)
+		end
+		)lua", sol::script_pass_on_error);
+			if (!CheckLuaResult(Result, "Coroutine helpers"))
+				throw std::runtime_error("Failed to initialize Coroutine helpers");
+	}
+
 
 	void BindActorAPI(sol::state& LuaState)
 	{
@@ -328,6 +351,8 @@ bool FLuaVM::Initialize()
 
 void FLuaVM::Shutdown()
 {
+	// Lua 참조는 lua_State를 닫기 전에 해제한다.
+	ResetCoroutines();
 	if (!State)
 	{
 		return;
@@ -335,6 +360,17 @@ void FLuaVM::Shutdown()
 
 	// sol::state의 소멸자가 내부 lua_State에 lua_close를 호출합니다.
 	State.reset();
+}
+
+void FLuaVM::UpdateCoroutine(float DeltaTime)
+{
+	if (State)
+		FCoroutineScheduler.Update(DeltaTime);
+}
+
+void FLuaVM::ResetCoroutines()
+{
+	FCoroutineScheduler.Reset();
 }
 
 void FLuaVM::BindEngineAPI()
@@ -347,6 +383,7 @@ void FLuaVM::BindEngineAPI()
 	BindLoggingAPI(*State);
 	BindVectorAPI(*State);
 	BindRotatorAPI(*State);
+	BindCoroutineAPI(*State, FCoroutineScheduler);
 	State->new_usertype<FHitResult>(
 		"FHitResult",
 		sol::no_constructor,

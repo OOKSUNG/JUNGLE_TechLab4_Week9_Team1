@@ -81,8 +81,6 @@ public:
 	//void RestoreEditorWorld(UWorld* EditorWorld);            // GWorld를 에디터 월드로 복구
 	//void DestroyWorldContext(UWorld* PlayWorld);
 
-	sol::state lua;
-	CoroutineScheduler FCoroutineScheduler;
 private:
 	bool ExecShadowCommand(const FString& CommandLine, FString& OutMessage);
 	bool ExecShadowResolutionCommand(const FString& CommandLine, FString& OutMessage);

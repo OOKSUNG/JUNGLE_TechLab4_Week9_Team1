@@ -2,6 +2,7 @@
 
 #include "Core/Types.h"
 #include "Core/EngineString.h"
+#include "Core/CoroutineScheduler.h"
 
 #include <sol/sol.hpp>
 
@@ -39,8 +40,11 @@ public:
 		return State.get();
 	}
 
+	void UpdateCoroutine(float DeltaTime);
+	void ResetCoroutines();
+
 private:
 	void BindEngineAPI();
-
+	CoroutineScheduler FCoroutineScheduler;
 	TUniquePtr<sol::state> State;
 };
