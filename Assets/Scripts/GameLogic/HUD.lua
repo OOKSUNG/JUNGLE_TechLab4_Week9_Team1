@@ -9,7 +9,9 @@ local MEDIUM = 40
 local LARGE = 90
 local MARGIN = 20
 local BATTERY_SIZE = FVector2.new(270, 90)
-local STAMINA_BAR_LENGTH = 20
+local STAMINA_FRAME_SIZE = FVector2.new(320, 64)
+local STAMINA_FILL_SIZE = FVector2.new(292, 18)
+local STAMINA_FILL_INSET = FVector2.new(14, 23)
 
 local function V(x, y)
     return FVector2.new(x, y)
@@ -28,13 +30,12 @@ local function DrawBattery()
 end
 
 local function DrawStamina()
-    local filled = math.floor(Stamina.GetRatio() * STAMINA_BAR_LENGTH + 0.5)
-    local bar = string.rep("|", filled) .. string.rep(".", STAMINA_BAR_LENGTH - filled)
-    local label = "체력 [" .. bar .. "]"
-    if Stamina.IsExhausted() then
-        label = label .. " 지침"
-    end
-    AddUIText(label, SMALL, V(0, 1), V(0, 1), V(MARGIN, -MARGIN))
+    AddUIImage("Assets/UI/StaminaFrame.png", STAMINA_FRAME_SIZE,
+        V(0, 1), V(0, 1), V(MARGIN, -MARGIN))
+    -- 충전 영역만 실제 스태미나 비율로 잘라 프레임 안에 표시한다.
+    AddUIImage("Assets/UI/StaminaFill.png", STAMINA_FILL_SIZE,
+        V(0, 1), V(0, 1), V(MARGIN + STAMINA_FILL_INSET.X, -MARGIN - STAMINA_FILL_INSET.Y),
+        Stamina.GetRatio())
 end
 
 local function DrawPickupPrompt()
