@@ -5,6 +5,7 @@
 #include "Components/SceneComponent.h"
 #include "Math/Vector.h"
 #include "Math/Rotator.h"
+#include "Collision/HitResult.h"
 
 #include <sol/sol.hpp>
 #include <luajit.h>
@@ -283,6 +284,19 @@ void FLuaVM::BindEngineAPI()
 	BindLoggingAPI(*State);
 	BindVectorAPI(*State);
 	BindRotatorAPI(*State);
+	State->new_usertype<FHitResult>(
+		"FHitResult",
+		sol::no_constructor,
+		"bBlockingHit", &FHitResult::bBlockingHit,
+		"bStartPenetrating", &FHitResult::bStartPenetrating,
+		"Time", &FHitResult::Time,
+		"Distance", &FHitResult::Distance,
+		"Location", &FHitResult::Location,
+		"ImpactPoint", &FHitResult::ImpactPoint,
+		"Normal", &FHitResult::Normal,
+		"ImpactNormal", &FHitResult::ImpactNormal,
+		"PenetrationDepth", &FHitResult::PenetrationDepth
+	);
 	BindActorAPI(*State);
 }
 

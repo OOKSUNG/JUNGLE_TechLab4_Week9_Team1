@@ -4,6 +4,7 @@
 #include <sol/sol.hpp>
 
 class FLuaVM;
+struct FHitResult;
 
 class UScriptComponent : public UActorComponent
 {
@@ -13,13 +14,15 @@ class UScriptComponent : public UActorComponent
 		REFLECT_END()
 
 public:
-	virtual ~UScriptComponent() override {};
+	virtual ~UScriptComponent() override;
 
 	virtual void InitializeComponent() override;
 	virtual void BeginPlay() override;
 	virtual void TickComponent(float DeltaTime) override;
 	virtual void EndPlay() override;
 	void OnOverlap(AActor* OtherActor);
+	void OnEndOverlap(AActor* OtherActor);
+	void OnHit(AActor* OtherActor, const FHitResult& Hit);
 
 	bool CreateScriptFromTemplate(const FString& SceneName, const FString& ActorName);
 	bool LoadScript();
@@ -36,9 +39,25 @@ private:
 	sol::protected_function TickFunction;
 	sol::protected_function EndPlayFunction;
 	sol::protected_function OverlapFunction;
+	sol::protected_function EndOverlapFunction;
+	sol::protected_function HitFunction;
 
-	FLuaVM* LuaVM;
-	sol::state* State;
+	FLuaVM* LuaVM = nullptr;
+	sol::state* State = nullptr;
+
+	struct FCollisionBinding
+	{
+		uint32 ShapeUUID;
+		uint32 BeginOverlapHandle;
+		uint32 EndOverlapHandle;
+		uint32 HitHandle;
+	};
+	TArray<FCollisionBinding> CollisionBindings;
+	// Broadcast의 복사본에 남은 콜백도 EndPlay/소멸 후에는 실행하지 않는다.
+	TSharedPtr<bool> CollisionCallbackLifetime;
+
+	void BindCollisionEvents();
+	void UnbindCollisionEvents();
 
 	FString ScriptPath;
 

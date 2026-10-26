@@ -13,11 +13,26 @@ class TDelegate
 public:
 	using HandlerType = std::function<void(Args...)>;
 
+	TDelegate() = default;
+	TDelegate(const TDelegate& Other) : CurrentHandleNum(Other.CurrentHandleNum)
+	{
+		for (const auto& Entry : Other.Handlers)
+			Handlers.Add(Entry.first, MakeShared<HandlerType>(*Entry.second));
+	}
+	TDelegate& operator=(const TDelegate& Other)
+	{
+		if (this != &Other)
+			*this = TDelegate(Other);
+		return *this;
+	}
+	TDelegate(TDelegate&&) = default;
+	TDelegate& operator=(TDelegate&&) = default;
+
 	// 일반 함수나 람다 바인딩, 등록 후 해당 Handle에 대한 번호 return
 	uint32 Add(const HandlerType& handler)
 	{
 		CurrentHandleNum++;
-		Handlers.Add(CurrentHandleNum, handler);
+		Handlers.Add(CurrentHandleNum, MakeShared<HandlerType>(handler));
 		return CurrentHandleNum;
 	}
 
@@ -26,18 +41,20 @@ public:
 	uint32 AddDynamic(T* Instance, void (T::* Func)(Args...))
 	{
 		HandlerType handler = [Instance, Func](Args... args) -> void {(Instance->*Func)(args...);};
-		CurrentHandleNum++;
-		Handlers.Add(CurrentHandleNum, handler);
-		return CurrentHandleNum;
+		return Add(handler);
 	}
 
 	// Handlers 목록에 있는 함수들 전부 실행
 	// Todo : Instance가 중간에 Null이 된 경우 등 예외처리
 	void Broadcast(Args... args)
 	{
-		for (auto it = Handlers.begin();it != Handlers.end();it++)
+		// 콜백에서 구독을 해제하거나 발행 객체를 삭제해도 현재 순회는 유지한다.
+		// 등록/해제는 다음 Broadcast부터 반영된다.
+		// 함수는 공유 참조로 유지해 mutable 람다의 내부 상태도 보존한다.
+		const auto Snapshot = Handlers;
+		for (const auto& Entry : Snapshot)
 		{
-			it->second(args...);
+			(*Entry.second)(args...);
 		}
 	}
 
@@ -47,7 +64,8 @@ public:
 	{
 		if (auto* Handler = Handlers.Find(HandleNum))
 		{
-			(*Handler)(args...);
+			auto Callback = *Handler;
+			(*Callback)(args...);
 		}
 	}
 
@@ -59,6 +77,6 @@ public:
 	}
 
 private:
-	TMap<uint32, HandlerType> Handlers;
+	TMap<uint32, TSharedPtr<HandlerType>> Handlers;
 	uint32 CurrentHandleNum = 0;
 };
