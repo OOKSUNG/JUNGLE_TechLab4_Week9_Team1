@@ -8,11 +8,11 @@ EnemyAudio.Config = {
 
     FootstepFullDistance = 3.0,
     FootstepSilentDistance = 25.0,
-    HeartbeatDistance = 5.0,
+    HeartbeatDistance = 8.0,
 
-    FootstepMaxVolume = 1.0,
+    FootstepMaxVolume = 0.7,
     FootstepPitch = 1.0,
-    HeartbeatMaxVolume = 1.0,
+    HeartbeatMaxVolume = 0.6,
 
     VolumeChangePerSecond = 2.0,
     MovingSpeedThreshold = 0.2,

@@ -1,12 +1,13 @@
 local GameManager = require("GameManager")
 
 local FOOTSTEP_SOUND = "Assets/Sounds/발소리2.mp3"
-local MAX_VOLUME = 0.5
+local MAX_VOLUME = 1.0
 local REFERENCE_SPEED = 3.0
+local PITCH_EMPHASIS = 1.3
 local MIN_PITCH = 0.5
-local MAX_PITCH = 1.4
+local MAX_PITCH = 1.9
 local VOLUME_CHANGE_PER_SECOND = 6.0
-local PITCH_CHANGE_PER_SECOND = 2.0
+local PITCH_CHANGE_PER_SECOND = 6.0
 local MOVING_SPEED_THRESHOLD = 0.2
 
 local handle = 0
@@ -58,7 +59,8 @@ function Tick(dt)
     end
 
     if bMoving then
-        local targetPitch = math.max(MIN_PITCH, math.min(MAX_PITCH, speed / REFERENCE_SPEED))
+        local emphasized = 1.0 + (speed / REFERENCE_SPEED - 1.0) * PITCH_EMPHASIS
+        local targetPitch = math.max(MIN_PITCH, math.min(MAX_PITCH, emphasized))
         local newPitch = MoveToward(pitch, targetPitch, PITCH_CHANGE_PER_SECOND * dt)
         if newPitch ~= pitch then
             pitch = newPitch

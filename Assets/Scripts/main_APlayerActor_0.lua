@@ -65,7 +65,8 @@ function Tick(DeltaTime)
         local SinYaw = math.sin(YawRadians)
         local WorldDirection = FVector.new(Direction.X * CosYaw - Direction.Y * SinYaw, Direction.X * SinYaw + Direction.Y * CosYaw, 0)
         local Delta = WorldDirection:Normalized() * Speed * DeltaTime
-        self:Move(Delta, Rotation)
+        self:Move(FVector.new(Delta.X, 0, 0), Rotation)
+        self:Move(FVector.new(0, Delta.Y, 0), Rotation)
     end
 end
 
