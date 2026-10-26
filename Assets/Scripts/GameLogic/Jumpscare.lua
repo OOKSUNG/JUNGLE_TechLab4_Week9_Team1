@@ -21,6 +21,7 @@ local BASE_YAW = 180.0
 local FLASH_INTENSITY = 2.5
 local FLICKER_MIN = 0.4
 local FLICKER_OFF_CHANCE = 0.15
+local FLICKER_INTERVAL = 0.05
 local SHAKE_OFFSET = 0.035
 local SHAKE_ANGLE = 3.0
 
@@ -34,6 +35,7 @@ local EState = {
 
 local state = EState.Idle
 local elapsed = 0.0
+local flickerTimer = 0.0
 local root = nil
 local mesh = nil
 local light = nil
@@ -138,11 +140,16 @@ function Tick(dt)
         if alpha >= 1.0 then
             state = EState.Hold
             elapsed = 0.0
+            flickerTimer = 0.0
         end
     elseif state == EState.Hold then
         PlaceMonster(END_DISTANCE, SHAKE_OFFSET)
-        local bOff = math.random() < FLICKER_OFF_CHANCE
-        SetLight(not bOff, FLICKER_MIN + math.random() * (FLASH_INTENSITY - FLICKER_MIN))
+        flickerTimer = flickerTimer - dt
+        if flickerTimer <= 0.0 then
+            flickerTimer = FLICKER_INTERVAL
+            local bOff = math.random() < FLICKER_OFF_CHANCE
+            SetLight(not bOff, FLICKER_MIN + math.random() * (FLASH_INTENSITY - FLICKER_MIN))
+        end
         if elapsed >= HOLD_TIME then
             Finish()
         end
