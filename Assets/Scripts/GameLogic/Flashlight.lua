@@ -15,7 +15,7 @@ Flashlight.Config = {
     FlickerMinScale = 0.15,
     FlickerMaxScale = 0.6,
     ToggleSound = "Assets/Sounds/손전등키는소리.mp3",
-    ToggleSoundVolume = 0.8,
+    ToggleSoundVolume = 0.1,
 }
 
 local light = nil

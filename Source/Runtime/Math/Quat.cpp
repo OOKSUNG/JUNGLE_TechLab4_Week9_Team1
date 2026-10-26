@@ -5,12 +5,18 @@
 
 FQuat::FQuat()
 {
-	X = 0.0f; Y = 0.0f; Z = 0.0f; W = 1.0f;
+	X = 0.0f;
+	Y = 0.0f;
+	Z = 0.0f;
+	W = 1.0f;
 }
 
 FQuat::FQuat(float InX, float InY, float InZ, float InW)
 {
-	X = InX; Y = InY; Z = InZ; W = InW;
+	X = InX;
+	Y = InY;
+	Z = InZ;
+	W = InW;
 }
 
 FQuat::FQuat(FRotator InRotator)
@@ -20,7 +26,7 @@ FQuat::FQuat(FRotator InRotator)
 
 /* Functions */
 
-FQuat FQuat::operator * (const FQuat& Other) const
+FQuat FQuat::operator*(const FQuat& Other) const
 {
 	FQuatRegister A = VectorSIMD::Load(V);
 	FQuatRegister B = VectorSIMD::Load(Other.V);
@@ -52,7 +58,6 @@ FQuat FQuat::operator * (const FQuat& Other) const
 	float SR = -VectorSIMD::Dot(R, Sign);
 
 	return FQuat(SI, SJ, SK, SR);
-
 }
 
 // 켤레 복소수
@@ -104,13 +109,13 @@ FVector FQuat::RotateVector(const FVector& V) const
 	FVectorRegister Qv = Qv = VectorSIMD::SetWZero(Q);
 
 	// T = 2 * cross(Q.xyz, V)
-	FVectorRegister T = VectorSIMD::Mul( VectorSIMD::SetVal(2.0f), VectorSIMD::Cross3(Qv, Vec));
+	FVectorRegister T = VectorSIMD::Mul(VectorSIMD::SetVal(2.0f), VectorSIMD::Cross3(Qv, Vec));
 
 	// V + W*T
-	FVectorRegister Result = VectorSIMD::Add( Vec, VectorSIMD::Mul( VectorSIMD::SplatW(Q), T ));
+	FVectorRegister Result = VectorSIMD::Add(Vec, VectorSIMD::Mul(VectorSIMD::SplatW(Q), T));
 
 	// + cross(Q.xyz, T)
-	Result = VectorSIMD::Add( Result, VectorSIMD::Cross3(Qv, T));
+	Result = VectorSIMD::Add(Result, VectorSIMD::Cross3(Qv, T));
 
 	FVector Out;
 	VectorSIMD::StoreFloat3(Out.V, Result);
@@ -133,11 +138,10 @@ FMatrix FQuat::ToFMatrix() const
 	const float WZ = W * Z;
 
 	return FMatrix(
-		1.0f - 2.0f * (YY + ZZ), 2.0f * (XY + WZ), 2.0f * (XZ - WY), 0.0f,
-		2.0f * (XY - WZ), 1.0f - 2.0f * (XX + ZZ), 2.0f * (YZ + WX), 0.0f,
-		2.0f * (XZ + WY) , 2.0f * (YZ - WX), 1.0f - 2.0f * (XX + YY), 0.0f,
-		0.0f, 0.0f, 0.0f, 1.0f
-	);
+	    1.0f - 2.0f * (YY + ZZ), 2.0f * (XY + WZ), 2.0f * (XZ - WY), 0.0f,
+	    2.0f * (XY - WZ), 1.0f - 2.0f * (XX + ZZ), 2.0f * (YZ + WX), 0.0f,
+	    2.0f * (XZ + WY), 2.0f * (YZ - WX), 1.0f - 2.0f * (XX + YY), 0.0f,
+	    0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 FRotator FQuat::ToFRotator() const
@@ -152,11 +156,21 @@ FRotator FQuat::ToFRotator() const
 
 	ResultRotator.Pitch = asinf(ClampedSinPitch);
 
-	// Roll
-	ResultRotator.Roll = atan2f( 2.0f * (W * X + Y * Z), 1.0f - 2.0f * (X * X + Y * Y));
+	if (fabsf(SinPitch) > 0.99999f)
+	{
+		// Pitch가 ±90도면 Roll/Yaw 식의 두 인자가 모두 0에 가까워져 결과가 망가진다.
+		// 이때는 Roll을 0으로 두고 Right 벡터에서 Yaw를 구한다.
+		ResultRotator.Roll = 0.0f;
+		ResultRotator.Yaw = atan2f(2.0f * (W * Z - X * Y), 1.0f - 2.0f * (X * X + Z * Z));
+	}
+	else
+	{
+		// Roll
+		ResultRotator.Roll = atan2f(2.0f * (W * X + Y * Z), 1.0f - 2.0f * (X * X + Y * Y));
 
-	// Yaw
-	ResultRotator.Yaw = atan2f( 2.0f * (W * Z + X * Y), 1.0f - 2.0f * (Y * Y + Z * Z));
+		// Yaw
+		ResultRotator.Yaw = atan2f(2.0f * (W * Z + X * Y), 1.0f - 2.0f * (Y * Y + Z * Z));
+	}
 
 	// Radian -> Degree
 	ResultRotator.Pitch = FMath::RadiansToDegrees(ResultRotator.Pitch);
@@ -169,28 +183,25 @@ FRotator FQuat::ToFRotator() const
 FVector FQuat::GetForwardVector() const
 {
 	return FVector(
-		1.0f - 2.0f * (Y * Y + Z * Z),
-		2.0f * (X * Y + W * Z),
-		2.0f * (X * Z - W * Y)
-	);
+	    1.0f - 2.0f * (Y * Y + Z * Z),
+	    2.0f * (X * Y + W * Z),
+	    2.0f * (X * Z - W * Y));
 }
 
 FVector FQuat::GetRightVector() const
 {
 	return FVector(
-		2.0f * (X * Y - W * Z),
-		1.0f - 2.0f * (X * X + Z * Z),
-		2.0f * (Y * Z + W * X)
-	);
+	    2.0f * (X * Y - W * Z),
+	    1.0f - 2.0f * (X * X + Z * Z),
+	    2.0f * (Y * Z + W * X));
 }
 
 FVector FQuat::GetUpVector() const
 {
 	return FVector(
-		2.0f * (X * Z + W * Y),
-		2.0f * (Y * Z - W * X),
-		1.0f - 2.0f * (X * X + Y * Y)
-	);
+	    2.0f * (X * Z + W * Y),
+	    2.0f * (Y * Z - W * X),
+	    1.0f - 2.0f * (X * X + Y * Y));
 }
 
 /* Statics */
@@ -210,11 +221,10 @@ FQuat FQuat::MakeFromAxisAngle(const FVector& Axis, float AngleRadians)
 	const float C = cosf(HalfAngle);
 
 	return FQuat(
-		NormalizeddAxis.X * S,
-		NormalizeddAxis.Y * S,
-		NormalizeddAxis.Z * S,
-		C
-	);
+	    NormalizeddAxis.X * S,
+	    NormalizeddAxis.Y * S,
+	    NormalizeddAxis.Z * S,
+	    C);
 }
 
 FQuat FQuat::MakeFromEuler(float RollRadian, float PitchRadian, float YawRadian)
@@ -233,16 +243,15 @@ FQuat FQuat::MakeFromEuler(float RollRadian, float PitchRadian, float YawRadian)
 	const float CR = cosf(HalfRoll);
 
 	return FQuat(
-		// X
-		SR * CP * CY - CR * SP * SY,
+	    // X
+	    SR * CP * CY - CR * SP * SY,
 
-		// Y
-		CR * SP * CY + SR * CP * SY,
+	    // Y
+	    CR * SP * CY + SR * CP * SY,
 
-		// Z
-		CR * CP * SY - SR * SP * CY,
+	    // Z
+	    CR * CP * SY - SR * SP * CY,
 
-		// W
-		CR * CP * CY + SR * SP * SY
-	);
+	    // W
+	    CR * CP * CY + SR * SP * SY);
 }

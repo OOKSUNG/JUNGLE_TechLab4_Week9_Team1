@@ -12,17 +12,17 @@ local DARK_TIME = 0.35
 local LUNGE_TIME = 0.22
 local HOLD_TIME = 0.9
 
-local START_DISTANCE = 4.0
-local END_DISTANCE = 1.3
-local SIDE_OFFSET = 0.1
-local HEIGHT_OFFSET = -1.65
+local START_DISTANCE = 3.2
+local END_DISTANCE = 0.75
+local SIDE_OFFSET = 0.0
+local HEIGHT_OFFSET = 0.0
 local BASE_YAW = 180.0
 
-local FLASH_INTENSITY = 2.5
-local FLICKER_MIN = 0.4
+local FLASH_INTENSITY = 1.0  
+local FLICKER_MIN = 0.3      
 local FLICKER_OFF_CHANCE = 0.15
 local FLICKER_INTERVAL = 0.05
-local SHAKE_OFFSET = 0.035
+local SHAKE_OFFSET = 0.02
 local SHAKE_ANGLE = 3.0
 
 local EState = {
@@ -112,6 +112,7 @@ function BeginPlay()
         print("[Jumpscare] Missing component", ROOT_NAME, MESH_NAME)
         return
     end
+    mesh:SetRelativeLocation(MESH_PIVOT_OFFSET)
     mesh:SetVisible(false)
 end
 
