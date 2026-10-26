@@ -21,6 +21,10 @@ public:
 	virtual void BeginPlay() override;
 	virtual void TickComponent(float DeltaTime) override;
 	virtual void EndPlay() override;
+
+	using Super::Serialize;
+	virtual void Serialize(FStructuredArchive::FRecord Record) override;
+
 	void OnOverlap(AActor* OtherActor);
 	void OnEndOverlap(AActor* OtherActor);
 	void OnHit(AActor* OtherActor, const FHitResult& Hit);

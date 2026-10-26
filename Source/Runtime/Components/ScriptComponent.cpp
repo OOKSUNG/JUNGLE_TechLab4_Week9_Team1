@@ -13,6 +13,13 @@ UScriptComponent::~UScriptComponent()
     UnbindCollisionEvents();
 }
 
+void UScriptComponent::Serialize(FStructuredArchive::FRecord Record)
+{
+    ScriptPath = std::filesystem::path(ScriptPath).generic_string();
+    Super::Serialize(Record);
+    ScriptPath = std::filesystem::path(ScriptPath).generic_string();
+}
+
 void UScriptComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
@@ -246,7 +253,7 @@ bool UScriptComponent::CreateScriptFromTemplate(const FString& SceneName, const 
         }
     }
 
-    ScriptPath = NewScriptPath.string();
+    ScriptPath = NewScriptPath.generic_string();
     return true;
 }
 
