@@ -2,6 +2,8 @@
 #include "Engine.h"
 
 #include "Components/ScriptComponent.h"
+#include "Launch/LaunchEngineLoop.h"
+#include "Core/Window.h"
 
 UEngine* GEngine = nullptr;
 UEngine::~UEngine() = default;
@@ -89,4 +91,31 @@ void UEngine::DestroyWorldContext(UWorld* InWorld)
 void FWorldContext::SetCurrentWorld(UWorld* World)
 {
 	ThisCurrentWorld = World;
+}
+
+FGameViewportInfo UEngine::GetGameViewportInfo(const UWorld* InWorld) const
+{
+    FGameViewportInfo Info;
+    if (!InWorld || InWorld->GetWorldType() == EWorldType::Editor)
+        return Info;
+
+    FWindow* Window = GetEngineLoop().GetMainWindow();
+    if (!Window)
+        return Info;
+
+    Info.Size = FVector2(static_cast<float>(Window->GetWidth()), static_cast<float>(Window->GetHeight()));
+    POINT Mouse{};
+    if (::GetCursorPos(&Mouse) && ::ScreenToClient(Window->GetHandle(), &Mouse))
+    {
+        Info.MousePosition = FVector2(static_cast<float>(Mouse.x), static_cast<float>(Mouse.y));
+        Info.bAcceptsMouseInput = ::GetForegroundWindow() == Window->GetHandle()
+            && Mouse.x >= 0 && Mouse.y >= 0 && Mouse.x < Info.Size.X && Mouse.y < Info.Size.Y;
+    }
+    return Info;
+}
+
+void UEngine::RequestQuitGame(const UWorld* InWorld)
+{
+    if (InWorld && InWorld->GetWorldType() == EWorldType::Game)
+        GetEngineLoop().RequestExit();
 }

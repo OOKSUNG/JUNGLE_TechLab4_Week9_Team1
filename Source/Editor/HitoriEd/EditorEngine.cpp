@@ -1784,3 +1784,49 @@ void UEditorEngine::SaveSceneAs()
 	FEditorFileUtils::SaveSceneAs(EditorWorld);
 }
 
+
+// Script UI coordinates use the same render-target dimensions as the UI renderer.
+FGameViewportInfo UEditorEngine::GetGameViewportInfo(const UWorld* InWorld) const
+{
+    FGameViewportInfo Info;
+    if (!InWorld || InWorld != PlayWorld || PIEViewIndex == InvalidViewIndex)
+        return Info;
+
+    if (PIEWindow)
+    {
+        Info.Size = FVector2(static_cast<float>(PIEWindow->GetWidth()), static_cast<float>(PIEWindow->GetHeight()));
+        POINT Mouse{};
+        if (::GetCursorPos(&Mouse) && ::ScreenToClient(PIEWindow->GetHandle(), &Mouse))
+        {
+            Info.MousePosition = FVector2(static_cast<float>(Mouse.x), static_cast<float>(Mouse.y));
+            Info.bAcceptsMouseInput = ::GetForegroundWindow() == PIEWindow->GetHandle()
+                && Mouse.x >= 0 && Mouse.y >= 0 && Mouse.x < Info.Size.X && Mouse.y < Info.Size.Y;
+        }
+        return Info;
+    }
+
+    if (!ViewportsPanel || !MainWindow || !MultipleViewportsAdapter.IsViewActive(PIEViewIndex))
+        return Info;
+
+    const FRect& Rect = MultipleViewportsAdapter.GetViewRect(PIEViewIndex);
+    if (Rect.Width <= 0.0f || Rect.Height <= 0.0f)
+        return Info;
+
+    const auto& Viewport = ViewportsPanel->GetRenderingInfo(PIEViewIndex).ViewportSetting;
+    Info.Size = FVector2(static_cast<float>(Viewport.Width), static_cast<float>(Viewport.Height));
+    const FVector2 LocalMouse = ViewportsPanel->GetLocalMousePosition();
+    const float X = LocalMouse.X - Rect.X;
+    const float Y = LocalMouse.Y - Rect.Y;
+    Info.MousePosition = FVector2(X * Info.Size.X / Rect.Width, Y * Info.Size.Y / Rect.Height);
+    Info.bAcceptsMouseInput = ViewportsPanel->IsHovered() && !ImGui::GetIO().WantTextInput
+        && ::GetForegroundWindow() == MainWindow->GetHandle()
+        && X >= 0.0f && Y >= 0.0f && X < Rect.Width && Y < Rect.Height;
+    return Info;
+}
+
+void UEditorEngine::RequestQuitGame(const UWorld* InWorld)
+{
+    // A game menu closes the PIE session, not the editor and its unsaved scene.
+    if (InWorld && InWorld == PlayWorld)
+        RequestEndPlayMap();
+}
