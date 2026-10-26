@@ -200,6 +200,8 @@ project "HitoriEngine"
 		enablepch "Off"
 	filter "files:Source/ThirdParty/miniaudio/**.cpp"
 		enablepch "Off"
+	filter "files:Source/Runtime/Scripting/**.cpp"
+		buildoptions { "/bigobj" }
 	filter {}
 
 -- 에디터 애플리케이션. ObjViewer 구성에서는 같은 exe가 뷰어로 빌드된다.

@@ -390,6 +390,14 @@
                                 "bUsePCSS": false,
                                 "bVisible": true
                             }
+                        },
+                        {
+                            "Class": "UScriptComponent",
+                            "Name": "FlashlightScript",
+                            "Parent": "",
+                            "Properties": {
+                                "ScriptPath": "Assets/Scripts/GameLogic/FlashlightActor.lua"
+                            }
                         }
                     ],
                     "Properties": {},

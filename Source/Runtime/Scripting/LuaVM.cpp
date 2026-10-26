@@ -3,6 +3,7 @@
 
 #include "GameFramework/Actor.h"
 #include "Components/SceneComponent.h"
+#include "Components/SpotLightComponent.h"
 #include "Math/Vector.h"
 #include "Math/Rotator.h"
 #include "Collision/HitResult.h"
@@ -438,6 +439,65 @@ namespace
 			"Destroy", [](AActor& Actor)
 			{
 				return Actor.Destroy();
+			},
+			"GetSpotLight", [](const AActor& Actor) -> USpotLightComponent*
+			{
+				for (UActorComponent* Component : Actor.GetComponents())
+				{
+					if (USpotLightComponent* SpotLight = Cast<USpotLightComponent>(Component))
+					{
+						return SpotLight;
+					}
+				}
+				return nullptr;
+			}
+		);
+	}
+
+	void BindLightAPI(sol::state& LuaState)
+	{
+		LuaState.new_usertype<USpotLightComponent>(
+			"USpotLightComponent",
+			sol::no_constructor,
+			"SetVisibility", [](USpotLightComponent& Light, bool bVisible)
+			{
+				Light.SetVisibility(bVisible);
+			},
+			"IsVisible", [](const USpotLightComponent& Light)
+			{
+				return Light.IsVisible();
+			},
+			"SetIntensity", [](USpotLightComponent& Light, float Intensity)
+			{
+				Light.SetIntensity(Intensity);
+			},
+			"GetIntensity", [](const USpotLightComponent& Light)
+			{
+				return Light.GetIntensity();
+			},
+			"SetInnerConeAngle", [](USpotLightComponent& Light, float Angle)
+			{
+				Light.SetInnerConeAngle(Angle);
+			},
+			"GetInnerConeAngle", [](const USpotLightComponent& Light)
+			{
+				return Light.GetInnerConeAngle();
+			},
+			"SetOuterConeAngle", [](USpotLightComponent& Light, float Angle)
+			{
+				Light.SetOuterConeAngle(Angle);
+			},
+			"GetOuterConeAngle", [](const USpotLightComponent& Light)
+			{
+				return Light.GetOuterConeAngle();
+			},
+			"SetAttenuationRadius", [](USpotLightComponent& Light, float Radius)
+			{
+				Light.SetAttenuationRadius(Radius);
+			},
+			"GetAttenuationRadius", [](const USpotLightComponent& Light)
+			{
+				return Light.GetAttenuationRadius();
 			}
 		);
 	}
@@ -543,6 +603,7 @@ void FLuaVM::BindEngineAPI()
 		"ImpactNormal", &FHitResult::ImpactNormal,
 		"PenetrationDepth", &FHitResult::PenetrationDepth
 	);
+	BindLightAPI(*State);
 	BindActorAPI(*State);
 	BindAudioAPI(*State);
 }

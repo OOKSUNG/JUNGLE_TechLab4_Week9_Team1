@@ -11,7 +11,7 @@ function BeginPlay()
         Wait(2.0)
 
         Log("[SceneTestA] LoadScene 요청")
-        LoadScene("Assets/Scenes/SceneTestBBBAAA.scene")
+        LoadScene("Assets/Scenes/Tests/SceneTestBBBAAA.scene")
     end)
 
     RegisterCoroutine(transitionCoroutine)
