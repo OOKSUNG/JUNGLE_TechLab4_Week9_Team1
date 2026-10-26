@@ -3,6 +3,7 @@
 #include "ScriptComponent.h"
 
 #include "Engine/Engine.h"
+#include "Engine/SceneTransitionManager.h"
 #include "Scripting/LuaVM.h"
 #include "Components/ShapeComponent.h"
 #include "GameFramework/Actor.h"
@@ -320,6 +321,29 @@ void UScriptComponent::BindScriptContext(sol::environment& TargetEnvironment)
             }
         }
     );
+
+	// 실제 로드는 현재 Lua 호출이 끝난 뒤 엔진의 프레임 경계에서 수행한다.
+	TargetEnvironment.set_function(
+		"LoadScene",
+		[this](const FString& Path)
+		{
+			AActor* Owner = GetOwner();
+			FSceneTransitionManager* Manager = GEngine ? GEngine->GetSceneTransitionManager() : nullptr;
+			if (Owner && Manager)
+				Manager->RequestLoadScene(Owner->GetWorld(), Path);
+		}
+	);
+
+	TargetEnvironment.set_function(
+		"RestartScene",
+		[this]()
+		{
+			AActor* Owner = GetOwner();
+			FSceneTransitionManager* Manager = GEngine ? GEngine->GetSceneTransitionManager() : nullptr;
+			if (Owner && Manager)
+				Manager->RequestRestartScene(Owner->GetWorld());
+		}
+	);
 }
 
 void UScriptComponent::CheckHotReload(float DeltaTime)

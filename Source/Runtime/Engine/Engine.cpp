@@ -15,6 +15,7 @@ bool UEngine::Init()
 
 	if (!World || !World->Init()) return false;*/
 
+	SceneTransitionManager = MakeUnique<FSceneTransitionManager>();
 	AudioSystem = MakeUnique<FAudioSystem>();
 
 	if (!AudioSystem->Initialize())
