@@ -33,6 +33,10 @@ public:
 	// View별 ViewProjection을 직접 사용해 텍스트를 해당 View에 렌더한다.
 	void OnRender(const FString& Text, const FMatrix& WorldMatrix, float TextSize,
 		const UFont& Atlas, const FMatrix& ViewProjection);
+	// 호출자가 지정한 파이프라인으로 동일한 글자 메시를 그린다.
+	void OnRender(const FString& Text, const FMatrix& WorldMatrix, float TextSize,
+		const UFont& Atlas, const FMatrix& ViewProjection, const FPipelineState& DrawPipeline);
+	const FPipelineState& GetPipelineState() const { return PipelineState; }
 
 	// 항상 카메라를 향하게 그린다 (에디터 UUID 라벨 등)
 	void OnRenderBillboard(const FString& Text, const FVector& WorldPos, float TextSize,

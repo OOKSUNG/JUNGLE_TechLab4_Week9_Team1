@@ -46,6 +46,7 @@ bool UExecutableEngine::Init() {
 		return false;
 	}
 	mTextRenderer.Init();
+	mUIRenderer.Init(mTextRenderer);
 	Renderer->SetViewMode(EViewMode::Lit_BlinnPhong);
 
 	mWorld = UWorld::CreateWorld(EWorldType::Game, false);
@@ -268,6 +269,8 @@ void UExecutableEngine::RenderText(const FMatrix& ViewProjection) {
 		}
 		mTextRenderer.OnRender(TextComponent->GetText(), TextComponent->GetWorldMatrix(), TextComponent->GetTextSize(), *TextComponent->GetFont(), ViewProjection);
 	}
+	mUIRenderer.RenderUIImage(TextPass.ViewportSetting.Width, TextPass.ViewportSetting.Height);
+	mUIRenderer.RenderUIText(TextPass.ViewportSetting.Width, TextPass.ViewportSetting.Height);
 	RenderCommand::EndRenderPass(TextPass);
 }
 

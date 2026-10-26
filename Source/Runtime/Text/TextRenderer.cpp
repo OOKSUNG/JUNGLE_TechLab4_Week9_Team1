@@ -181,6 +181,12 @@ void FTextRenderer::OnRender(const FString& Text, const FMatrix& WorldMatrix, fl
 void FTextRenderer::OnRender(const FString& Text, const FMatrix& WorldMatrix, float TextSize,
 	const UFont& Atlas, const FMatrix& ViewProjection)
 {
+	OnRender(Text, WorldMatrix, TextSize, Atlas, ViewProjection, PipelineState);
+}
+
+void FTextRenderer::OnRender(const FString& Text, const FMatrix& WorldMatrix, float TextSize,
+	const UFont& Atlas, const FMatrix& ViewProjection, const FPipelineState& DrawPipeline)
+{
 	if (Text.empty() || !Atlas.AtlasTexture)
 	{
 		return;
@@ -213,7 +219,7 @@ void FTextRenderer::OnRender(const FString& Text, const FMatrix& WorldMatrix, fl
 	MSDFData MSDFData;
 	MSDFData.ScreenPx = Atlas.DistanceRange;
 
-	RenderCommand::BindPipelineState(PipelineState);
+	RenderCommand::BindPipelineState(DrawPipeline);
 	RenderCommand::BindShaderResource(0, Atlas.AtlasTexture, EShaderBindFlagBits::Pixel);
 	RenderCommand::UpdateBufferData(MVP.get(), &TransData, sizeof(TextTransformData));
 	RenderCommand::UpdateBufferData(ScreenPx.get(), &MSDFData, sizeof(MSDFData));

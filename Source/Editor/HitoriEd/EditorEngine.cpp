@@ -203,6 +203,9 @@ bool UEditorEngine::Init()
 	TextRenderer = MakeUnique<FTextRenderer>();
 	TextRenderer->Init();
 
+	UIRenderer = MakeUnique<FUIRenderer>();
+	UIRenderer->Init(*TextRenderer);
+
 	// 투영 행렬 생성 
 	MultipleViewportsAdapter.InitializeFromWorld(*GetActiveWorld());
 	// 화면 나눔 비율 설정 가져오기
@@ -1182,6 +1185,12 @@ void UEditorEngine::RenderOverlayPass(const int32 ViewIndex, UWorld& ViewWorld, 
 		}
 	}
 
+	if (PlayWorld && ViewIndex == PIEViewIndex)
+	{
+		UIRenderer->RenderUIImage(ViewRenderingInfo.ViewportSetting.Width, ViewRenderingInfo.ViewportSetting.Height);
+		UIRenderer->RenderUIText(ViewRenderingInfo.ViewportSetting.Width, ViewRenderingInfo.ViewportSetting.Height);
+	}
+
 	RenderCommand::EndRenderPass(PassInfo);
 }
 
@@ -1570,6 +1579,8 @@ void UEditorEngine::EndPlayMap()
 	if (FSceneTransitionManager* SceneTransitions = GetSceneTransitionManager())
 		SceneTransitions->CancelForWorld(PlayWorld);
 	PlayWorld->EndPlay();
+	UIRenderer->ResetUIText();
+	UIRenderer->ResetUIImage();
 	PlayWorld->ClearWorld();
 	DestroyWorldContext(PlayWorld);
 	delete PlayWorld;

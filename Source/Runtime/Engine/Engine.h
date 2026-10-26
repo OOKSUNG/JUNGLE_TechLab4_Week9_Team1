@@ -38,6 +38,7 @@ private:
 };
 
 class FEngineLoop;
+class FUIRenderer;
 
 // 엔진 모드별 실행 설정. UE에서는 ini가 맡는 부분이다.
 // Width·Height가 0이면 주 모니터 해상도를 쓴다.
@@ -81,6 +82,7 @@ public:
 
 	FLuaVM* GetLuaVM() const { return LuaVM.get(); }
 	FAudioSystem* GetAudioSystem() const { return AudioSystem.get(); }
+	virtual FUIRenderer* GetUIRenderer() { return nullptr; }
 	FSceneTransitionManager* GetSceneTransitionManager() const { return SceneTransitionManager.get(); }
 
 protected:

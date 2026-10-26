@@ -349,7 +349,7 @@
                             "Name": "ScriptComponent",
                             "Parent": "",
                             "Properties": {
-                                "ScriptPath": "Assets/Scripts\\main_APlayerActor_0.lua"
+                                "ScriptPath": "Assets/Scripts/main_APlayerActor_0.lua"
                             }
                         },
                         {
@@ -391,6 +391,57 @@
                     ],
                     "Properties": {},
                     "RootComponent": "UBoxComponent_1"
+                },
+                {
+                    "Class": "ABoxActor",
+                    "Components": [
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "CollisionComponent",
+                            "Parent": "",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 0.5,
+                                    "Y": 0.5,
+                                    "Z": 0.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.0,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": false,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UScriptComponent",
+                            "Name": "UScriptComponent_0",
+                            "Parent": "",
+                            "Properties": {
+                                "ScriptPath": "Assets/Scripts/main_ABoxActor_0.lua"
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "CollisionComponent"
                 }
             ],
             "Properties": {}
