@@ -1,4 +1,5 @@
 local FSM = require("FSM")
+local GameManager = require("GameManager")
 local States = require("FSMExampleStates")
 local Runtime = { mMachine = nil }
 
@@ -11,6 +12,7 @@ local function Initialize()
     local Data = { mOrigin = FVector.new(Location.X, Location.Y, Location.Z), mDirection = 1.0, mDestinationX = Location.X, mPatrolDistance = 3.0, mPatrolSpeed = 2.0, mIdleDuration = 1.0, mStunDuration = 1.5, mResumeState = "Idle" }
     Runtime.mMachine = FSM.New(self, States, Data)
     Runtime.mMachine:Start("Idle")
+    GameManager.RegisterEnemy(self)
     Log("[FSMExample]", self:GetName(), "Space: stun for 1.5 seconds; patrol: origin X +/- 3")
 end
 
@@ -19,6 +21,9 @@ function BeginPlay()
 end
 
 function Tick(DeltaTime)
+    if not GameManager.IsPlaying() then
+        return
+    end
     if Runtime.mMachine == nil then
         return
     end
@@ -48,6 +53,7 @@ function OnHit(OtherActor, Hit)
 end
 
 function EndPlay()
+    GameManager.UnregisterEnemy(self)
     if Runtime.mMachine ~= nil then
         Runtime.mMachine:Stop()
         Runtime.mMachine = nil
