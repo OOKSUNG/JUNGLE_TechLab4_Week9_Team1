@@ -317,7 +317,7 @@
                             "Class": "UStaticMeshComponent",
                             "Name": "StaticMeshComponent",
                             "OverrideMaterials": [],
-                            "Parent": "UBoxComponent_1",
+                            "Parent": "PlayerCapsule",
                             "Properties": {
                                 "StaticMesh": "Cube",
                                 "Transform": {
@@ -332,8 +332,8 @@
                                         "Yaw": 0.0
                                     },
                                     "Scale": {
-                                        "X": 1.0,
-                                        "Y": 1.0,
+                                        "X": 0.5,
+                                        "Y": 0.5,
                                         "Z": 1.0
                                     }
                                 },
@@ -353,15 +353,12 @@
                             }
                         },
                         {
-                            "Class": "UBoxComponent",
-                            "Name": "UBoxComponent_1",
+                            "Class": "UCapsuleComponent",
+                            "Name": "PlayerCapsule",
                             "Parent": "",
                             "Properties": {
-                                "BoxExtent": {
-                                    "X": 0.5,
-                                    "Y": 0.5,
-                                    "Z": 0.5
-                                },
+                                "CapsuleHalfHeight": 0.5,
+                                "CapsuleRadius": 0.25,
                                 "ShapeColor": 4288517599,
                                 "Transform": {
                                     "Location": {
@@ -390,7 +387,7 @@
                         }
                     ],
                     "Properties": {},
-                    "RootComponent": "UBoxComponent_1"
+                    "RootComponent": "PlayerCapsule"
                 },
                 {
                     "Class": "ABoxActor",

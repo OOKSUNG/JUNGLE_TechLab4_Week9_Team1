@@ -1,7 +1,7 @@
 local GameManager = require("GameManager")
 
 local SPEED = 4.0
-local PATROL_DISTANCE = 18.0
+local PATROL_DISTANCE = 36.0
 
 local startLocation = nil
 local offset = 0.0
