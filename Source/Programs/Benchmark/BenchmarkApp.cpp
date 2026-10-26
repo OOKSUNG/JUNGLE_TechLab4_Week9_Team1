@@ -255,7 +255,7 @@ void UBenchmarkEngine::UpdateGizmoAndPicking()
 	if (Width == 0 || Height == 0)
 		return;
 
-	UCameraComponent* Camera = World->GetMainCamera()->GetCameraComponent();
+	UCameraComponent* Camera{ World->GetMainCameraComponent() };
 
 	const FVector2 MousePosition(
 		static_cast<float>(FInputSystem::GetMouseX()),
@@ -292,7 +292,7 @@ void UBenchmarkEngine::Tick(float DeltaTime)
 	if (Width == 0 || Height == 0)
 		return;
 
-	UCameraComponent* Camera = World->GetMainCamera()->GetCameraComponent();
+	UCameraComponent* Camera{ World->GetMainCameraComponent() };
 	Camera->SetAspectRatio(static_cast<float>(Width) / Height);
 
 	// 기즈모 조작 결과가 같은 프레임의 UpdateAllTransforms에 반영되도록 World Tick보다 앞에 둔다.

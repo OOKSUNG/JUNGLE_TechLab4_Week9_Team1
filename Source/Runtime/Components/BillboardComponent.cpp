@@ -146,7 +146,8 @@ void UBillboardComponent::GetWorldTransformedMatrix(FMatrix* OutWorldMatrix) con
 {
 	OutWorldMatrix->SetIdentity();
 
-	const FTransform& Transform = GetOwner()->GetWorld()->GetMainCamera()->GetCameraComponent()->GetTransform();
+	const UCameraComponent* Camera{ GetOwner()->GetWorld()->GetMainCameraComponent() };
+	const FTransform Transform{ Camera->GetWorldRotation(), Camera->GetWorldLocation() };
 
 	FVector Right = Transform.GetRight().Normalized();
 	FVector Up = Transform.GetUp().Normalized();
@@ -166,7 +167,7 @@ void UBillboardComponent::GetWorldTransformedMatrix(FMatrix* OutWorldMatrix) con
 
 	// Icon 일 때만 IconSize 넘기기
 	const FVector Scale = IsEditorIcon() ? FVector(IconSize, IconSize, IconSize) : GetWorldScale3D();
-	
+
 	// X -> Billboard Forward
 	OutWorldMatrix->M[0][0] = BbFwd.X * Scale.X;
 	OutWorldMatrix->M[0][1] = BbFwd.Y * Scale.X;

@@ -81,17 +81,16 @@ void FEditorViewportClient::ApplyCameraPreset(EMultipleViewportsCameraPreset InP
 }
 
 // 기존 Forward → Yaw/Pitch 계산과 직교 폭 보정을 Override에만 적용한다.
-void FEditorViewportClient::SetCameraOverride(const FVector& Location,
-    const FVector& Forward, const FCameraProjection& Projection, const FRect& Rect)
-{
-    const FVector Direction = NormalizedOrZero(Forward);
-    CameraOverride.Transform.Location = Location;
-    CameraOverride.Transform.Rotation = MakeCameraRotation(
-        std::atan2(Direction.Y, Direction.X) * 180.0f / Pi,
-        std::asin(FMath::Clamp(Direction.Z, -1.0f, 1.0f)) * 180.0f / Pi);
-    CameraOverride.Projection = Projection;
-    ConstrainOrthographicWidth(CameraOverride.Projection, Rect);
-    bHasCameraOverride = true;
+void FEditorViewportClient::SetCameraOverride(const FVector& Location, const FVector& Forward, const FCameraProjection& Projection, const FRect& Rect, const FQuat* Rotation) {
+	const FVector Direction{ NormalizedOrZero(Forward) };
+	CameraOverride.Transform.Location = Location;
+	CameraOverride.Transform.Rotation = Rotation ? *Rotation : MakeCameraRotation(std::atan2(Direction.Y, Direction.X) * 180.0f / Pi, std::asin(FMath::Clamp(Direction.Z, -1.0f, 1.0f)) * 180.0f / Pi);
+	CameraOverride.Projection = Projection;
+	CameraOverride.Projection.mUseCameraClipPlanes = Rotation != nullptr;
+	if (!Rotation) {
+		ConstrainOrthographicWidth(CameraOverride.Projection, Rect);
+	}
+	bHasCameraOverride = true;
 }
 
 // 축 정렬 프리셋은 고정 평면을, 일반 직교 View는 실제 카메라 방향을 사용한다.
@@ -205,7 +204,7 @@ FViewCamera FEditorViewportClient::BuildRenderCamera(
     const FViewCamera& InCamera, const FRect& Rect)
 {
     FViewCamera RenderCamera = InCamera;
-    if (RenderCamera.Projection.Mode != EProjectionMode::Orthographic)
+    if (RenderCamera.Projection.mUseCameraClipPlanes || RenderCamera.Projection.Mode != EProjectionMode::Orthographic)
         return RenderCamera;
 
     const float AspectRatio = Rect.Width > 0.0f && Rect.Height > 0.0f

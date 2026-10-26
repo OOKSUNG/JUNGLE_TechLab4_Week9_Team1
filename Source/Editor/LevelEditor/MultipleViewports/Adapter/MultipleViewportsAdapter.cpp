@@ -24,7 +24,7 @@ void FMultipleViewportsAdapter::SetExternalViewSize(const uint32 Width, const ui
 // 메인 카메라 투영값을 공유하고 네 View의 기본 프리셋 상태를 만든다.
 void FMultipleViewportsAdapter::InitializeFromWorld(UWorld& World)
 {
-	UCameraComponent* MainCamera = World.GetMainCamera() ? World.GetMainCamera()->GetCameraComponent() : nullptr;
+	UCameraComponent* MainCamera{ World.GetMainCameraComponent() };
 	assert(MainCamera != nullptr);
 
 	const FCameraProjection Perspective{
@@ -53,11 +53,9 @@ void FMultipleViewportsAdapter::ApplyCameraProperties(const int32 ViewIndex,
 }
 
 // 패널과 외부 PIE의 카메라 Override를 해당 Client에 전달한다.
-void FMultipleViewportsAdapter::SetViewCameraOverride(const int32 ViewIndex, const FVector& Location,
-	const FVector& Forward, const FCameraProjection& Projection)
-{
+void FMultipleViewportsAdapter::SetViewCameraOverride(const int32 ViewIndex, const FVector& Location, const FVector& Forward, const FCameraProjection& Projection, const FQuat* Rotation) {
 	assert(IsViewIndex(ViewIndex));
-	ViewportClients[ViewIndex].SetCameraOverride(Location, Forward, Projection, GetViewRect(ViewIndex));
+	ViewportClients[ViewIndex].SetCameraOverride(Location, Forward, Projection, GetViewRect(ViewIndex), Rotation);
 }
 
 // Override를 해제해 저장 카메라로 되돌린다.
@@ -289,7 +287,7 @@ void FMultipleViewportsAdapter::BuildRenderQueue(UWorld& World, const int32 View
         const auto& Camera = *static_cast<const FViewCamera*>(Context);
         return FEditorViewportClient::BuildBillboardMatrix(Camera, Position, Width, Height);
     };
-  
+
 	FLODViewContext LODContext = GetLODViewContext(ViewIndex);
 	FFrustumPlanes Frustum = ExtractFrustumPlanes(LODContext.ViewProjection);
 

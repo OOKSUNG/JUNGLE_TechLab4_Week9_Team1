@@ -101,7 +101,7 @@ AActor* UWorld::SpawnActor(UClass* Class, FName InName, const FTransform* Transf
 	{
 		NewActor->GetRootComponent()->SetTransform(SpawnTransform);
 	}
-	
+
 	NewActor->RegisterAllComponents();
 
 	// 4. Level->Actors에 등록
@@ -146,11 +146,13 @@ void UWorld::Tick(float DeltaTime)
 		FlushPendingDestroyActors();
 	}
 
-	
+
 }
 
 void UWorld::ClearWorld()
 {
+	mPlayCameraComponent = nullptr;
+
 	// BeginPlay 대기 중인 Actor 제거
 	while (!BeginPlayList.IsEmpty())
 	{
@@ -158,7 +160,7 @@ void UWorld::ClearWorld()
 	}
 	PendingDestroyActors.Reset();
 
-	
+
 	for (ULevel* Level : Levels)
 	{
 		for (AActor* Actor : Level->Actors)
@@ -818,6 +820,71 @@ void UWorld::SetMainCamera(ACameraActor* Camera)
 	{
 		MainCamera->World = this;
 		MainCamera->RegisterAllActorTickFunctions(true);
+	}
+}
+
+UCameraComponent* UWorld::GetMainCameraComponent() {
+	if (WorldType == EWorldType::PIE) {
+		if (!mPlayCameraComponent) {
+			InitializePlayCamera();
+		}
+		return mPlayCameraComponent;
+	}
+
+	return MainCamera ? MainCamera->GetCameraComponent() : nullptr;
+}
+
+void UWorld::ResetMainCameraComponent(UCameraComponent* Camera) {
+	if (mPlayCameraComponent == Camera) {
+		mPlayCameraComponent = nullptr;
+	}
+}
+
+void UWorld::InitializePlayCamera() {
+	if (MainCamera) {
+		MainCamera->GetCameraComponent()->SetExternalInputManaged(true);
+	}
+
+	for (ULevel* Level : Levels) {
+		if (!Level) {
+			continue;
+		}
+
+		for (AActor* Actor : Level->GetActors()) {
+			if (!Actor) {
+				continue;
+			}
+
+			for (UActorComponent* Component : Actor->GetComponents()) {
+				UCameraComponent* Camera{ Cast<UCameraComponent>(Component) };
+				if (!Camera || !Camera->IsRegistered()) {
+					continue;
+				}
+
+				Camera->SetExternalInputManaged(true);
+				if (!mPlayCameraComponent) {
+					mPlayCameraComponent = Camera;
+				}
+			}
+		}
+	}
+
+	if (!mPlayCameraComponent) {
+		const FTransform CameraTransform{ MainCamera ? MainCamera->GetActorTransform() : FTransform::Identity };
+		ACameraActor* CameraActor{ Cast<ACameraActor>(SpawnActor(ACameraActor::StaticClass(), NAME_None, &CameraTransform)) };
+		if (CameraActor) {
+			mPlayCameraComponent = CameraActor->GetCameraComponent();
+			if (MainCamera) {
+				const UCameraComponent* DefaultCamera{ MainCamera->GetCameraComponent() };
+				mPlayCameraComponent->SetFieldOfView(DefaultCamera->GetFieldOfView());
+				mPlayCameraComponent->SetAspectRatio(DefaultCamera->GetAspectRatio());
+				mPlayCameraComponent->SetNearZ(DefaultCamera->GetNearZ());
+				mPlayCameraComponent->SetFarZ(DefaultCamera->GetFarZ());
+				mPlayCameraComponent->SetIsOrthogonal(DefaultCamera->GetIsOrthogonal());
+				mPlayCameraComponent->SetOrthoWidth(DefaultCamera->GetOrthoWidth());
+			}
+			mPlayCameraComponent->SetExternalInputManaged(true);
+		}
 	}
 }
 

@@ -131,7 +131,7 @@ bool UEditorEngine::Init()
 		HTR_LOG(Error, "Failed To Initialize ImGui!");
 	}
 	HTR_LOG(Info, "Initialize ImGui Success!");
-	
+
 	GridRenderer = MakeUnique<FGridRenderer>();
 	GridRenderer->Init(Renderer);
 
@@ -216,7 +216,7 @@ bool UEditorEngine::Init()
 		SettingsPanel->GetSettings().bMultipleViewportsSingle
 		? ELayoutMode::Single
 		: ELayoutMode::QuadSplit);
-	GetActiveWorld()->GetMainCamera()->GetCameraComponent()->SetExternalInputManaged(true);
+	GetActiveWorld()->GetMainCameraComponent()->SetExternalInputManaged(true);
 
 	/// 삭제 예정
 	//SceneManager = EditorUI->AddEditorPanel<FSceneManager>();
@@ -369,6 +369,7 @@ void UEditorEngine::Tick(const float DeltaTime)
 				A->GetRootComponent() && A->GetRootComponent()->GetOwner() == A);
 	}
 	UpdateMultipleViewportState(DeltaTime);
+	UpdatePIEViewCamera();
 	TickWorldAndEditor(DeltaTime);
 	RenderMultipleViewports();
 	EndFrame();
@@ -651,7 +652,7 @@ void UEditorEngine::RenderMultipleViewports()
 			ActiveShadowViews.Reserve(ViewIndices->Num());
 			TArray<FFrustumPlanes> ActiveViewFrustums;
 			ActiveViewFrustums.Reserve(ViewIndices->Num());
-			
+
 			for (int32 ViewIndex : *ViewIndices)
 			{
 				const FLODViewContext View = MultipleViewportsAdapter.GetLODViewContext(ViewIndex);
@@ -800,37 +801,33 @@ void UEditorEngine::RenderMultipleViewports()
 		CameraPresets);
 }
 
-void UEditorEngine::UpdatePIEViewCamera()
-{
-	if (!PlayWorld || PIEViewIndex == InvalidViewIndex)
+void UEditorEngine::UpdatePIEViewCamera() {
+	if (!PlayWorld || PIEViewIndex == InvalidViewIndex) {
 		return;
+	}
 
-	ACameraActor* GameCameraActor = PlayWorld->GetMainCamera();
-	UCameraComponent* GameCamera = GameCameraActor ? GameCameraActor->GetCameraComponent() : nullptr;
-	if (!GameCamera)
-	{
+	UCameraComponent* GameCamera{ PlayWorld->GetMainCameraComponent() };
+	if (!GameCamera) {
 		MultipleViewportsAdapter.ClearViewCameraOverride(PIEViewIndex);
 		return;
 	}
 
 	// 게임 카메라 자체 입력(WASD·우클릭 회전·휠)은 PIE View를 선택했을 때만 받는다.
 	// 별도 창이면 그 창이 OS 포커스를 가졌을 때다.
-	const bool bPIEViewFocused = IsPIEInWindow()
-		? ::GetForegroundWindow() == PIEWindow->GetHandle()
-		: MultipleViewportsAdapter.GetActiveViewIndex() == PIEViewIndex && !ImGui::GetIO().WantTextInput;
-	GameCamera->SetExternalInputManaged(!bPIEViewFocused);
+	const bool PIEViewFocused{ IsPIEInWindow() ? ::GetForegroundWindow() == PIEWindow->GetHandle() : MultipleViewportsAdapter.GetActiveViewIndex() == PIEViewIndex && !ImGui::GetIO().WantTextInput };
+	GameCamera->SetExternalInputManaged(!PIEViewFocused);
+	const FRect& Rect{ MultipleViewportsAdapter.GetViewRect(PIEViewIndex) };
+	if (Rect.Width > 0.0f && Rect.Height > 0.0f) {
+		GameCamera->SetAspectRatio(Rect.Width / Rect.Height);
+	}
 
 	// 엔진 View 행렬에서 깊이축(View X)을 꺼내면 회전 규약과 무관하게 실제 렌더 방향과 같다.
-	const FMatrix View = GameCamera->GetViewMatrix();
-	const FVector Forward(View.M[0][0], View.M[1][0], View.M[2][0]);
+	const FMatrix View{ GameCamera->GetViewMatrix() };
+	const FVector Forward{ View.M[0][0], View.M[1][0], View.M[2][0] };
+	const FQuat Rotation{ GameCamera->GetWorldRotation().Quaternion() };
 
-	const FCameraProjection Projection{
-		GameCamera->GetIsOrthogonal() ? EProjectionMode::Orthographic : EProjectionMode::Perspective,
-		GameCamera->GetFieldOfView(),
-		GameCamera->GetOrthoWidth(),
-		GameCamera->GetNearZ(),
-		GameCamera->GetFarZ() };
-	MultipleViewportsAdapter.SetViewCameraOverride(PIEViewIndex, GameCamera->GetWorldLocation(), Forward, Projection);
+	const FCameraProjection Projection{ GameCamera->GetIsOrthogonal() ? EProjectionMode::Orthographic : EProjectionMode::Perspective, GameCamera->GetFieldOfView(), GameCamera->GetOrthoWidth(), GameCamera->GetNearZ(), GameCamera->GetFarZ() };
+	MultipleViewportsAdapter.SetViewCameraOverride(PIEViewIndex, GameCamera->GetWorldLocation(), Forward, Projection, &Rotation);
 }
 
 // 화면을 표시하고 UI 변경 후 View 설정을 보관한다.
@@ -1076,7 +1073,7 @@ void UEditorEngine::RenderOverlayPass(const int32 ViewIndex, UWorld& ViewWorld, 
 		// 아이콘 먼저 그리기 (반투명)
 		Renderer->RenderQueueSorting(IconQueue, ViewProjection, ViewCameraLocation);
 		Renderer->RenderTranslucent(ViewProjection);
-		
+
 		// 화살표 그리기 (불투명)
 		Renderer->RenderQueueSorting(ArrowQueue, ViewProjection, ViewCameraLocation);
 		Renderer->RenderOpaque(ViewProjection);
