@@ -157,7 +157,7 @@ void FEditorControlsPanel::DrawCameraProperties()
 	ImGui::Dummy(ImVec2(0.0f, SectionGap));
 	ImGui::SeparatorText("Viewport");
 
-	UCameraComponent* CamCom = World && World->GetMainCamera() ? World->GetMainCamera()->GetCameraComponent() : nullptr;
+	UCameraComponent* CamCom{ World ? World->GetMainCameraComponent() : nullptr };
 	if (!ViewportAdapter && !CamCom) return;
 
 	int32 CameraViewIndex = 0;

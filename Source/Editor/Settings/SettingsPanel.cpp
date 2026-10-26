@@ -68,7 +68,7 @@ void FSettingsPanel::OnRender()
 	ImGui::Dummy(ImVec2(0.0f, SectionGap));
 	ImGui::SeparatorText("Editor Settings");
 
-	UCameraComponent* CamCom = World->GetMainCamera()->GetCameraComponent();
+	UCameraComponent* CamCom{ World->GetMainCameraComponent() };
 
 	ImGui::SetNextItemWidth(200.0f);
 	ImGui::SliderFloat("Camera Rotate Sensitivity", &Settings.MouseSensitivity, 0.01f, 1.0f, "%.2f");

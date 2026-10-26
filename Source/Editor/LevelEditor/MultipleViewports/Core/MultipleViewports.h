@@ -33,6 +33,7 @@ struct FCameraProjection
     float OrthoWidth;
     float NearClip;
     float FarClip;
+	bool mUseCameraClipPlanes{};
 };
 
 // 한 View에서 사용하는 카메라 Transform과 투영 설정을 담는다.

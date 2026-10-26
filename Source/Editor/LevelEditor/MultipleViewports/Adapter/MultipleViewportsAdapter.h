@@ -44,7 +44,7 @@ public:
     void ApplyCameraPreset(int32 ViewIndex, EMultipleViewportsCameraPreset Preset);
     // 저장 카메라는 그대로 두고 렌더·컬링·피킹에만 외부 카메라(PIE 게임 카메라 등)를 쓴다.
     // Forward는 정규화되어 있어야 하며 Roll은 버린다.
-    void SetViewCameraOverride(int32 ViewIndex, const FVector& Location, const FVector& Forward, const FCameraProjection& Projection);
+    void SetViewCameraOverride(int32 ViewIndex, const FVector& Location, const FVector& Forward, const FCameraProjection& Projection, const FQuat* Rotation = nullptr);
     void ClearViewCameraOverride(int32 ViewIndex);
     // 지정 View에 적용된 카메라 프리셋을 반환한다.
     EMultipleViewportsCameraPreset GetCameraPreset(int32 ViewIndex) const;

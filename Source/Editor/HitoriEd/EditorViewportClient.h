@@ -25,8 +25,7 @@ public:
     EMultipleViewportsCameraPreset GetCameraPreset() const { return CameraPreset; }
 
     // 저장 카메라와 프리셋을 보존하고 실제 View에 적용할 카메라만 교체한다.
-    void SetCameraOverride(const FVector& Location, const FVector& Forward,
-        const FCameraProjection& Projection, const FRect& Rect);
+    void SetCameraOverride(const FVector& Location, const FVector& Forward, const FCameraProjection& Projection, const FRect& Rect, const FQuat* Rotation = nullptr);
     void ClearCameraOverride() { bHasCameraOverride = false; }
     bool HasCameraOverride() const { return bHasCameraOverride; }
 
