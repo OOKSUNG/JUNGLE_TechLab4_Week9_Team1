@@ -9,6 +9,14 @@ return {
     WallNormal = "Assets/Textures/StoneWall/StoneWall_Normal.png",
     WallTileSize = 2.0,
 
+    FloorBaseColor = "Assets/Textures/StoneGround/StoneGround_BaseColor.png",
+    FloorNormal = "Assets/Textures/StoneGround/StoneGround_Normal.png",
+    FloorTileSize = 3.0,
+
+    CeilingBaseColor = "Assets/Textures/SoilCeil/SoilCeil_BaseColor.png",
+    CeilingNormal = "Assets/Textures/SoilCeil/SoilCeil_Normal.png",
+    CeilingTileSize = 3.0,
+
     Floors = {
         [1] = [[
 ##############################################################

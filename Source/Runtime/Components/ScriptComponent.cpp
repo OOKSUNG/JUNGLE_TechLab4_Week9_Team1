@@ -352,6 +352,19 @@ void UScriptComponent::BindScriptContext(sol::environment& TargetEnvironment)
 		}
 	}
 
+    const auto GetViewportInfo = [this]()
+    {
+        AActor* Actor = GetOwner();
+        return GEngine && Actor ? GEngine->GetGameViewportInfo(Actor->GetWorld()) : FGameViewportInfo{};
+    };
+    TargetEnvironment.set_function("GetViewportSize", [GetViewportInfo]() { return GetViewportInfo().Size; });
+    TargetEnvironment.set_function("GetMousePosition", [GetViewportInfo]() { return GetViewportInfo().MousePosition; });
+    TargetEnvironment.set_function("IsMouseOverGameViewport", [GetViewportInfo]() { return GetViewportInfo().bAcceptsMouseInput; });
+    TargetEnvironment.set_function("QuitGame", [this]()
+    {
+        if (GEngine && GetOwner())
+            GEngine->RequestQuitGame(GetOwner()->GetWorld());
+    });
     TargetEnvironment.set_function(
         "DestroySelf",
         [this]()

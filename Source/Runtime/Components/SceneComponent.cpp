@@ -3,6 +3,14 @@
 
 #include "GameFramework/Actor.h"
 
+namespace {
+	FQuat GetComponentWorldRotation(const USceneComponent& Component) {
+		const USceneComponent* Parent{ Component.GetAttachParent() };
+		const FQuat Rotation{ Component.GetRelativeRotationQuat() };
+		return Parent ? GetComponentWorldRotation(*Parent) * Rotation : Rotation;
+	}
+}
+
 USceneComponent::~USceneComponent()
 {
 	TArray<USceneComponent*> Children = AttachChildren;
@@ -143,23 +151,25 @@ FVector USceneComponent::GetWorldScale3D() const
 	return Transform.Scale;
 }
 
-FMatrix USceneComponent::GetWorldMatrix() const
-{
-	if (!AttachParent)
-	{
+FMatrix USceneComponent::GetWorldMatrix() const {
+	if (!AttachParent) {
 		return Transform.GetLocalMatrix();
 	}
 
-	const FVector WorldLocation = 
-		AttachParent->GetWorldMatrix().TransformPosition(Transform.Location);
-
-	const FQuat WorldRotation = 
-		AttachParent->GetWorldRotation().Quaternion() * Transform.GetOrientation();
-
-	const FVector WorldScale =
-		Transform.Scale * AttachParent->GetWorldScale3D();
-
-	return FTransform(WorldRotation.ToFRotator(), WorldLocation, WorldScale).GetLocalMatrix();
+	const FVector WorldLocation{ AttachParent->GetWorldMatrix().TransformPosition(Transform.Location) };
+	const FQuat WorldRotation{ GetComponentWorldRotation(*this) };
+	const FVector WorldScale{ Transform.Scale * AttachParent->GetWorldScale3D() };
+	const float ScaleValues[]{ WorldScale.X, WorldScale.Y, WorldScale.Z };
+	FMatrix WorldMatrix{ WorldRotation.ToFMatrix() };
+	for (int32 Row{}; Row < 3; ++Row) {
+		for (int32 Column{}; Column < 3; ++Column) {
+			WorldMatrix.M[Row][Column] *= ScaleValues[Row];
+		}
+	}
+	WorldMatrix.M[3][0] = WorldLocation.X;
+	WorldMatrix.M[3][1] = WorldLocation.Y;
+	WorldMatrix.M[3][2] = WorldLocation.Z;
+	return WorldMatrix;
 }
 
 void USceneComponent::SetWorldTransform(const FMatrix& InWorldMatrix, bool bSweep)
