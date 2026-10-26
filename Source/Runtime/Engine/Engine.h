@@ -12,6 +12,7 @@
 
 #include "Scripting/LuaVM.h"
 #include "Audio/AudioSystem.h"
+#include "Engine/SceneTransitionManager.h"
 
 struct FWorldContext
 {
@@ -80,11 +81,13 @@ public:
 
 	FLuaVM* GetLuaVM() const { return LuaVM.get(); }
 	FAudioSystem* GetAudioSystem() const { return AudioSystem.get(); }
+	FSceneTransitionManager* GetSceneTransitionManager() const { return SceneTransitionManager.get(); }
 
 protected:
 	UAssetManager* AssetManager;
 	TUniquePtr<FLuaVM> LuaVM;
 	TUniquePtr<FAudioSystem> AudioSystem;
+	TUniquePtr<FSceneTransitionManager> SceneTransitionManager;
 
 	FEngineLoop& GetEngineLoop() const { return *EngineLoop; }
 

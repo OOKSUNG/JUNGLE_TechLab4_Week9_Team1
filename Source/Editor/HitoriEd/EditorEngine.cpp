@@ -44,6 +44,7 @@
 #include <algorithm>
 #include "Components/DirectionalLightComponent.h"
 #include "Engine/DirectionalLightSceneProxy.h"
+#include "Engine/SceneTransitionManager.h"
 #include "Core/Stats/ShadowStats.h"
 #include "Math/Frustum.h"
 
@@ -371,6 +372,11 @@ void UEditorEngine::Tick(const float DeltaTime)
 	UpdateMultipleViewportState(DeltaTime);
 	UpdatePIEViewCamera();
 	TickWorldAndEditor(DeltaTime);
+	if (PlayWorld)
+	{
+		if (FSceneTransitionManager* SceneTransitions = GetSceneTransitionManager())
+			SceneTransitions->ProcessPendingTransition();
+	}
 	RenderMultipleViewports();
 	EndFrame();
 }
@@ -1555,6 +1561,8 @@ void UEditorEngine::EndPlayMap()
 	ResetSceneSelection();
 	if (PIEViewIndex != InvalidViewIndex)
 		MultipleViewportsAdapter.ClearViewCameraOverride(PIEViewIndex);
+	if (FSceneTransitionManager* SceneTransitions = GetSceneTransitionManager())
+		SceneTransitions->CancelForWorld(PlayWorld);
 	PlayWorld->EndPlay();
 	PlayWorld->ClearWorld();
 	DestroyWorldContext(PlayWorld);

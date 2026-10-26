@@ -10,6 +10,7 @@
 #include "Core/ResourcePaths.h"
 #include "Core/Stats/LightweightStats.h"
 #include "Engine/DirectionalLightSceneProxy.h"
+#include "Engine/SceneTransitionManager.h"
 #include "Launch/LaunchEngineLoop.h"
 #include "Render/RenderCommand.h"
 #include "Render/Swapchain.h"
@@ -68,10 +69,16 @@ bool UExecutableEngine::Init() {
 }
 
 void UExecutableEngine::Tick(float DeltaTime) {
-	UCameraComponent* Camera{ mWorld->GetMainCamera()->GetCameraComponent() };
-	Camera->SetAspectRatio(static_cast<float>(GetEngineLoop().GetViewportWidth()) / static_cast<float>(GetEngineLoop().GetViewportHeight()));
 	mWorld->Tick(DeltaTime);
-	RenderFrame(*Camera);
+	if (FSceneTransitionManager* SceneTransitions = GetSceneTransitionManager()) {
+		SceneTransitions->ProcessPendingTransition();
+	}
+
+	UCameraComponent* Camera{ mWorld->GetMainCameraComponent() };
+	if (Camera) {
+		Camera->SetAspectRatio(static_cast<float>(GetEngineLoop().GetViewportWidth()) / static_cast<float>(GetEngineLoop().GetViewportHeight()));
+		RenderFrame(*Camera);
+	}
 	FStatRegistry::EndFrame();
 }
 
@@ -108,6 +115,9 @@ void UExecutableEngine::OnResize(uint32 Width, uint32 Height) {
 
 void UExecutableEngine::PreExit() {
 	if (mWorld) {
+		if (FSceneTransitionManager* SceneTransitions = GetSceneTransitionManager()) {
+			SceneTransitions->CancelForWorld(mWorld);
+		}
 		mWorld->EndPlay();
 		mWorld->ClearWorld();
 		DestroyWorldContext(mWorld);
