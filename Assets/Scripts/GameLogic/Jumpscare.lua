@@ -18,6 +18,8 @@ local SIDE_OFFSET = 0.0
 local HEIGHT_OFFSET = 0.0
 local BASE_YAW = 180.0
 
+local MESH_PIVOT_OFFSET = FVector.new(-0.057, -0.273, -1.402)
+
 local FLASH_INTENSITY = 1.0  
 local FLICKER_MIN = 0.3      
 local FLICKER_OFF_CHANCE = 0.15
