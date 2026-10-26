@@ -37,6 +37,14 @@
                             "Properties": {
                                 "ScriptPath": "Assets/Scripts/GameLogic/GameManagerActor.lua"
                             }
+                        },
+                        {
+                            "Class": "UScriptComponent",
+                            "Name": "EnemyAudioScript",
+                            "Parent": "",
+                            "Properties": {
+                                "ScriptPath": "Assets/Scripts/GameLogic/EnemyAudioActor.lua"
+                            }
                         }
                     ],
                     "Properties": {},
@@ -4045,6 +4053,76 @@
                             "Parent": "",
                             "Properties": {
                                 "ScriptPath": "Assets/Scripts/GameLogic/Items/Item_FuelCan.lua"
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "DefaultSceneRoot"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "USceneComponent",
+                            "Name": "DefaultSceneRoot",
+                            "Parent": "",
+                            "Properties": {
+                                "Transform": {
+                                    "Location": {
+                                        "X": -11.0,
+                                        "Y": 2.0,
+                                        "Z": 0.9
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "EnemyMesh",
+                            "OverrideMaterials": [],
+                            "Parent": "DefaultSceneRoot",
+                            "Properties": {
+                                "StaticMesh": "Cube",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.0,
+                                        "Y": 0.0,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 0.8,
+                                        "Y": 0.8,
+                                        "Z": 1.8
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UScriptComponent",
+                            "Name": "PatrolScript",
+                            "Parent": "",
+                            "Properties": {
+                                "ScriptPath": "Assets/Scripts/Tests/TestEnemyPatrol.lua"
                             }
                         }
                     ],

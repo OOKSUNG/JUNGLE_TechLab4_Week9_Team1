@@ -1,0 +1,160 @@
+local GameManager = require("GameManager")
+
+local EnemyAudio = {}
+
+EnemyAudio.Config = {
+    FootstepSound = "Assets/Sounds/발소리.mp3",
+    TensionSound = "Assets/Sounds/공포배경음.mp3",
+    HeartbeatSound = nil,
+
+    FootstepFullDistance = 3.0,
+    FootstepSilentDistance = 25.0,
+    TensionDistance = 10.0,
+    HeartbeatDistance = 5.0,
+
+    FootstepMaxVolume = 1.0,
+    TensionMaxVolume = 0.7,
+    HeartbeatMaxVolume = 1.0,
+
+    VolumeChangePerSecond = 2.0,
+    MovingSpeedThreshold = 0.2,
+}
+
+local layers = {}
+local enemyStates = setmetatable({}, { __mode = "k" })
+local nearestDistance = math.huge
+
+local function StartLayer(name, path)
+    if not path then
+        return
+    end
+    local handle = PlaySound(path, true, 0.0)
+    if handle == 0 then
+        print("[EnemyAudio] Cannot play", name, path)
+        return
+    end
+    layers[name] = { Handle = handle, Volume = 0.0 }
+end
+
+local function UpdateLayer(name, target, dt)
+    local layer = layers[name]
+    if not layer then
+        return
+    end
+    local step = EnemyAudio.Config.VolumeChangePerSecond * dt
+    local volume = layer.Volume
+    if volume < target then
+        volume = math.min(target, volume + step)
+    elseif volume > target then
+        volume = math.max(target, volume - step)
+    end
+    if volume ~= layer.Volume then
+        layer.Volume = volume
+        SetSoundVolume(layer.Handle, volume)
+    end
+end
+
+local function HorizontalDistance(a, b)
+    local dx = a.X - b.X
+    local dy = a.Y - b.Y
+    return math.sqrt(dx * dx + dy * dy)
+end
+
+local function CellKey(cell)
+    return cell.Floor .. ":" .. cell.X .. ":" .. cell.Y
+end
+
+local function PathDistance(state, enemyLocation, playerLocation)
+    local map = GameManager.GetMap()
+    if not map then
+        return HorizontalDistance(enemyLocation, playerLocation)
+    end
+
+    local enemyCell = map:WorldToCell(enemyLocation)
+    local playerCell = map:WorldToCell(playerLocation)
+    local cacheKey = CellKey(enemyCell) .. "|" .. CellKey(playerCell)
+    if state.CacheKey == cacheKey then
+        return state.Distance
+    end
+
+    local path, distance = map:FindPath(enemyCell, playerCell)
+    if not path then
+        distance = distance == "Unreachable" and math.huge or HorizontalDistance(enemyLocation, playerLocation)
+    end
+
+    state.CacheKey = cacheKey
+    state.Distance = distance
+    return distance
+end
+
+function EnemyAudio.FootstepVolumeForDistance(distance)
+    local config = EnemyAudio.Config
+    if distance <= config.FootstepFullDistance then
+        return 1.0
+    end
+    if distance >= config.FootstepSilentDistance then
+        return 0.0
+    end
+    return 1.0 - (distance - config.FootstepFullDistance) / (config.FootstepSilentDistance - config.FootstepFullDistance)
+end
+
+function EnemyAudio.Start()
+    EnemyAudio.Stop()
+    local config = EnemyAudio.Config
+    StartLayer("Footstep", config.FootstepSound)
+    StartLayer("Tension", config.TensionSound)
+    StartLayer("Heartbeat", config.HeartbeatSound)
+end
+
+function EnemyAudio.Stop()
+    for _, layer in pairs(layers) do
+        StopSound(layer.Handle)
+    end
+    layers = {}
+    enemyStates = setmetatable({}, { __mode = "k" })
+    nearestDistance = math.huge
+end
+
+function EnemyAudio.Tick(dt)
+    local config = EnemyAudio.Config
+    local playerLocation = GameManager.GetPlayerLocation()
+    local footstepTarget = 0.0
+    nearestDistance = math.huge
+
+    if playerLocation and GameManager.IsPlaying() and dt > 0.0 then
+        for _, enemy in ipairs(GameManager.GetEnemies()) do
+            local state = enemyStates[enemy]
+            if not state then
+                state = {}
+                enemyStates[enemy] = state
+            end
+
+            local location = enemy:GetActorLocation()
+            local bMoving = state.LastLocation ~= nil
+                and HorizontalDistance(location, state.LastLocation) / dt > config.MovingSpeedThreshold
+            state.LastLocation = { X = location.X, Y = location.Y, Z = location.Z }
+
+            local distance = PathDistance(state, location, playerLocation)
+            nearestDistance = math.min(nearestDistance, distance)
+
+            if bMoving then
+                footstepTarget = math.max(footstepTarget, EnemyAudio.FootstepVolumeForDistance(distance))
+            end
+        end
+    end
+
+    UpdateLayer("Footstep", footstepTarget * config.FootstepMaxVolume, dt)
+    UpdateLayer("Tension", nearestDistance <= config.TensionDistance and config.TensionMaxVolume or 0.0, dt)
+    UpdateLayer("Heartbeat", nearestDistance <= config.HeartbeatDistance and config.HeartbeatMaxVolume or 0.0, dt)
+end
+
+function EnemyAudio.GetNearestDistance()
+    return nearestDistance
+end
+
+function EnemyAudio.GetLayerVolume(name)
+    local layer = layers[name]
+    return layer and layer.Volume or 0.0
+end
+
+return EnemyAudio

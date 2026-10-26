@@ -350,6 +350,12 @@ void UEditorEngine::Tick(const float DeltaTime)
 	if (bRequestEndPlayMapQueued) { bRequestEndPlayMapQueued = false; EndPlayMap(); }
 	if (bPlaySessionRequested) { bPlaySessionRequested = false; if (!PlayWorld) StartPlayInEditorSession(); }
 
+	ImGuiIO& IO = ImGui::GetIO();
+	if (IsPlaying() && !bIsPaused)
+		IO.ConfigFlags &= ~ImGuiConfigFlags_NavEnableKeyboard;
+	else
+		IO.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+
 	BeginFrame(DeltaTime);
 	// 임시: 선택된 Actor를 복제해서 결과를 로그로 확인 (PIE 연결 후 삭제)
 	if (!IsPlaying() && !ImGui::GetIO().WantTextInput && FInputSystem::IsKeyPressed(EKeyCode::F9))
