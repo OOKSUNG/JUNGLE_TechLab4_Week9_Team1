@@ -43,6 +43,9 @@ namespace
 		FString FloorBaseColor;
 		FString FloorNormal;
 		float FloorTileSize = 1.0f;
+		FString CeilingBaseColor;
+		FString CeilingNormal;
+		float CeilingTileSize = 1.0f;
 		TArray<FMapFloor> Floors;
 	};
 
@@ -123,6 +126,9 @@ namespace
 		OutData.FloorBaseColor = Data.get<sol::optional<FString>>("FloorBaseColor").value_or(FString());
 		OutData.FloorNormal = Data.get<sol::optional<FString>>("FloorNormal").value_or(FString());
 		OutData.FloorTileSize = Data.get_or("FloorTileSize", 1.0f);
+		OutData.CeilingBaseColor = Data.get<sol::optional<FString>>("CeilingBaseColor").value_or(FString());
+		OutData.CeilingNormal = Data.get<sol::optional<FString>>("CeilingNormal").value_or(FString());
+		OutData.CeilingTileSize = Data.get_or("CeilingTileSize", 1.0f);
 
 		sol::optional<sol::table> Floors = Data["Floors"];
 		if (!Floors)
@@ -304,6 +310,7 @@ FMapWallGenerateResult FMapWallGenerator::Generate(AActor& MapActor)
 	const float Cell = Data.CellSize;
 	UMaterial* WallMaterial = CreateTiledMaterial(Data.WallBaseColor, Data.WallNormal, Data.WallTileSize);
 	UMaterial* FloorMaterial = CreateTiledMaterial(Data.FloorBaseColor, Data.FloorNormal, Data.FloorTileSize);
+	UMaterial* CeilingMaterial = CreateTiledMaterial(Data.CeilingBaseColor, Data.CeilingNormal, Data.CeilingTileSize);
 	FString FirstOpenCell;
 
 	for (const FMapFloor& Floor : Data.Floors)
@@ -358,7 +365,7 @@ FMapWallGenerateResult FMapWallGenerator::Generate(AActor& MapActor)
 			{
 				const FVector CeilingLocation(Location.X, Location.Y, BaseZ + Data.WallHeight + CeilingThickness * 0.5f);
 				const FVector CeilingScale(Scale.X, Scale.Y, CeilingThickness);
-				if (SpawnCubeActor(*World, MapActor, CeilingLocation, CeilingScale, GeneratedPrefix + "CeilingMesh", FString()))
+				if (SpawnCubeActor(*World, MapActor, CeilingLocation, CeilingScale, GeneratedPrefix + "CeilingMesh", FString(), CeilingMaterial))
 					++Result.CeilingActors;
 			}
 		}

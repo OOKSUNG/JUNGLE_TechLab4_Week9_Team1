@@ -812,9 +812,9 @@
                             "Parent": "DefaultSceneRoot",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 0.4,
-                                    "Y": 0.4,
-                                    "Z": 0.9
+                                    "X": 0.4000000059604645,
+                                    "Y": 0.4000000059604645,
+                                    "Z": 0.8999999761581421
                                 },
                                 "ShapeColor": 4288517599,
                                 "Transform": {
@@ -835,8 +835,11 @@
                                     }
                                 },
                                 "bBlockComponent": false,
+                                "bCastShadow": true,
                                 "bDrawOnlyIfSelected": true,
-                                "bGenerateOverlapEvents": true
+                                "bGenerateOverlapEvents": true,
+                                "bReceiveShadow": true,
+                                "bVisible": true
                             }
                         },
                         {
@@ -33143,7 +33146,32 @@
                         {
                             "Class": "UStaticMeshComponent",
                             "Name": "MapGen_FloorMesh",
-                            "OverrideMaterials": [],
+                            "OverrideMaterials": [
+                                {
+                                    "Base": "DefaultMaterial",
+                                    "Instance": {
+                                        "BaseColor": {
+                                            "W": 1.0,
+                                            "X": 1.0,
+                                            "Y": 1.0,
+                                            "Z": 1.0
+                                        },
+                                        "BlendState": "Opaque",
+                                        "Properties": {},
+                                        "SamplerState": "LinearWrap",
+                                        "Shininess": 32.0,
+                                        "Textures": [
+                                            "Assets/Textures/StoneGround/StoneGround_BaseColor.png",
+                                            "Assets/Textures/StoneGround/StoneGround_Normal.png"
+                                        ],
+                                        "UVScrollSpeed": [
+                                            0.0,
+                                            0.0
+                                        ],
+                                        "WorldUVTileSize": 3.0
+                                    }
+                                }
+                            ],
                             "Parent": "DefaultSceneRoot",
                             "Properties": {
                                 "StaticMesh": "Cube",
@@ -33209,7 +33237,32 @@
                         {
                             "Class": "UStaticMeshComponent",
                             "Name": "MapGen_CeilingMesh",
-                            "OverrideMaterials": [],
+                            "OverrideMaterials": [
+                                {
+                                    "Base": "DefaultMaterial",
+                                    "Instance": {
+                                        "BaseColor": {
+                                            "W": 1.0,
+                                            "X": 1.0,
+                                            "Y": 1.0,
+                                            "Z": 1.0
+                                        },
+                                        "BlendState": "Opaque",
+                                        "Properties": {},
+                                        "SamplerState": "LinearWrap",
+                                        "Shininess": 32.0,
+                                        "Textures": [
+                                            "Assets/Textures/SoilCeil/SoilCeil_BaseColor.png",
+                                            "Assets/Textures/SoilCeil/SoilCeil_Normal.png"
+                                        ],
+                                        "UVScrollSpeed": [
+                                            0.0,
+                                            0.0
+                                        ],
+                                        "WorldUVTileSize": 3.0
+                                    }
+                                }
+                            ],
                             "Parent": "DefaultSceneRoot",
                             "Properties": {
                                 "StaticMesh": "Cube",
