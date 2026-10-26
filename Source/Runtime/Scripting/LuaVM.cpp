@@ -491,7 +491,6 @@ namespace
 	}
 
 	void BindCameraAPI(sol::state& LuaState) {
-		LuaState.new_usertype<USceneComponent>("USceneComponent", sol::no_constructor, "GetRelativeLocation", &GetSceneRelativeLocation, "SetRelativeLocation", &USceneComponent::SetRelativeLocation, "GetRelativeRotation", &GetSceneRelativeRotation, "SetRelativeRotation", &USceneComponent::SetRelativeRotation, "FindChildComponent", &FindChildSceneComponent);
 		LuaState.new_usertype<UCameraComponent>("UCameraComponent", sol::no_constructor, sol::base_classes, sol::bases<USceneComponent>(), "GetRelativeLocation", &GetCameraRelativeLocation, "SetRelativeLocation", &UCameraComponent::SetRelativeLocation, "GetRelativeRotation", &GetCameraRelativeRotation, "SetRelativeRotation", &UCameraComponent::SetRelativeRotation, "GetFieldOfView", &UCameraComponent::GetFieldOfView, "SetFieldOfView", &UCameraComponent::SetFieldOfView);
 	}
 
@@ -527,23 +526,14 @@ namespace
 		LuaState.new_usertype<USceneComponent>(
 			"USceneComponent",
 			sol::no_constructor,
-			"GetRelativeLocation", [](const USceneComponent& Component)
-			{
-				return Component.GetRelativeLocation();
-			},
-			"SetRelativeLocation", [](USceneComponent& Component, const FVector& Location)
-			{
-				Component.SetRelativeLocation(Location);
-			},
-			"GetRelativeRotation", [](const USceneComponent& Component)
-			{
-				return Component.GetRelativeRotation();
-			},
-			"SetRelativeRotation", [](USceneComponent& Component, const FRotator& Rotation)
-			{
-				Component.SetRelativeRotation(Rotation);
-			},
-			"SetVisible", [](USceneComponent& Component, bool bVisible)
+		    "USceneComponent",
+		    sol::no_constructor,
+		    "GetRelativeLocation", &GetSceneRelativeLocation,
+		    "SetRelativeLocation", &USceneComponent::SetRelativeLocation,
+		    "GetRelativeRotation", &GetSceneRelativeRotation,
+		    "SetRelativeRotation", &USceneComponent::SetRelativeRotation,
+		    "FindChildComponent", &FindChildSceneComponent,
+		    "SetVisible", [](USceneComponent & Component, bool bVisible)
 			{
 				if (UPrimitiveComponent* Primitive = Cast<UPrimitiveComponent>(&Component))
 				{
@@ -809,8 +799,8 @@ void FLuaVM::BindEngineAPI()
 		"PenetrationDepth", &FHitResult::PenetrationDepth
 	);
 	BindLightAPI(*State);
+	BindSceneComponentAPI(*State); // ← 위로
 	BindCameraAPI(*State);
-	BindSceneComponentAPI(*State);
 	BindActorAPI(*State);
 	BindAudioAPI(*State);
 }
