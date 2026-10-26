@@ -334,6 +334,19 @@ namespace
 
 	void DrawScriptComponentActions(UScriptComponent& ScriptComponent)
 	{
+		static UScriptComponent* EditingComponent = nullptr;
+		static char FileNameBuffer[256] = {};
+
+		// 다른 ScriptComponent를 선택했을 때만 버퍼 초기화
+		if (EditingComponent != &ScriptComponent)
+		{
+			EditingComponent = &ScriptComponent;
+			const FString FileName = std::filesystem::path(
+			        ScriptComponent.GetScriptPath()).filename().string();
+
+			strncpy_s(FileNameBuffer, sizeof(FileNameBuffer), FileName.c_str(), _TRUNCATE);
+		}
+
 		ImGui::SeparatorText("Lua Script");
 
 		const FString& CurrentPath = ScriptComponent.GetScriptPath();
@@ -345,6 +358,35 @@ namespace
 		else
 		{
 			ImGui::TextDisabled("Script file is not created yet.");
+		}
+
+		// Enter를 눌렀을 때만 true
+		ImGui::SetNextItemWidth(-90.0f);
+
+		const bool bEnterPressed = ImGui::InputText(
+		    "##ScriptFileName",
+		    FileNameBuffer,
+		    sizeof(FileNameBuffer),
+		    ImGuiInputTextFlags_EnterReturnsTrue);
+
+		ImGui::SameLine();
+
+		const bool bApplyClicked = ImGui::Button("Apply");
+
+		if (bEnterPressed || bApplyClicked)
+		{
+			if (ScriptComponent.SetScriptPath(FileNameBuffer))
+			{
+				// 확장자가 자동으로 붙었을 수 있으므로 적용된 파일명으로 다시 맞춘다.
+				const FString AppliedFileName = std::filesystem::path(
+				        ScriptComponent.GetScriptPath()).filename().string();
+
+				strncpy_s(
+				    FileNameBuffer,
+				    sizeof(FileNameBuffer),
+				    AppliedFileName.c_str(),
+				    _TRUNCATE);
+			}
 		}
 
 		if (!ImGui::Button("Edit Script", ImVec2(-FLT_MIN, 0.0f)))
