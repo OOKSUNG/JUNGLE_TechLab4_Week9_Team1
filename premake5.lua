@@ -38,6 +38,7 @@ workspace "Hitori"
 		"Debug",
 		"Release",
 		"ObjViewer",
+		"Executable",
 		"Benchmark",
 		"Benchmark_Debug",
 	}
@@ -98,6 +99,12 @@ function CommonSettings()
 	-- 에디터 없이 OBJ 파일만 열어보는 Viewer 빌드
 	filter "configurations:ObjViewer"
 		defines  { "ENGINE_RELEASE", "NDEBUG", "OBJ_VIEWER" }
+		runtime  "Release"
+		optimize "on"
+		symbols  "on"
+
+	filter "configurations:Executable"
+		defines  { "ENGINE_RELEASE", "NDEBUG", "EXECUTABLE" }
 		runtime  "Release"
 		optimize "on"
 		symbols  "on"
@@ -246,7 +253,7 @@ project "HitoriEditor"
 			"{COPYFILE} %[vcpkg_installed/x64-windows/debug/bin/lua51.dll] %[%{!cfg.targetdir}/lua51.dll]",
 		}
 
-	filter "configurations:Release or Benchmark or ObjViewer"
+	filter "configurations:Release or Benchmark or ObjViewer or Executable"
 		libdirs
 		{
 			"vcpkg_installed/x64-windows/lib",
@@ -261,6 +268,9 @@ project "HitoriEditor"
 
 	filter "configurations:ObjViewer"
 		targetname "ObjViewer"
+
+	filter "configurations:Executable"
+		targetname "Executable"
 
 	filter "configurations:Benchmark"
 		targetname "Benchmark"
