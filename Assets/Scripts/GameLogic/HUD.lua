@@ -89,6 +89,9 @@ local function DrawResult()
     if phase ~= GameManager.EPhase.GameOver and phase ~= GameManager.EPhase.Escaped then
         return
     end
+    if GameManager.IsJumpscarePlaying() then
+        return
+    end
 
     local result = GameManager.GetResult()
     local title = phase == GameManager.EPhase.GameOver and "게임 오버" or ("탈출 성공 - 루트 " .. tostring(result.Route))

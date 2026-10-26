@@ -323,6 +323,69 @@
                                 "bReceiveShadow": true,
                                 "bVisible": true
                             }
+                        },
+                        {
+                            "Class": "USceneComponent",
+                            "Name": "JumpscareRoot",
+                            "Parent": "UCameraComponent_0",
+                            "Properties": {
+                                "Transform": {
+                                    "Location": {
+                                        "X": 4.0,
+                                        "Y": 0.1,
+                                        "Z": -1.65
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 180.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "JumpscareMonster",
+                            "OverrideMaterials": [],
+                            "Parent": "JumpscareRoot",
+                            "Properties": {
+                                "StaticMesh": "Models/Monster/Monster.obj",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0.7152000069618225,
+                                        "Y": -0.06719999760389328,
+                                        "Z": 0.24320000410079956
+                                    },
+                                    "Rotation": {
+                                        "Pitch": -90.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 0.01600000075995922,
+                                        "Y": 0.01600000075995922,
+                                        "Z": 0.01600000075995922
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": false,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": false
+                            }
+                        },
+                        {
+                            "Class": "UScriptComponent",
+                            "Name": "JumpscareScript",
+                            "Parent": "",
+                            "Properties": {
+                                "ScriptPath": "Assets/Scripts/GameLogic/Jumpscare.lua"
+                            }
                         }
                     ],
                     "Properties": {},

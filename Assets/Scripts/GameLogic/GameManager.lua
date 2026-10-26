@@ -14,6 +14,7 @@ local function ResetProgress()
     GameManager.BatteriesUsed = 0
     GameManager.Route = nil
     GameManager.GameOverReason = nil
+    GameManager.bJumpscarePlaying = false
 end
 
 local function ClearReferences()
@@ -153,6 +154,14 @@ end
 
 function GameManager.IsLightOn()
     return GameManager.bLightOn
+end
+
+function GameManager.SetJumpscarePlaying(bPlaying)
+    GameManager.bJumpscarePlaying = bPlaying and true or false
+end
+
+function GameManager.IsJumpscarePlaying()
+    return GameManager.bJumpscarePlaying
 end
 
 function GameManager.AddBatteryUsed()

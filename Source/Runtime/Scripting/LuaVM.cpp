@@ -3,6 +3,7 @@
 
 #include "GameFramework/Actor.h"
 #include "Components/SceneComponent.h"
+#include "Components/PrimitiveComponent.h"
 #include "Components/SpotLightComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Math/Vector.h"
@@ -469,6 +470,42 @@ namespace
 		LuaState.new_usertype<UCameraComponent>("UCameraComponent", sol::no_constructor, "GetRelativeLocation", &GetCameraRelativeLocation, "SetRelativeLocation", &UCameraComponent::SetRelativeLocation, "GetRelativeRotation", &GetCameraRelativeRotation, "SetRelativeRotation", &UCameraComponent::SetRelativeRotation, "GetFieldOfView", &UCameraComponent::GetFieldOfView, "SetFieldOfView", &UCameraComponent::SetFieldOfView);
 	}
 
+	void BindSceneComponentAPI(sol::state& LuaState)
+	{
+		LuaState.new_usertype<USceneComponent>(
+			"USceneComponent",
+			sol::no_constructor,
+			"GetRelativeLocation", [](const USceneComponent& Component)
+			{
+				return Component.GetRelativeLocation();
+			},
+			"SetRelativeLocation", [](USceneComponent& Component, const FVector& Location)
+			{
+				Component.SetRelativeLocation(Location);
+			},
+			"GetRelativeRotation", [](const USceneComponent& Component)
+			{
+				return Component.GetRelativeRotation();
+			},
+			"SetRelativeRotation", [](USceneComponent& Component, const FRotator& Rotation)
+			{
+				Component.SetRelativeRotation(Rotation);
+			},
+			"SetVisible", [](USceneComponent& Component, bool bVisible)
+			{
+				if (UPrimitiveComponent* Primitive = Cast<UPrimitiveComponent>(&Component))
+				{
+					Primitive->SetVisible(bVisible);
+				}
+			},
+			"IsVisible", [](USceneComponent& Component)
+			{
+				UPrimitiveComponent* Primitive = Cast<UPrimitiveComponent>(&Component);
+				return Primitive && Primitive->IsVisible();
+			}
+		);
+	}
+
 	void BindActorAPI(sol::state& LuaState)
 	{
 		LuaState.new_usertype<AActor>(
@@ -550,6 +587,20 @@ namespace
 					}
 				}
 				return nullptr;
+			},
+			"GetComponent", [](const AActor& Actor, const FString& Name) -> USceneComponent*
+			{
+				return Cast<USceneComponent>(Actor.FindComponentByName(FName(Name)));
+			},
+			"SetVisible", [](AActor& Actor, bool bVisible)
+			{
+				for (UActorComponent* Component : Actor.GetComponents())
+				{
+					if (UPrimitiveComponent* Primitive = Cast<UPrimitiveComponent>(Component))
+					{
+						Primitive->SetVisible(bVisible);
+					}
+				}
 			}
 		);
 	}
@@ -706,6 +757,7 @@ void FLuaVM::BindEngineAPI()
 	);
 	BindLightAPI(*State);
 	BindCameraAPI(*State);
+	BindSceneComponentAPI(*State);
 	BindActorAPI(*State);
 	BindAudioAPI(*State);
 }

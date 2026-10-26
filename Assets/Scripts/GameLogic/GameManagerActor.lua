@@ -7,7 +7,7 @@ end
 function Tick(dt)
     local phase = GameManager.Phase
     if (phase == GameManager.EPhase.GameOver or phase == GameManager.EPhase.Escaped)
-        and IsKeyPressed(Key.R) then
+        and not GameManager.IsJumpscarePlaying() and IsKeyPressed(Key.R) then
         RestartScene()
         return
     end
