@@ -57,6 +57,13 @@ namespace
 		}
 	}
 
+	void ConfigurePackagePath(sol::state& LuaState)
+	{
+		sol::table Package = LuaState["package"];
+		const FString DefaultPath = Package.get_or<FString>("path", "");
+		Package["path"] = "Assets/Scripts/?.lua;Assets/Scripts/GameLogic/?.lua;" + DefaultPath;
+	}
+
 	void BindLoggingAPI(sol::state& LuaState)
 	{
 		auto LogFunction = [](sol::variadic_args Args)
@@ -326,6 +333,7 @@ bool FLuaVM::Initialize()
 			sol::lib::math
 		);
 
+		ConfigurePackagePath(*State);
 		BindEngineAPI();
 
 		HTR_LOG(
