@@ -20,6 +20,7 @@ struct FEditorSettings
 	// Values
 	float CameraSpeed = 1.0f;
 	float MouseSensitivity = 1.0f;
+	bool mShowGrid{ true };
 	int32 GridSpacing = 1;
 	float MultipleViewportsHorizontal = 0.5f;
 	float MultipleViewportsVertical = 0.5f;

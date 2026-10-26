@@ -1055,7 +1055,7 @@ void UEditorEngine::RenderOverlayPass(const int32 ViewIndex, UWorld& ViewWorld, 
 	//그리드
 	//TODO : 그리드도 안개가 적용되어야하나..?
 	// 언리얼처럼 투영에 따라 방식을 고정한다. 원근은 PS 그리드, 직교는 보는 평면에 맞춘 배치 라인 그리드다.
-	if (bShowEditorOverlay)
+	if (bShowEditorOverlay && SettingsPanel->GetSettings().mShowGrid)
 	{
 		const EGridPlane GridPlane = MultipleViewportsAdapter.GetGridPlane(ViewIndex);
 

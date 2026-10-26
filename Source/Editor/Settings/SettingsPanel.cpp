@@ -57,6 +57,7 @@ void FSettingsPanel::OnRender()
 
 	ImGui::Dummy(ImVec2(0.0f, SectionGap));
 	ImGui::SeparatorText("Grid");
+	ImGui::Checkbox("Show Grid", &Settings.mShowGrid);
 
 	// 언리얼처럼 그리기 방식은 투영으로 정해진다: 원근 = PS 그리드, 직교 = 배치 라인 그리드.
 	ImGui::SetNextItemWidth(200.0f);
@@ -125,6 +126,7 @@ bool FSettingsPanel::SaveSettings() const
 	File << "[Editor]\n";
 	File << "CameraMoveSpeed=" << Settings.CameraSpeed << "\n";
 	File << "CameraRotateSensitivity=" << Settings.MouseSensitivity << "\n";
+	File << "ShowGrid=" << Settings.mShowGrid << "\n";
 	File << "GridSpacing=" << Settings.GridSpacing << "\n";
 	File << "\n";
 
@@ -245,6 +247,7 @@ bool FSettingsPanel::LoadSettings()
 				if (Key == "LightingModel") Settings.LightingModel = FMath::Clamp(static_cast<int32>(Value), 0, 2);
 				else if (Key == "CameraMoveSpeed") Settings.CameraSpeed = Value;
 				else if (Key == "CameraRotateSensitivity") Settings.MouseSensitivity = Value;
+				else if (Key == "ShowGrid") Settings.mShowGrid = Value != 0.0f;
 				else if (Key == "GridSpacing") Settings.GridSpacing = std::max(1, static_cast<int32>(Value));
 				else if (Key == "Horizontal") Settings.MultipleViewportsHorizontal = Value;
 				else if (Key == "Vertical") Settings.MultipleViewportsVertical = Value;

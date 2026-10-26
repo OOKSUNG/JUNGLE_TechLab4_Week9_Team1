@@ -4,6 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "Components/SceneComponent.h"
 #include "Components/SpotLightComponent.h"
+#include "Camera/CameraComponent.h"
 #include "Math/Vector.h"
 #include "Math/Vector2.h"
 #include "Math/Rotator.h"
@@ -438,6 +439,36 @@ namespace
 		});
 	}
 
+	UCameraComponent* FindCameraComponent(USceneComponent* Component) {
+		if (!Component) {
+			return nullptr;
+		}
+
+		if (UCameraComponent* Camera{ Cast<UCameraComponent>(Component) }) {
+			return Camera;
+		}
+
+		for (USceneComponent* Child : Component->GetAttachChildren()) {
+			if (UCameraComponent* Camera{ FindCameraComponent(Child) }) {
+				return Camera;
+			}
+		}
+
+		return nullptr;
+	}
+
+	FVector GetCameraRelativeLocation(const UCameraComponent& Camera) {
+		return Camera.GetRelativeLocation();
+	}
+
+	FRotator GetCameraRelativeRotation(const UCameraComponent& Camera) {
+		return Camera.GetRelativeRotation();
+	}
+
+	void BindCameraAPI(sol::state& LuaState) {
+		LuaState.new_usertype<UCameraComponent>("UCameraComponent", sol::no_constructor, "GetRelativeLocation", &GetCameraRelativeLocation, "SetRelativeLocation", &UCameraComponent::SetRelativeLocation, "GetRelativeRotation", &GetCameraRelativeRotation, "SetRelativeRotation", &UCameraComponent::SetRelativeRotation, "GetFieldOfView", &UCameraComponent::GetFieldOfView, "SetFieldOfView", &UCameraComponent::SetFieldOfView);
+	}
+
 	void BindActorAPI(sol::state& LuaState)
 	{
 		LuaState.new_usertype<AActor>(
@@ -505,6 +536,9 @@ namespace
 			"Destroy", [](AActor& Actor)
 			{
 				return Actor.Destroy();
+			},
+			"GetCamera", [](const AActor& Actor) -> UCameraComponent* {
+				return FindCameraComponent(Actor.GetRootComponent());
 			},
 			"GetSpotLight", [](const AActor& Actor) -> USpotLightComponent*
 			{
@@ -671,6 +705,7 @@ void FLuaVM::BindEngineAPI()
 		"PenetrationDepth", &FHitResult::PenetrationDepth
 	);
 	BindLightAPI(*State);
+	BindCameraAPI(*State);
 	BindActorAPI(*State);
 	BindAudioAPI(*State);
 }
