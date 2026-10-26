@@ -4,8 +4,8 @@ local Flashlight = require("Flashlight")
 local Inventory = {}
 
 Inventory.Config = {
-    SlowdownPerWeight = 0.05,
-    MinSpeedMultiplier = 0.5,
+    SlowdownPerWeight = 0.025,
+    MinSpeedMultiplier = 0.85,
     PickupRadius = 2.0,
 }
 

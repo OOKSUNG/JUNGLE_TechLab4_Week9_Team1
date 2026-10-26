@@ -8,9 +8,9 @@ local function Initialize()
         Runtime.mMachine:Stop()
     end
 
-    local Data = { mPatrolSpeed = 2.0, mPatrolTurnSpeed = 360.0, mPatrolReplanInterval = 2.5, mPatrolExtent = self:GetNavigationExtent(), mPatrolWallMargin = 0.04, mChaseSpeed = 3.0, mChaseReplanInterval = 0.5, mIdleDuration = 1.0, mStunDuration = 1.5, mResumeState = "Idle", mPatrolMap = nil, mPatrolPath = nil, mPatrolPathIndex = 1, mPatrolHeightOffset = 0.0, mPatrolBlockedTime = 0.0 }
+    local Data = { mPatrolSpeed = 2.0, mPatrolTurnSpeed = 360.0, mPatrolReplanInterval = 2.5, mPatrolExtent = self:GetNavigationExtent(), mPatrolWallMargin = 0.04, mChaseSpeed = 4.0, mChaseReplanInterval = 0.5, mSearchDuration = 4.0, mSearchTurnSpeed = 90.0, mIdleDuration = 1.0, mStunDuration = 1.5, mResumeState = "Idle", mPatrolMap = nil, mPatrolPath = nil, mPatrolPathIndex = 1, mPatrolHeightOffset = 0.0, mPatrolBlockedTime = 0.0 }
     Runtime.mMachine = FSM.New(self, States, Data)
-    GameManager.RegisterEnemy(self)
+    GameManager.RegisterEnemy(self, Runtime.mMachine)
     Runtime.mMachine:Start("Idle")
     Log("[EnemyFSM]", self:GetName(), "Space: stun for 1.5 seconds; patrol: follow walkable map cells")
 end

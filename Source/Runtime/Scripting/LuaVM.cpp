@@ -492,7 +492,7 @@ namespace
 
 	void BindCameraAPI(sol::state& LuaState) {
 		LuaState.new_usertype<USceneComponent>("USceneComponent", sol::no_constructor, "GetRelativeLocation", &GetSceneRelativeLocation, "SetRelativeLocation", &USceneComponent::SetRelativeLocation, "GetRelativeRotation", &GetSceneRelativeRotation, "SetRelativeRotation", &USceneComponent::SetRelativeRotation, "FindChildComponent", &FindChildSceneComponent);
-		LuaState.new_usertype<UCameraComponent>("UCameraComponent", sol::no_constructor, sol::base_classes, sol::bases<USceneComponent>(), "GetRelativeLocation", &GetCameraRelativeLocation, "SetRelativeLocation", &UCameraComponent::SetRelativeLocation, "GetRelativeRotation", &GetCameraRelativeRotation, "SetRelativeRotation", &UCameraComponent::SetRelativeRotation, "GetFieldOfView", &UCameraComponent::GetFieldOfView, "SetFieldOfView", &UCameraComponent::SetFieldOfView);
+		LuaState.new_usertype<UCameraComponent>("UCameraComponent", sol::no_constructor, sol::base_classes, sol::bases<USceneComponent>(), "GetRelativeLocation", &GetCameraRelativeLocation, "SetRelativeLocation", &UCameraComponent::SetRelativeLocation, "GetRelativeRotation", &GetCameraRelativeRotation, "SetRelativeRotation", &UCameraComponent::SetRelativeRotation, "GetFieldOfView", &UCameraComponent::GetFieldOfView, "SetFieldOfView", &UCameraComponent::SetFieldOfView, "CanSeeActor", &UCameraComponent::CanSeeActor);
 	}
 
 	FVector GetActorNavigationExtent(const AActor& Actor) {

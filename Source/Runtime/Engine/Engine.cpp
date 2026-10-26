@@ -25,30 +25,17 @@ bool UEngine::Init()
 		HTR_LOG(Warning, "[Startup] Audio is unavailable; sounds will be skipped");
 	}
 
+	// Lua 파일을 실행한다.
 	LuaVM = MakeUnique<FLuaVM>();
 
+	// 초기 연결 확인용입니다.
 	if (!LuaVM->Initialize())
 	{
 		HTR_LOG(Error, "[Startup] Lua VM initialization failed");
 		return false;
 	}
 
-	// 초기 연결 확인용입니다.
-	if (!LuaVM->ExecuteString(
-		"Log('Lua VM startup test', 123, true)",
-		"@VMStartup"
-	))
-	{
-		return false;
-	}
-
-	// Lua 파일을 실행한다.
-	if (!LuaVM->ExecuteFile("Assets/Scripts/VMTest.lua"))
-	{
-		return false;
-	}
-
- 	return true;
+	return true;
 }
 
 FWorldContext& UEngine::CreateNewWorldContext(EWorldType WorldType)

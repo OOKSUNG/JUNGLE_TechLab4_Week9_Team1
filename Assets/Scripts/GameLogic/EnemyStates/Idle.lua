@@ -15,7 +15,7 @@ function Idle.Tick(Context, DeltaTime)
 end
 
 function Idle.HandleEvent(Context, EventName, ...)
-    Common.HandleInterruption(Context, EventName)
+    Common.HandleInterruption(Context, EventName, ...)
 end
 
 return Idle

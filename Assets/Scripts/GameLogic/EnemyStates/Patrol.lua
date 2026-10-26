@@ -173,7 +173,7 @@ function Patrol.Tick(Context, DeltaTime)
 end
 
 function Patrol.HandleEvent(Context, EventName, ...)
-    Common.HandleInterruption(Context, EventName)
+    Common.HandleInterruption(Context, EventName, ...)
 end
 
 return Patrol

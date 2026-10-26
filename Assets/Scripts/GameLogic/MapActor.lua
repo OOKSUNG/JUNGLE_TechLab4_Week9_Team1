@@ -1,5 +1,6 @@
 local Map = require("Map")
 local GameManager = require("GameManager")
+local MapObstacles = require("MapObstacles")
 
 local MAP_DATA_MODULE = "MapData"
 local DEBUG_KEY = Key.F9
@@ -27,6 +28,11 @@ local function BuildMap()
 
     for _, link in ipairs(data.Links or {}) do
         map:AddLink(link.From, link.To, link.Cost, link.bOneWay)
+    end
+
+    if data.Dressing ~= nil then
+        local BlockedCells = MapObstacles.Apply(map, data.Dressing)
+        print("[MapActor] Facility obstacle cells:", BlockedCells)
     end
 
     currentMap = map

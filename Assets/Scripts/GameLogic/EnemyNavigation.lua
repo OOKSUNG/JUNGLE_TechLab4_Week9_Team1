@@ -1,3 +1,4 @@
+local MapModule = require("Map")
 local EnemyNavigation = {}
 EnemyNavigation.__index = EnemyNavigation
 
@@ -100,17 +101,13 @@ function EnemyNavigation.CanMove(Navigation, From, To, Floor, Heading)
     return IsAreaClear(Navigation, Floor, (From.X + To.X) * 0.5, (From.Y + To.Y) * 0.5, ExtentX + math.abs(To.X - From.X) * 0.5, ExtentY + math.abs(To.Y - From.Y) * 0.5)
 end
 
-local function FindPath(Navigation, Location, Yaw, MinimumDistance, ChangeDirection, TargetLocation)
+local function FindStart(Navigation, Location, Yaw, ChangeDirection)
     local Map = Navigation.mMap
     local Floor = Map:WorldToCell(Location).Floor
     local FloorData = Map.Floors[Floor]
     if FloorData == nil then
         return nil
     end
-    if TargetLocation ~= nil and Map:WorldToCell(TargetLocation).Floor ~= Floor then
-        return nil
-    end
-
     local Heading = math.floor(Yaw / 90.0 + 0.5) % 4
     local Angle = (Heading * 90.0 - Yaw + 180.0) % 360.0 - 180.0
     if math.abs(Angle) > 0.01 and not Navigation:CanTurn(Location, Floor) then
@@ -129,102 +126,112 @@ local function FindPath(Navigation, Location, Yaw, MinimumDistance, ChangeDirect
             local Distance = (Position.X - Location.X) ^ 2 + (Position.Y - Location.Y) ^ 2
             local ForwardDistance = (Position.X - Location.X) * ForwardX + (Position.Y - Location.Y) * ForwardY
             if Distance < BestDistance and (not ChangeDirection or ForwardDistance >= -0.001) and Navigation:IsNodeClear(Floor, X, Y, Heading) and Navigation:CanMove(Location, Position, Floor, Heading) then
-                Start = { X = X, Y = Y, Heading = Heading, Depth = 0 }
+                Start = { Floor = Floor, X = X, Y = Y, Heading = Heading }
                 BestDistance = Distance
             end
         end
     end
-    if Start == nil then
-        return nil
+    return Start
+end
+
+local function ToSearchCell(X, Y, Heading)
+    return { Floor = Heading + 1, X = X * 2 + 1, Y = Y * 2 + 1 }
+end
+
+local function IsSearchNodeClear(SearchMap, Layer, Column, Row)
+    if Layer == 5 then
+        return Column == SearchMap.mGoal.X and Row == SearchMap.mGoal.Y
+    end
+    if Layer < 1 or Layer > 4 or Column % 2 ~= 1 or Row % 2 ~= 1 then
+        return false
+    end
+    local Navigation = SearchMap.mNavigation
+    local Start = SearchMap.mStart
+    local FloorData = Navigation.mMap.Floors[Start.Floor]
+    local X = (Column - 1) * 0.5
+    local Y = (Row - 1) * 0.5
+    local Heading = Layer - 1
+    if X < 0 or X > (FloorData.Width - 1) * 2 or Y < 0 or Y > (FloorData.Height - 1) * 2 or not Navigation:IsNodeClear(Start.Floor, X, Y, Heading) then
+        return false
     end
 
-    local Nodes = { Start }
-    local Visited = { [PositionKey(Floor, Start.X, Start.Y) .. ":" .. Heading] = true }
-    local Goals = {}
-    local NearbyGoals = {}
-    local SideGoals = {}
-    local NearbySideGoals = {}
-    local MaximumDepth = math.ceil(MinimumDistance * 2.0 / Navigation.mSpacing) + 4
-    local ChaseGoal = nil
-    local ChaseDistance = math.huge
-    local Index = 1
-    while Index <= #Nodes do
-        local Node = Nodes[Index]
-        if TargetLocation ~= nil then
-            local Position = Navigation:ToWorld(Floor, Node.X, Node.Y)
-            local Distance = (Position.X - TargetLocation.X) ^ 2 + (Position.Y - TargetLocation.Y) ^ 2
-            if Distance < ChaseDistance then
-                ChaseGoal = Index
-                ChaseDistance = Distance
-            end
-            if ChaseDistance <= Navigation.mSpacing * Navigation.mSpacing * 0.5 + 0.000001 then
-                break
-            end
-        elseif Node.Depth > MaximumDepth and #NearbyGoals > 0 then
-            break
+    local Cell = ToSearchCell(X, Y, Heading)
+    local Position = Navigation:ToWorld(Start.Floor, X, Y)
+    if SearchMap.mTargetLocation ~= nil then
+        local Distance = (Position.X - SearchMap.mTargetLocation.X) ^ 2 + (Position.Y - SearchMap.mTargetLocation.Y) ^ 2
+        if Distance < SearchMap.mClosestDistance then
+            SearchMap.mClosestCell = Cell
+            SearchMap.mClosestDistance = Distance
         end
-        local CanTurn = Navigation:CanTurnAtNode(Floor, Node.X, Node.Y)
-        local Distance = ((Node.X - Start.X) ^ 2 + (Node.Y - Start.Y) ^ 2) * Navigation.mSpacing * Navigation.mSpacing
-        if TargetLocation == nil and Node.Moved and CanTurn and Distance >= Map.CellSize * Map.CellSize and (not ChangeDirection or Node.FirstHeading ~= Heading) then
-            NearbyGoals[#NearbyGoals + 1] = Index
-            local Sideways = Node.FirstHeading % 2 ~= Heading % 2
-            if Sideways then
-                NearbySideGoals[#NearbySideGoals + 1] = Index
-            end
-            if Distance >= MinimumDistance * MinimumDistance then
-                Goals[#Goals + 1] = Index
-                if Sideways then
-                    SideGoals[#SideGoals + 1] = Index
-                end
-            end
-        end
+    end
 
-        local Direction = Directions[Node.Heading + 1]
-        local NextNodes = { { X = Node.X + Direction.X, Y = Node.Y + Direction.Y, Heading = Node.Heading, Parent = Index, Depth = Node.Depth + 1, FirstHeading = Node.FirstHeading or Node.Heading, Moved = true } }
-        if CanTurn then
-            NextNodes[#NextNodes + 1] = { X = Node.X, Y = Node.Y, Heading = (Node.Heading + 1) % 4, Parent = Index, Depth = Node.Depth + 1, FirstHeading = Node.FirstHeading }
-            NextNodes[#NextNodes + 1] = { X = Node.X, Y = Node.Y, Heading = (Node.Heading + 3) % 4, Parent = Index, Depth = Node.Depth + 1, FirstHeading = Node.FirstHeading }
+    local Key = PositionKey(Layer, Column, Row)
+    if not SearchMap.mLinked[Key] then
+        SearchMap.mLinked[Key] = true
+        local Direction = Directions[Layer]
+        local Forward = Navigation:ToWorld(Start.Floor, X + Direction.X, Y + Direction.Y)
+        if not (SearchMap.mChangeDirection and X == Start.X and Y == Start.Y and Heading == Start.Heading) and Navigation:CanMove(Position, Forward, Start.Floor, Heading) then
+            SearchMap:AddLink(Cell, ToSearchCell(X + Direction.X, Y + Direction.Y, Heading), Navigation.mSpacing, true)
+        end
+        if Navigation:CanTurnAtNode(Start.Floor, X, Y) then
+            SearchMap:AddLink(Cell, ToSearchCell(X, Y, (Heading + 1) % 4), Navigation.mSpacing, true)
+            SearchMap:AddLink(Cell, ToSearchCell(X, Y, (Heading + 3) % 4), Navigation.mSpacing, true)
         else
-            NextNodes[#NextNodes + 1] = { X = Node.X - Direction.X, Y = Node.Y - Direction.Y, Heading = Node.Heading, Parent = Index, Depth = Node.Depth + 1, FirstHeading = Node.FirstHeading or (Node.Heading + 2) % 4, Moved = true }
-        end
-        for _, Next in ipairs(NextNodes) do
-            local Key = PositionKey(Floor, Next.X, Next.Y) .. ":" .. Next.Heading
-            if not Visited[Key] and Next.X >= 0 and Next.X <= (FloorData.Width - 1) * 2 and Next.Y >= 0 and Next.Y <= (FloorData.Height - 1) * 2 and Navigation:IsNodeClear(Floor, Next.X, Next.Y, Next.Heading) then
-                Visited[Key] = true
-                Nodes[#Nodes + 1] = Next
+            local Backward = Navigation:ToWorld(Start.Floor, X - Direction.X, Y - Direction.Y)
+            if Navigation:CanMove(Position, Backward, Start.Floor, Heading) then
+                SearchMap:AddLink(Cell, ToSearchCell(X - Direction.X, Y - Direction.Y, Heading), Navigation.mSpacing, true)
             end
         end
-        Index = Index + 1
+        if Column == SearchMap.mGoal.X and Row == SearchMap.mGoal.Y then
+            SearchMap:AddLink(Cell, SearchMap.mGoal, 0.0, true)
+        end
     end
+    return true
+end
 
-    if ChangeDirection and #SideGoals > 0 then
-        Goals = SideGoals
-    elseif #Goals == 0 and ChangeDirection and #NearbySideGoals > 0 then
-        Goals = NearbySideGoals
-    elseif #Goals == 0 then
-        Goals = NearbyGoals
+local function FindRoute(Navigation, Start, X, Y, ChangeDirection, TargetLocation)
+    local FloorData = Navigation.mMap.Floors[Start.Floor]
+    X = math.max(0, math.min((FloorData.Width - 1) * 2, X))
+    Y = math.max(0, math.min((FloorData.Height - 1) * 2, Y))
+    local SearchMap = MapModule.New({ CellSize = Navigation.mSpacing * 0.5 })
+    SearchMap.mNavigation = Navigation
+    SearchMap.mStart = Start
+    SearchMap.mGoal = { Floor = 5, X = X * 2 + 1, Y = Y * 2 + 1 }
+    SearchMap.mChangeDirection = ChangeDirection
+    SearchMap.mTargetLocation = TargetLocation
+    SearchMap.mClosestCell = nil
+    SearchMap.mClosestDistance = math.huge
+    SearchMap.mLinked = {}
+    SearchMap.IsWalkableAt = IsSearchNodeClear
+    local StartCell = ToSearchCell(Start.X, Start.Y, Start.Heading)
+    SearchMap:IsWalkable(StartCell)
+    local Options = { bAllowDiagonal = false, MaxNodes = (FloorData.Width * 2 - 1) * (FloorData.Height * 2 - 1) * 4 + 1 }
+    local Cells, Reason = SearchMap:FindPath(StartCell, SearchMap.mGoal, Options)
+    if Cells == nil and Reason == "Unreachable" and TargetLocation ~= nil and SearchMap.mClosestCell ~= nil then
+        Cells = SearchMap:FindPath(StartCell, SearchMap.mClosestCell, Options)
     end
-    if TargetLocation == nil and #Goals == 0 then
+    if Cells == nil then
         return nil
-    end
-
-    local ReversePath = {}
-    local GoalIndex = ChaseGoal or Goals[math.random(1, #Goals)]
-    while GoalIndex ~= nil do
-        local Node = Nodes[GoalIndex]
-        ReversePath[#ReversePath + 1] = { Location = Navigation:ToWorld(Floor, Node.X, Node.Y), Floor = Floor, Heading = Node.Heading }
-        GoalIndex = Node.Parent
     end
 
     local Path = {}
-    for PathIndex = #ReversePath, 1, -1 do
-        local Point = ReversePath[PathIndex]
-        local Count = #Path
-        if Count >= 2 and Path[Count].Heading == Point.Heading and Path[Count - 1].Heading == Point.Heading then
-            Path[Count] = Point
-        else
-            Path[#Path + 1] = Point
+    for _, Cell in ipairs(Cells) do
+        if Cell.Floor <= 4 then
+            local Point = { Location = Navigation:ToWorld(Start.Floor, (Cell.X - 1) * 0.5, (Cell.Y - 1) * 0.5), Floor = Start.Floor, Heading = Cell.Floor - 1 }
+            local Count = #Path
+            if Count >= 2 and Path[Count].Heading == Point.Heading and Path[Count - 1].Heading == Point.Heading then
+                Path[Count] = Point
+            else
+                Path[#Path + 1] = Point
+            end
         end
+    end
+    return Path
+end
+
+local function TrimPath(Path, Location)
+    if Path == nil then
+        return nil
     end
     while #Path > 1 and math.abs(Path[1].Location.X - Location.X) <= 0.001 and math.abs(Path[1].Location.Y - Location.Y) <= 0.001 and Path[1].Location.X == Path[2].Location.X and Path[1].Location.Y == Path[2].Location.Y do
         table.remove(Path, 1)
@@ -233,11 +240,60 @@ local function FindPath(Navigation, Location, Yaw, MinimumDistance, ChangeDirect
 end
 
 function EnemyNavigation.FindPatrolPath(Navigation, Location, Yaw, MinimumDistance, ChangeDirection)
-    return FindPath(Navigation, Location, Yaw, MinimumDistance, ChangeDirection, nil)
+    local Start = FindStart(Navigation, Location, Yaw, ChangeDirection)
+    if Start == nil then
+        return nil
+    end
+    local FloorData = Navigation.mMap.Floors[Start.Floor]
+    local Range = math.ceil(math.max(MinimumDistance, Navigation.mMap.CellSize) * 2.0 / Navigation.mSpacing) + 4
+    local Direction = Directions[Start.Heading + 1]
+    local Goals = {}
+    local NearbyGoals = {}
+    local SideGoals = {}
+    local NearbySideGoals = {}
+    for Y = math.max(0, Start.Y - Range), math.min((FloorData.Height - 1) * 2, Start.Y + Range) do
+        for X = math.max(0, Start.X - Range), math.min((FloorData.Width - 1) * 2, Start.X + Range) do
+            local Distance = ((X - Start.X) ^ 2 + (Y - Start.Y) ^ 2) * Navigation.mSpacing * Navigation.mSpacing
+            if Distance >= Navigation.mMap.CellSize * Navigation.mMap.CellSize and Navigation:CanTurnAtNode(Start.Floor, X, Y) then
+                local Goal = { X = X, Y = Y }
+                local Sideways = math.abs((X - Start.X) * Direction.Y - (Y - Start.Y) * Direction.X) > math.abs((X - Start.X) * Direction.X + (Y - Start.Y) * Direction.Y)
+                NearbyGoals[#NearbyGoals + 1] = Goal
+                if Sideways then
+                    NearbySideGoals[#NearbySideGoals + 1] = Goal
+                end
+                if Distance >= MinimumDistance * MinimumDistance then
+                    Goals[#Goals + 1] = Goal
+                    if Sideways then
+                        SideGoals[#SideGoals + 1] = Goal
+                    end
+                end
+            end
+        end
+    end
+    local Candidates = { ChangeDirection and SideGoals or Goals, ChangeDirection and NearbySideGoals or NearbyGoals, Goals, NearbyGoals }
+    for _, List in ipairs(Candidates) do
+        for Attempt = 1, math.min(#List, 8) do
+            local Index = math.random(1, #List)
+            local Goal = List[Index]
+            List[Index] = List[#List]
+            List[#List] = nil
+            local Path = FindRoute(Navigation, Start, Goal.X, Goal.Y, ChangeDirection, nil)
+            if Path ~= nil then
+                return TrimPath(Path, Location)
+            end
+        end
+    end
+    return nil
 end
 
 function EnemyNavigation.FindChasePath(Navigation, Location, Yaw, TargetLocation)
-    return FindPath(Navigation, Location, Yaw, 0.0, false, TargetLocation)
+    local Start = FindStart(Navigation, Location, Yaw, false)
+    if Start == nil or Navigation.mMap:WorldToCell(TargetLocation).Floor ~= Start.Floor then
+        return nil
+    end
+    local X = math.floor((TargetLocation.Y - Navigation.mMap.Origin.Y) / Navigation.mSpacing + 0.5)
+    local Y = math.floor((Navigation.mMap.Origin.X - TargetLocation.X) / Navigation.mSpacing + 0.5)
+    return TrimPath(FindRoute(Navigation, Start, X, Y, false, TargetLocation), Location)
 end
 
 return EnemyNavigation

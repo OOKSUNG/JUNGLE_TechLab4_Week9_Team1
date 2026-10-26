@@ -33,6 +33,7 @@ public:
 	FMatrix GetOrthogonalMatrix() const;
 	FMatrix GetProjectionMatrix() const;
 	FMatrix GetViewProjectionMatrix() const;
+	bool CanSeeActor(const AActor& Target) const;
 
 	// Picking
 	FRay DeProjection(FVector2 MousePos, float ScreenW, float ScreenH);

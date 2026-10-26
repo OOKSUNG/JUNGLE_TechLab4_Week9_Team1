@@ -19,6 +19,7 @@ end
 local function ClearReferences()
     GameManager.Player = nil
     GameManager.Enemies = {}
+    GameManager.EnemyMachines = {}
     GameManager.Items = {}
     GameManager.Map = nil
 end
@@ -77,18 +78,43 @@ function GameManager.GetPlayerLocation()
     return GameManager.Player:GetActorLocation()
 end
 
-function GameManager.RegisterEnemy(actor)
-    if IndexOf(GameManager.Enemies, actor) then
-        return
+function GameManager.ReportPlayerFootstep(Actor, Radius)
+    if not GameManager.IsPlaying() or Actor == nil or Actor ~= GameManager.Player or Radius <= 0.0 then
+        return false
     end
-    table.insert(GameManager.Enemies, actor)
+
+    local Location = Actor:GetActorLocation()
+    local SoundLocation = FVector.new(Location.X, Location.Y, Location.Z)
+    for _, Enemy in ipairs(GameManager.Enemies) do
+        local Machine = GameManager.EnemyMachines[Enemy]
+        if Machine ~= nil and Machine:IsRunning() then
+            Machine:HandleEvent("PlayerFootstep", SoundLocation, Radius)
+        end
+    end
+    return true
 end
 
-function GameManager.UnregisterEnemy(actor)
-    local index = IndexOf(GameManager.Enemies, actor)
-    if index then
-        table.remove(GameManager.Enemies, index)
+function GameManager.RegisterEnemy(Actor, Machine)
+    if Machine ~= nil then
+        GameManager.EnemyMachines[Actor] = Machine
     end
+    if IndexOf(GameManager.Enemies, Actor) then
+        return
+    end
+    table.insert(GameManager.Enemies, Actor)
+end
+
+function GameManager.UnregisterEnemy(Actor)
+    GameManager.EnemyMachines[Actor] = nil
+    local Index = IndexOf(GameManager.Enemies, Actor)
+    if Index then
+        table.remove(GameManager.Enemies, Index)
+    end
+end
+
+function GameManager.GetEnemyState(Actor)
+    local Machine = GameManager.EnemyMachines[Actor]
+    return Machine and Machine:IsRunning() and Machine:GetCurrentState() or nil
 end
 
 function GameManager.GetEnemies()

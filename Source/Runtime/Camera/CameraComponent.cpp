@@ -4,6 +4,64 @@
 #include "../Collision/Ray.h"
 #include "Engine/World.h"
 
+bool UCameraComponent::CanSeeActor(const AActor& Target) const {
+	UWorld* World{ GetWorld() };
+	if (!World || Target.GetWorld() != World) {
+		return false;
+	}
+
+	FBox Bounds{};
+	bool HasBounds{};
+	for (UActorComponent* Component : Target.GetComponents()) {
+		const UPrimitiveComponent* Primitive{ Cast<UPrimitiveComponent>(Component) };
+		if (!Primitive || !Primitive->IsVisible() || !Primitive->GetMeshData()) {
+			continue;
+		}
+		const FBox ComponentBounds{ Primitive->CalcBounds() };
+		if (HasBounds) {
+			Bounds.Expand(ComponentBounds);
+		} else {
+			Bounds = ComponentBounds;
+			HasBounds = true;
+		}
+	}
+	if (!HasBounds) {
+		return false;
+	}
+
+	const AActor* Observer{ GetOwner() };
+	while (Observer && Observer->GetAttachParentActor()) {
+		Observer = Observer->GetAttachParentActor();
+	}
+	const FVector Origin{ GetWorldLocation() };
+	const FVector Center{ (Bounds.Min + Bounds.Max) * 0.5f };
+	const FVector Extent{ (Bounds.Max - Bounds.Min) * 0.5f };
+	const FMatrix ViewProjection{ GetViewProjectionMatrix() };
+	const float Samples[]{ 0.0f, -0.9f, 0.9f };
+	for (const float Z : Samples) {
+		for (const float Y : Samples) {
+			for (const float X : Samples) {
+				const FVector Point{ Center + FVector{ Extent.X * X, Extent.Y * Y, Extent.Z * Z } };
+				const FVector4 Clip{ FVector4{ Point, 1.0f } * ViewProjection };
+				if (Clip.W <= 0.0f || Clip.Z < 0.0f || Clip.Z > Clip.W || std::abs(Clip.X) > Clip.W || std::abs(Clip.Y) > Clip.W) {
+					continue;
+				}
+				const FVector Delta{ Point - Origin };
+				const float Distance{ Delta.Length() };
+				if (Distance <= 0.001f) {
+					return true;
+				}
+				const FRay Ray{ Origin, Delta / Distance };
+				FHitResult Hit{};
+				if (!World->LineTraceSingle(Ray, Hit, nullptr, nullptr, Observer) || Hit.Distance >= Distance - 0.01f || (Hit.HitComponent && Hit.HitComponent->GetOwner() == &Target)) {
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
+
 UCameraComponent::UCameraComponent() {
 	PrimaryComponentTick.bCanEverTick = true;
 }

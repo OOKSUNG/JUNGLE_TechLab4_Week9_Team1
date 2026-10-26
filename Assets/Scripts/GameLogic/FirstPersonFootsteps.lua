@@ -1,4 +1,6 @@
+local GameManager = require("GameManager")
 local FirstPersonFootsteps = {}
+FirstPersonFootsteps.Config = { WalkHearingRadius = 2.0, RunHearingRadius = 8.0, LandingHearingBonus = 3.0 }
 local Runtime = { mStates = {} }
 local StepSounds = { "Assets/Sounds/FootstepLeft.wav", "Assets/Sounds/FootstepRight.wav" }
 
@@ -22,9 +24,13 @@ function FirstPersonFootsteps.Update(StateKey)
     end
 end
 
-function FirstPersonFootsteps.Step(StateKey, StepIndex, SpeedRatio, RunBlend, Impact)
+function FirstPersonFootsteps.Step(StateKey, StepIndex, SpeedRatio, RunBlend, Impact, Actor)
     FirstPersonFootsteps.Start(StateKey)
     FirstPersonFootsteps.Update(StateKey)
+    local Config = FirstPersonFootsteps.Config
+    local RunRatio = math.max(0.0, math.min(1.0, RunBlend))
+    local HearingRadius = (Config.WalkHearingRadius + (Config.RunHearingRadius - Config.WalkHearingRadius) * RunRatio + Config.LandingHearingBonus * math.max(0.0, math.min(1.0, Impact or 0.0))) * math.max(0.0, math.min(1.0, SpeedRatio))
+    GameManager.ReportPlayerFootstep(Actor, HearingRadius)
     local State = Runtime.mStates[StateKey]
     if State.mFailed then
         return

@@ -12,6 +12,7 @@ EnemyAudio.Config = {
 
     FootstepMaxVolume = 0.7,
     FootstepPitch = 1.0,
+    ChaseFootstepPitch = 1.5,
     HeartbeatMaxVolume = 0.6,
 
     VolumeChangePerSecond = 2.0,
@@ -34,7 +35,15 @@ local function StartLayer(name, path, pitch)
     if pitch then
         SetSoundPitch(handle, pitch)
     end
-    layers[name] = { Handle = handle, Volume = 0.0 }
+    layers[name] = { Handle = handle, Volume = 0.0, Pitch = pitch or 1.0 }
+end
+
+local function UpdateLayerPitch(Name, Pitch)
+    local Layer = layers[Name]
+    if Layer ~= nil and Layer.Pitch ~= Pitch then
+        SetSoundPitch(Layer.Handle, Pitch)
+        Layer.Pitch = Pitch
+    end
 end
 
 local function UpdateLayer(name, target, dt)
@@ -119,6 +128,7 @@ function EnemyAudio.Tick(dt)
     local config = EnemyAudio.Config
     local playerLocation = GameManager.GetPlayerLocation()
     local footstepTarget = 0.0
+    local FootstepPitch = config.FootstepPitch
     nearestDistance = math.huge
 
     if playerLocation and GameManager.IsPlaying() and dt > 0.0 then
@@ -138,11 +148,17 @@ function EnemyAudio.Tick(dt)
             nearestDistance = math.min(nearestDistance, distance)
 
             if bMoving then
-                footstepTarget = math.max(footstepTarget, EnemyAudio.FootstepVolumeForDistance(distance))
+                local Volume = EnemyAudio.FootstepVolumeForDistance(distance)
+                if Volume > footstepTarget then
+                    footstepTarget = Volume
+                    local StateName = GameManager.GetEnemyState(enemy)
+                    FootstepPitch = (StateName == "Chase" or StateName == "Stalking") and config.ChaseFootstepPitch or config.FootstepPitch
+                end
             end
         end
     end
 
+    UpdateLayerPitch("Footstep", FootstepPitch)
     UpdateLayer("Footstep", footstepTarget * config.FootstepMaxVolume, dt)
     UpdateLayer("Heartbeat", nearestDistance <= config.HeartbeatDistance and config.HeartbeatMaxVolume or 0.0, dt)
 end

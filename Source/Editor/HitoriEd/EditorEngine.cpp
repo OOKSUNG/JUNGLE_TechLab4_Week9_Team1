@@ -20,7 +20,6 @@
 #include "Camera/CameraComponent.h"
 // 피킹 결과와 View별 Billboard 행렬 공급에 사용한다.
 #include "Collision/HitResult.h"
-#include "Collision/CollisionTests.h"
 #include "Components/BillboardComponent.h"
 #include "GameFramework/Actor/LightActorBase.h"
 
@@ -107,10 +106,7 @@ bool UEditorEngine::Init()
 	OutputLogPanel = EditorUI->AddEditorPanel<FOutputLogPanel>();
 	FLog::AddSink(OutputLogPanel);
 
-#if defined(ENGINE_DEBUG)
 	// 로그 패널이 생긴 뒤에 돌려야 결과가 Output Log에 보인다.
-	Collision::RunSelfTests();
-#endif
 	OutputLogPanel->SetCommandHandler(
 		[this](const FString& CommandLine, FString& OutMessage)
 		{

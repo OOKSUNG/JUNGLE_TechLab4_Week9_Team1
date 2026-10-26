@@ -235,7 +235,7 @@ function WalkingCamera.Land(StateKey, ImpactSpeed)
     State.mFallDistance = 0.0
     State.mVerticalSpeed = 0.0
     State.mIsAirborne = false
-    FirstPersonFootsteps.Step(StateKey, State.mStepCount, 1.0, State.mRunBlend, Clamp(ImpactSpeed / 5.0, 0.0, 1.0))
+    FirstPersonFootsteps.Step(StateKey, State.mStepCount, 1.0, State.mRunBlend, Clamp(ImpactSpeed / 5.0, 0.0, 1.0), State.mActor)
 end
 
 function WalkingCamera.OnHit(StateKey, Hit)
@@ -311,7 +311,7 @@ function WalkingCamera.Update(StateKey, LocalMovement, MoveSpeed, DeltaTime, IsR
             State.mStepProgress = State.mStepProgress % 1.0
             State.mStepCount = State.mStepCount + 1
             State.mStepImpact = 1.0
-            FirstPersonFootsteps.Step(StateKey, State.mStepCount, TargetBlend, State.mRunBlend)
+            FirstPersonFootsteps.Step(StateKey, State.mStepCount, TargetBlend, State.mRunBlend, nil, State.mActor)
         end
     elseif State.mBlend < 0.0001 then
         State.mBlend = 0.0

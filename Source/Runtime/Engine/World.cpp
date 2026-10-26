@@ -976,15 +976,21 @@ bool UWorld::DestroyActorNow(AActor* Actor)
 }
 
 // 다른 World의 객체를 제외하고 Component 교차 중 최근접 결과를 선택한다.
-bool UWorld::LineTraceSingle(const FRay& WorldRay, FHitResult& OutHit,
-	FBillboardTraceTransform ResolveBillboard, const void* ViewContext)
-{
+bool UWorld::LineTraceSingle(const FRay& WorldRay, FHitResult& OutHit, FBillboardTraceTransform ResolveBillboard, const void* ViewContext, const AActor* IgnoreActor) {
 	SCOPE_CYCLE_COUNTER_ALWAYS(EditorStats::STAT_PickingTime_Name);
 	OutHit = FHitResult();
 	float NearestT = std::numeric_limits<float>::max();
 
 	const auto TraceComponent = [&](FPrimitiveSceneProxy* Proxy, float& InOutNearestT)
 		{
+			const AActor* Owner{ Proxy && Proxy->GetComponent() ? Proxy->GetComponent()->GetOwner() : nullptr };
+			while (Owner && IgnoreActor) {
+				if (Owner == IgnoreActor) {
+					return false;
+				}
+				Owner = Owner->GetAttachParentActor();
+			}
+
 			if (UStaticMesh* Mesh = Proxy ? Proxy->GetMesh() : nullptr)
 			{
 				if (!Proxy->IsVisible())

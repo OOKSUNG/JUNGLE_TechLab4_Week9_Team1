@@ -5,17 +5,17 @@ return {
     bCeiling = true,
     bAllowDiagonal = false,
 
-    WallBaseColor = "Assets/Textures/StoneWall/StoneWall_BaseColor.png",
-    WallNormal = "Assets/Textures/StoneWall/StoneWall_Normal.png",
-    WallTileSize = 2.0,
+    WallBaseColor = "Assets/Textures/Facility/RustedSteel_BaseColor.png",
+    WallNormal = "Assets/Textures/Facility/RustedSteel_Normal.png",
+    WallTileSize = 4.0,
 
-    FloorBaseColor = "Assets/Textures/StoneGround/StoneGround_BaseColor.png",
-    FloorNormal = "Assets/Textures/StoneGround/StoneGround_Normal.png",
-    FloorTileSize = 3.0,
+    FloorBaseColor = "Assets/Textures/Facility/TreadPlate_BaseColor.png",
+    FloorNormal = "Assets/Textures/Facility/TreadPlate_Normal.png",
+    FloorTileSize = 2.0,
 
-    CeilingBaseColor = "Assets/Textures/SoilCeil/SoilCeil_BaseColor.png",
-    CeilingNormal = "Assets/Textures/SoilCeil/SoilCeil_Normal.png",
-    CeilingTileSize = 3.0,
+    CeilingBaseColor = "Assets/Textures/Facility/RustedSteel_BaseColor.png",
+    CeilingNormal = "Assets/Textures/Facility/RustedSteel_Normal.png",
+    CeilingTileSize = 4.0,
 
     Floors = {
         [1] = [[
@@ -85,4 +85,5 @@ return {
     },
 
     Links = {},
+    Dressing = require("FacilityLayout"),
 }
