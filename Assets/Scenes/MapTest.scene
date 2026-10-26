@@ -251,33 +251,33 @@
                         {
                             "Class": "USpotLightComponent",
                             "Name": "USpotLightComponent_0",
-                            "Parent": "UCameraComponent_0",
+                            "Parent": "FlashlightMesh",
                             "Properties": {
-                                "AttenuationRadius": 18.0,
-                                "InnerConeAngle": 0.0,
+                                "AttenuationRadius": 18.600000381469727,
+                                "InnerConeAngle": 20.600000381469727,
                                 "Intensity": 1.0,
                                 "LightColor": 4294967295,
-                                "LightFalloffExponent": 3.0,
-                                "OuterConeAngle": 30.0,
+                                "LightFalloffExponent": 3.700000047683716,
+                                "OuterConeAngle": 32.29999923706055,
                                 "ShadowBias": 0.0010000000474974513,
                                 "ShadowMapResolution": 1024,
                                 "ShadowPCFKernelSize": 2,
                                 "SourceRadius": 0.029999999329447746,
                                 "Transform": {
                                     "Location": {
-                                        "X": 0.0,
-                                        "Y": 0.0,
-                                        "Z": 0.0
+                                        "X": -0.007568359375,
+                                        "Y": -11.7899169921875,
+                                        "Z": 0.02069091796875
                                     },
                                     "Rotation": {
-                                        "Pitch": 0.0,
+                                        "Pitch": -0.0,
                                         "Roll": 0.0,
-                                        "Yaw": 0.0
+                                        "Yaw": -90.0
                                     },
                                     "Scale": {
-                                        "X": 1.0,
-                                        "Y": 1.0,
-                                        "Z": 1.0
+                                        "X": 71.42857360839844,
+                                        "Y": 71.42857360839844,
+                                        "Z": 71.4285659790039
                                     }
                                 },
                                 "bCastShadows": true,
@@ -847,7 +847,7 @@
                             "Name": "PatrolScript",
                             "Parent": "",
                             "Properties": {
-                                "ScriptPath": "Assets/Scripts/FSMExample.lua"
+                                "ScriptPath": "Assets/Scripts/EnemyFSM.lua"
                             }
                         }
                     ],

@@ -5,9 +5,9 @@ function Common.ReportState(Context, PreviousState, StateName)
 end
 
 function Common.HandleInterruption(Context, EventName)
-    if EventName == "Stun" or EventName == "OnOverlap" or EventName == "OnHit" then
+    if EventName == "Stun" and Context.mMachine:RequestState("Stunned") then
         Context.mData.mResumeState = Context.mMachine:GetCurrentState()
-        Context.mMachine:RequestState("Stunned")
+        Context.mData.mPatrolInterrupted = true
     end
 end
 

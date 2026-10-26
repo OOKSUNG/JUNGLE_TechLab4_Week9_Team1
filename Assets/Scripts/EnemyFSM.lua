@@ -1,6 +1,6 @@
 local FSM = require("FSM")
+local States = require("EnemyStates")
 local GameManager = require("GameManager")
-local States = require("FSMExampleStates")
 local Runtime = { mMachine = nil }
 
 local function Initialize()
@@ -8,12 +8,11 @@ local function Initialize()
         Runtime.mMachine:Stop()
     end
 
-    local Location = self:GetActorLocation()
-    local Data = { mOrigin = FVector.new(Location.X, Location.Y, Location.Z), mDirection = 1.0, mDestinationX = Location.X, mPatrolDistance = 3.0, mPatrolSpeed = 2.0, mIdleDuration = 1.0, mStunDuration = 1.5, mResumeState = "Idle" }
+    local Data = { mPatrolSpeed = 2.0, mPatrolTurnSpeed = 360.0, mPatrolReplanInterval = 2.5, mPatrolExtent = self:GetNavigationExtent(), mPatrolWallMargin = 0.04, mIdleDuration = 1.0, mStunDuration = 1.5, mResumeState = "Idle", mPatrolMap = nil, mPatrolPath = nil, mPatrolPathIndex = 1, mPatrolHeightOffset = 0.0, mPatrolBlockedTime = 0.0 }
     Runtime.mMachine = FSM.New(self, States, Data)
-    Runtime.mMachine:Start("Idle")
     GameManager.RegisterEnemy(self)
-    Log("[FSMExample]", self:GetName(), "Space: stun for 1.5 seconds; patrol: origin X +/- 3")
+    Runtime.mMachine:Start("Idle")
+    Log("[EnemyFSM]", self:GetName(), "Space: stun for 1.5 seconds; patrol: follow walkable map cells")
 end
 
 function BeginPlay()
@@ -53,11 +52,11 @@ function OnHit(OtherActor, Hit)
 end
 
 function EndPlay()
-    GameManager.UnregisterEnemy(self)
     if Runtime.mMachine ~= nil then
         Runtime.mMachine:Stop()
         Runtime.mMachine = nil
     end
+    GameManager.UnregisterEnemy(self)
 end
 
 function OnReload()

@@ -3,6 +3,7 @@
 
 #include "GameFramework/Actor.h"
 #include "Components/SceneComponent.h"
+#include "Components/PrimitiveComponent.h"
 #include "Components/SpotLightComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Math/Vector.h"
@@ -21,6 +22,7 @@
 #include <luajit.h>
 #include <stdexcept>
 #include <algorithm>
+#include <cmath>
 
 namespace
 {
@@ -467,8 +469,57 @@ namespace
 		return Camera.GetRelativeRotation();
 	}
 
+	FVector GetSceneRelativeLocation(const USceneComponent& Component) {
+		return Component.GetRelativeLocation();
+	}
+
+	FRotator GetSceneRelativeRotation(const USceneComponent& Component) {
+		return Component.GetRelativeRotation();
+	}
+
+	USceneComponent* FindChildSceneComponent(const USceneComponent& Component, const FString& Name) {
+		for (USceneComponent* Child : Component.GetAttachChildren()) {
+			if (Child->GetName() == Name) {
+				return Child;
+			}
+
+			if (USceneComponent* Found{ FindChildSceneComponent(*Child, Name) }) {
+				return Found;
+			}
+		}
+		return nullptr;
+	}
+
 	void BindCameraAPI(sol::state& LuaState) {
-		LuaState.new_usertype<UCameraComponent>("UCameraComponent", sol::no_constructor, "GetRelativeLocation", &GetCameraRelativeLocation, "SetRelativeLocation", &UCameraComponent::SetRelativeLocation, "GetRelativeRotation", &GetCameraRelativeRotation, "SetRelativeRotation", &UCameraComponent::SetRelativeRotation, "GetFieldOfView", &UCameraComponent::GetFieldOfView, "SetFieldOfView", &UCameraComponent::SetFieldOfView);
+		LuaState.new_usertype<USceneComponent>("USceneComponent", sol::no_constructor, "GetRelativeLocation", &GetSceneRelativeLocation, "SetRelativeLocation", &USceneComponent::SetRelativeLocation, "GetRelativeRotation", &GetSceneRelativeRotation, "SetRelativeRotation", &USceneComponent::SetRelativeRotation, "FindChildComponent", &FindChildSceneComponent);
+		LuaState.new_usertype<UCameraComponent>("UCameraComponent", sol::no_constructor, sol::base_classes, sol::bases<USceneComponent>(), "GetRelativeLocation", &GetCameraRelativeLocation, "SetRelativeLocation", &UCameraComponent::SetRelativeLocation, "GetRelativeRotation", &GetCameraRelativeRotation, "SetRelativeRotation", &UCameraComponent::SetRelativeRotation, "GetFieldOfView", &UCameraComponent::GetFieldOfView, "SetFieldOfView", &UCameraComponent::SetFieldOfView);
+	}
+
+	FVector GetActorNavigationExtent(const AActor& Actor) {
+		const USceneComponent* RootComponent{ Actor.GetRootComponent() };
+		if (!RootComponent) {
+			return {};
+		}
+
+		const FMatrix WorldToRoot{ RootComponent->GetWorldMatrix().Inverse() };
+		const FVector Scale{ RootComponent->GetWorldScale3D() };
+		FVector Extent{};
+		for (UActorComponent* Component : Actor.GetComponents()) {
+			const UPrimitiveComponent* Primitive{ Cast<UPrimitiveComponent>(Component) };
+			const FStaticMeshData* Mesh{ Primitive && Primitive->IsVisible() ? Primitive->GetMeshData() : nullptr };
+			if (!Mesh) {
+				continue;
+			}
+
+			const FMatrix ComponentToRoot{ Primitive->GetWorldMatrix() * WorldToRoot };
+			for (const FVertex& Vertex : Mesh->Vertices) {
+				const FVector Position{ ComponentToRoot.TransformPosition(Vertex.Position) };
+				Extent.X = std::max(Extent.X, std::abs(Position.X * Scale.X));
+				Extent.Y = std::max(Extent.Y, std::abs(Position.Y * Scale.Y));
+				Extent.Z = std::max(Extent.Z, std::abs(Position.Z * Scale.Z));
+			}
+		}
+		return Extent;
 	}
 
 	void BindActorAPI(sol::state& LuaState)
@@ -476,6 +527,7 @@ namespace
 		LuaState.new_usertype<AActor>(
 			"AActor",
 			sol::no_constructor,
+			"GetNavigationExtent", &GetActorNavigationExtent,
 			"GetName", [](const AActor& Actor)
 			{
 				return Actor.GetName();

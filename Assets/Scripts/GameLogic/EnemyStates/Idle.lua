@@ -1,4 +1,4 @@
-local Common = require("FSMExampleStates.Common")
+local Common = require("EnemyStates.Common")
 local Idle = {}
 
 function Idle.Enter(Context, PreviousState)
