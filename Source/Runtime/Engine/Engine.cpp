@@ -15,6 +15,13 @@ bool UEngine::Init()
 
 	if (!World || !World->Init()) return false;*/
 
+	AudioSystem = MakeUnique<FAudioSystem>();
+
+	if (!AudioSystem->Initialize())
+	{
+		HTR_LOG(Warning, "[Startup] Audio is unavailable; sounds will be skipped");
+	}
+
 	LuaVM = MakeUnique<FLuaVM>();
 
 	if (!LuaVM->Initialize())

@@ -3,6 +3,7 @@
 #include "Level.h"
 
 #include "Core/EngineStatics.h"
+#include "Engine/Engine.h"
 #include "GameFramework/Actor/StaticMeshActor.h"
 
 #include "Camera/CameraActor.h"
@@ -1016,6 +1017,11 @@ void UWorld::EndPlay()
 			if (Actor)
 				Actor->EndPlay();
 		}
+	}
+
+	if (GEngine && GEngine->GetAudioSystem())
+	{
+		GEngine->GetAudioSystem()->StopAll();
 	}
 }
 

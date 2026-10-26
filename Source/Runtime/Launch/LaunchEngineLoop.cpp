@@ -156,6 +156,11 @@ bool FEngineLoop::Tick()
 	{
 		SCOPE_CYCLE_COUNTER(STAT_EngineTick);
 		GEngine->Tick(EngineTimer::GetDeltaTime());
+
+		if (FAudioSystem* AudioSystem = GEngine->GetAudioSystem())
+		{
+			AudioSystem->Tick(EngineTimer::GetDeltaTime());
+		}
 	}
 	{
 		SCOPE_CYCLE_COUNTER(STAT_Present);

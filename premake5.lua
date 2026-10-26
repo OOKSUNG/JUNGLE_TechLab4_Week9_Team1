@@ -52,6 +52,7 @@ IncludeDir["ImGui"] = "Source/ThirdParty/ImGui"
 IncludeDir["stb"]   = "Source/ThirdParty/stb"
 IncludeDir["json"]  = "Source/ThirdParty/json"
 IncludeDir["DDSLoader"] = "Source/ThirdParty/DDSLoader"
+IncludeDir["miniaudio"] = "Source/ThirdParty/miniaudio"
 IncludeDir["Sol2"] = "vcpkg_installed/x64-windows/include"
 IncludeDir["LuaJIT"] = "vcpkg_installed/x64-windows/include/luajit"
 
@@ -177,6 +178,8 @@ project "HitoriEngine"
 		"Source/Runtime/**.cpp",
 		"%{IncludeDir.DDSLoader}/*.h",
 		"%{IncludeDir.DDSLoader}/*.cpp",
+		"%{IncludeDir.miniaudio}/*.h",
+		"%{IncludeDir.miniaudio}/*.cpp",
 	}
 
 	includedirs
@@ -187,12 +190,15 @@ project "HitoriEngine"
 		"%{IncludeDir.stb}",
 		"%{IncludeDir.json}",
 		"%{IncludeDir.DDSLoader}",
+		"%{IncludeDir.miniaudio}",
 	}
 
 	-- D3D 시스템 lib는 exe(HitoriEditor)에서 링크한다. 정적 lib에 넣으면 import lib가 엔진 lib 안에 합쳐져
 	-- /WHOLEARCHIVE로 강제 링크할 때 __NULL_IMPORT_DESCRIPTOR가 중복 정의된다.
 
 	filter "files:Source/ThirdParty/DDSLoader/**.cpp"
+		enablepch "Off"
+	filter "files:Source/ThirdParty/miniaudio/**.cpp"
 		enablepch "Off"
 	filter {}
 

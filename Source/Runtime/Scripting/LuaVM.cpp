@@ -6,6 +6,8 @@
 #include "Math/Vector.h"
 #include "Math/Rotator.h"
 #include "Collision/HitResult.h"
+#include "Audio/AudioSystem.h"
+#include "Engine/Engine.h"
 
 #include <sol/sol.hpp>
 #include <luajit.h>
@@ -149,6 +151,67 @@ namespace
 			"Yaw", &FRotator::Yaw,
 			"Roll", &FRotator::Roll
 		);
+	}
+
+	FAudioSystem* GetAudio()
+	{
+		return GEngine ? GEngine->GetAudioSystem() : nullptr;
+	}
+
+	void BindAudioAPI(sol::state& LuaState)
+	{
+		LuaState.set_function("PlaySound",
+			[](const FString& Path, sol::optional<bool> bLoop, sol::optional<float> Volume) -> uint32
+			{
+				FAudioSystem* Audio = GetAudio();
+				return Audio ? Audio->Play(Path, bLoop.value_or(false), Volume.value_or(1.0f)) : 0;
+			});
+
+		LuaState.set_function("StopSound", [](uint32 Handle)
+			{
+				if (FAudioSystem* Audio = GetAudio())
+				{
+					Audio->Stop(Handle);
+				}
+			});
+
+		LuaState.set_function("StopAllSounds", []()
+			{
+				if (FAudioSystem* Audio = GetAudio())
+				{
+					Audio->StopAll();
+				}
+			});
+
+		LuaState.set_function("SetSoundVolume", [](uint32 Handle, float Volume)
+			{
+				if (FAudioSystem* Audio = GetAudio())
+				{
+					Audio->SetVolume(Handle, Volume);
+				}
+			});
+
+		LuaState.set_function("FadeSound", [](uint32 Handle, float TargetVolume, float Duration)
+			{
+				if (FAudioSystem* Audio = GetAudio())
+				{
+					Audio->FadeTo(Handle, TargetVolume, Duration);
+				}
+			});
+
+		LuaState.set_function("IsSoundPlaying", [](uint32 Handle)
+			{
+				FAudioSystem* Audio = GetAudio();
+				return Audio && Audio->IsPlaying(Handle);
+			});
+
+		LuaState.set_function("SetMasterVolume", [](float Volume)
+			{
+				if (FAudioSystem* Audio = GetAudio())
+				{
+					Audio->SetMasterVolume(Volume);
+				}
+			});
 	}
 
 	void BindActorAPI(sol::state& LuaState)
@@ -298,6 +361,7 @@ void FLuaVM::BindEngineAPI()
 		"PenetrationDepth", &FHitResult::PenetrationDepth
 	);
 	BindActorAPI(*State);
+	BindAudioAPI(*State);
 }
 
 bool FLuaVM::ExecuteString(

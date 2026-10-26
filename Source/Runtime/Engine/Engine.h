@@ -12,6 +12,7 @@
 
 // TODO: 전방 선언으로 바꿔야 한다.
 #include "Scripting/LuaVM.h"
+#include "Audio/AudioSystem.h"
 
 struct FWorldContext
 {
@@ -79,10 +80,12 @@ public:
 	void DestroyWorldContext(UWorld* InWorld);
 
 	FLuaVM* GetLuaVM() const { return LuaVM.get(); }
+	FAudioSystem* GetAudioSystem() const { return AudioSystem.get(); }
 
 protected:
 	UAssetManager* AssetManager;
 	TUniquePtr<FLuaVM> LuaVM;
+	TUniquePtr<FAudioSystem> AudioSystem;
 
 	FEngineLoop& GetEngineLoop() const { return *EngineLoop; }
 
