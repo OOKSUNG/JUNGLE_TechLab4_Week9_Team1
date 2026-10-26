@@ -16,6 +16,7 @@
 #include "Render/ToneMapRenderer.h"
 #include "Render/DepthViewRenderer.h"
 #include "Render/FShadowViewRenderer.h"
+#include "Render/UIRenderer.h"
 
 
 #include "Editor/EditorUI/EditorUI.h"
@@ -51,6 +52,7 @@ public:
 	bool Init() override;
 	void Tick(float DeltaTime) override;
 	void PreExit() override;
+	FUIRenderer* GetUIRenderer() override { return UIRenderer.get(); }
 
 	// Active View의 입력과 Picking 결과만 Gizmo 및 선택 상태에 반영한다.
 	void UpdateGizmoAndPicking();
@@ -157,6 +159,7 @@ private:
 	TUniquePtr<FToneMapRenderer> ToneMapRenderer;
 	TUniquePtr<FDepthViewRenderer> DepthViewRenderer;
 	TUniquePtr<FShadowViewRenderer> ShadowViewRenderer;
+	TUniquePtr<FUIRenderer> UIRenderer;
 
 	UFont* SystemFont;
 

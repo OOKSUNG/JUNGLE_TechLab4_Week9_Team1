@@ -8,6 +8,7 @@
 #include "Render/FXAARenderer.h"
 #include "Render/SkyboxRenderer.h"
 #include "Render/ToneMapRenderer.h"
+#include "Render/UIRenderer.h"
 #include "Text/TextRenderer.h"
 
 struct FLODViewContext;
@@ -21,6 +22,7 @@ public:
 	void Tick(float DeltaTime) override;
 	void OnResize(uint32 Width, uint32 Height) override;
 	void PreExit() override;
+	FUIRenderer* GetUIRenderer() override { return &mUIRenderer; }
 
 private:
 	void RenderFrame(UCameraComponent& Camera);
@@ -39,6 +41,7 @@ private:
 	FToneMapRenderer mToneMapRenderer{};
 	FFXAARenderer mFXAARenderer{};
 	FTextRenderer mTextRenderer{};
+	FUIRenderer mUIRenderer{};
 	TUniquePtr<FTexture2D> mColorTarget{};
 	TUniquePtr<FTexture2D> mDepthTarget{};
 	TUniquePtr<FTexture2D> mHDRTarget{};

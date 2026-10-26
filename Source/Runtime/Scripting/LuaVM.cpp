@@ -5,15 +5,21 @@
 #include "Components/SceneComponent.h"
 #include "Components/SpotLightComponent.h"
 #include "Math/Vector.h"
+#include "Math/Vector2.h"
 #include "Math/Rotator.h"
 #include "Collision/HitResult.h"
 #include "Audio/AudioSystem.h"
 #include "Engine/Engine.h"
+#include "Core/ResourcePaths.h"
+#include "Render/UIRenderer.h"
+#include "Render/Texture2D.h"
+#include "Text/Font.h"
 #include "Input/InputSystem.h"
 
 #include <sol/sol.hpp>
 #include <luajit.h>
 #include <stdexcept>
+#include <algorithm>
 
 namespace
 {
@@ -371,6 +377,59 @@ namespace
 			"Quote", EKeyCode::Quote);
 	}
 
+	void BindUIAPI(sol::state& LuaState)
+	{
+		LuaState.new_usertype<FVector2>(
+			"FVector2",
+			sol::constructors<FVector2(), FVector2(float, float)>(),
+			"X", &FVector2::X,
+			"Y", &FVector2::Y);
+
+		LuaState.set_function("AddUIText", [](const FString& Text, float TextSize,
+			const FVector2& Anchor, const FVector2& Alignment, sol::optional<FVector2> Offset) -> bool
+		{
+			FUIRenderer* UIRenderer = GEngine ? GEngine->GetUIRenderer() : nullptr;
+			if (!UIRenderer)
+				return false;
+
+			UFont* Font = UAssetManager::GetAssetByPath<UFont>(ResourcePaths::DefaultFont);
+			if (!Font)
+				return false;
+
+			UITextInfo Info{};
+			Info.TextSize = TextSize;
+			Info.Text = Text;
+			Info.Atlas = Font;
+			Info.Anchor = Anchor;
+			Info.Alignment = Alignment;
+			Info.Offset = Offset.value_or(FVector2());
+			UIRenderer->AddUIText(Info);
+			return true;
+		});
+
+		LuaState.set_function("AddUIImage", [](const FString& TexturePath, const FVector2& Size,
+			const FVector2& Anchor, const FVector2& Alignment, sol::optional<FVector2> Offset,
+			sol::optional<float> Ratio) -> bool
+		{
+			FUIRenderer* UIRenderer = GEngine ? GEngine->GetUIRenderer() : nullptr;
+			if (!UIRenderer || TexturePath.empty() || Size.X <= 0.0f || Size.Y <= 0.0f)
+				return false;
+
+			UTexture2D* Texture = UAssetManager::Get().LoadTexture(TexturePath);
+			if (!Texture)
+				return false;
+
+			UIImageInfo Info{};
+			Info.Size = Size;
+			Info.Texture = Texture;
+			Info.Ratio = std::clamp(Ratio.value_or(1.0f), 0.0f, 1.0f);
+			Info.Anchor = Anchor;
+			Info.Alignment = Alignment;
+			Info.Offset = Offset.value_or(FVector2());
+			UIRenderer->AddUIImage(Info);
+			return true;
+		});
+	}
 
 	void BindActorAPI(sol::state& LuaState)
 	{
@@ -590,6 +649,7 @@ void FLuaVM::BindEngineAPI()
 	BindRotatorAPI(*State);
 	BindCoroutineAPI(*State, FCoroutineScheduler);
 	BindInputAPI(*State);
+	BindUIAPI(*State);
 	State->new_usertype<FHitResult>(
 		"FHitResult",
 		sol::no_constructor,
