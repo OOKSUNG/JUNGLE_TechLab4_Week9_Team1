@@ -95,6 +95,8 @@ cbuffer MaterialParams : register(b1)
     float2 UVOffset;
     float bOpaque;
     float Shininess; // Blinn-Phong 광택 지수 (Material.h FStaticMeshMaterialParams::Shininess)
+    float WorldUVTileSize;
+    float3 MaterialPadding;
 };
 
 // Renderer.h의 FPerObjectConstants와 바이트 단위로 같아야 한다.
@@ -841,7 +843,32 @@ VS_OUTPUT mainVS(VS_INPUT Input)
 
 float4 mainPS(VS_OUTPUT Input) : SV_TARGET
 {
-    const float2 UV = Input.UV + UVOffset;
+    float2 UV = Input.UV + UVOffset;
+    float3 WorldUVTangent = float3(0.0f, 0.0f, 0.0f);
+    float3 WorldUVBitangent = float3(0.0f, 0.0f, 0.0f);
+    if (WorldUVTileSize > 0.0f)
+    {
+        const float3 AxisWeight = abs(normalize(Input.Normal));
+        const float3 TilePos = Input.WorldPos / WorldUVTileSize;
+        if (AxisWeight.z >= AxisWeight.x && AxisWeight.z >= AxisWeight.y)
+        {
+            UV = float2(TilePos.y, TilePos.x);
+            WorldUVTangent = float3(0.0f, 1.0f, 0.0f);
+            WorldUVBitangent = float3(1.0f, 0.0f, 0.0f);
+        }
+        else if (AxisWeight.x >= AxisWeight.y)
+        {
+            UV = float2(TilePos.y, -TilePos.z);
+            WorldUVTangent = float3(0.0f, 1.0f, 0.0f);
+            WorldUVBitangent = float3(0.0f, 0.0f, -1.0f);
+        }
+        else
+        {
+            UV = float2(TilePos.x, -TilePos.z);
+            WorldUVTangent = float3(1.0f, 0.0f, 0.0f);
+            WorldUVBitangent = float3(0.0f, 0.0f, -1.0f);
+        }
+    }
     const float4 TexColor = DiffuseTexture.Sample(MaterialSampler, UV);
     float4 Albedo = TexColor * BaseColor;
 #if !defined(EDITOR_ARROW_SHADER)
@@ -866,8 +893,10 @@ float4 mainPS(VS_OUTPUT Input) : SV_TARGET
     const float3 VertexNormal = { normalize(Input.Normal) };
 #if defined(LIGHTING_MODEL_LAMBERT) || defined(LIGHTING_MODEL_BLINN_PHONG) || defined(WORLD_NORMAL)
     // TBN: 노멀맵의 탄젠트 공간 노멀을 월드 공간으로 옮긴다.
-    const float3 T = { normalize(Input.Tangent.xyz - VertexNormal * dot(VertexNormal, Input.Tangent.xyz)) };
-    const float3 B = { cross(VertexNormal, T) * (Input.Tangent.w < 0.0f ? -1.0f : 1.0f) };
+    const bool bWorldUV = WorldUVTileSize > 0.0f;
+    const float3 MeshT = { normalize(Input.Tangent.xyz - VertexNormal * dot(VertexNormal, Input.Tangent.xyz)) };
+    const float3 T = { bWorldUV ? WorldUVTangent : MeshT };
+    const float3 B = { bWorldUV ? WorldUVBitangent : cross(VertexNormal, MeshT) * (Input.Tangent.w < 0.0f ? -1.0f : 1.0f) };
     const float3 TangentNormal = { NormalTexture.Sample(MaterialSampler, UV).xyz * 2.0f - 1.0f };
     const float3 N = { normalize(T * TangentNormal.x + B * -TangentNormal.y + VertexNormal * TangentNormal.z) };
 #endif

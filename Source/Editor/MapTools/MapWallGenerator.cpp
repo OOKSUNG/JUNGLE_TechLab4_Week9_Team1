@@ -1,6 +1,7 @@
 #include "EnginePCH.h"
 #include "Editor/MapTools/MapWallGenerator.h"
 
+#include "Asset/AssetManager.h"
 #include "Components/BoxComponent.h"
 #include "Components/ScriptComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -8,6 +9,7 @@
 #include "Engine/Level.h"
 #include "Engine/World.h"
 #include "GameFramework/Actor.h"
+#include "Render/Material.h"
 #include "Scripting/LuaVM.h"
 
 #include <algorithm>
@@ -35,6 +37,12 @@ namespace
 		float FloorHeight = 4.0f;
 		float WallHeight = 4.0f;
 		bool bCeiling = true;
+		FString WallBaseColor;
+		FString WallNormal;
+		float WallTileSize = 2.0f;
+		FString FloorBaseColor;
+		FString FloorNormal;
+		float FloorTileSize = 1.0f;
 		TArray<FMapFloor> Floors;
 	};
 
@@ -109,6 +117,12 @@ namespace
 		OutData.FloorHeight = Data.get_or("FloorHeight", 4.0f);
 		OutData.WallHeight = Data.get_or("WallHeight", OutData.FloorHeight);
 		OutData.bCeiling = Data.get_or("bCeiling", true);
+		OutData.WallBaseColor = Data.get<sol::optional<FString>>("WallBaseColor").value_or(FString());
+		OutData.WallNormal = Data.get<sol::optional<FString>>("WallNormal").value_or(FString());
+		OutData.WallTileSize = Data.get_or("WallTileSize", 2.0f);
+		OutData.FloorBaseColor = Data.get<sol::optional<FString>>("FloorBaseColor").value_or(FString());
+		OutData.FloorNormal = Data.get<sol::optional<FString>>("FloorNormal").value_or(FString());
+		OutData.FloorTileSize = Data.get_or("FloorTileSize", 1.0f);
 
 		sol::optional<sol::table> Floors = Data["Floors"];
 		if (!Floors)
@@ -168,14 +182,43 @@ namespace
 		return ToRemove.Num();
 	}
 
-	AActor* SpawnCubeActor(UWorld& World, AActor& Parent, const FVector& Location, const FVector& Scale, const FString& MeshName, const FString& BoxName)
+	UMaterial* CreateTiledMaterial(const FString& BaseColorPath, const FString& NormalPath, float TileSize)
+	{
+		if (BaseColorPath.empty())
+			return nullptr;
+
+		UMaterial* Material = UMaterial::CreateInstance(UAssetManager::GetAssetByPath<UMaterial>("DefaultMaterial"));
+		if (!Material)
+			return nullptr;
+
+		if (UTexture2D* BaseColor = UAssetManager::Get().LoadTexture(BaseColorPath))
+			Material->Textures[0] = BaseColor;
+		else
+			HTR_LOG(Warning, "[MapWallGenerator] Texture not found: {}", BaseColorPath);
+
+		if (!NormalPath.empty())
+		{
+			if (UTexture2D* Normal = UAssetManager::Get().LoadTexture(NormalPath))
+				Material->Textures[1] = Normal;
+			else
+				HTR_LOG(Warning, "[MapWallGenerator] Normal map not found: {}", NormalPath);
+		}
+
+		Material->SamplerState = ESamplerState::LinearWrap;
+		Material->WorldUVTileSize = TileSize;
+		return Material;
+	}
+
+	AActor* SpawnCubeActor(UWorld& World, AActor& Parent, const FVector& Location, const FVector& Scale, const FString& MeshName, const FString& BoxName, UMaterial* Material = nullptr)
 	{
 		const FTransform Transform(FRotator(0.0f, 0.0f, 0.0f), Location, Scale);
 		AActor* Actor = World.SpawnActor(AActor::StaticClass(), NAME_None, &Transform);
 		if (!Actor)
 			return nullptr;
 
-		Actor->AddComponent(UStaticMeshComponent::StaticClass(), FName(MeshName.c_str()));
+		UStaticMeshComponent* Mesh = Cast<UStaticMeshComponent>(Actor->AddComponent(UStaticMeshComponent::StaticClass(), FName(MeshName.c_str())));
+		if (Mesh && Material)
+			Mesh->SetMaterial(0, Material);
 
 		if (!BoxName.empty())
 		{
@@ -259,6 +302,8 @@ FMapWallGenerateResult FMapWallGenerator::Generate(AActor& MapActor)
 
 	const FVector Origin = MapActor.GetActorLocation();
 	const float Cell = Data.CellSize;
+	UMaterial* WallMaterial = CreateTiledMaterial(Data.WallBaseColor, Data.WallNormal, Data.WallTileSize);
+	UMaterial* FloorMaterial = CreateTiledMaterial(Data.FloorBaseColor, Data.FloorNormal, Data.FloorTileSize);
 	FString FirstOpenCell;
 
 	for (const FMapFloor& Floor : Data.Floors)
@@ -292,7 +337,7 @@ FMapWallGenerateResult FMapWallGenerator::Generate(AActor& MapActor)
 					BaseZ + Data.WallHeight * 0.5f);
 				const FVector Scale(Cell, static_cast<float>(End - Start + 1) * Cell, Data.WallHeight);
 
-				if (SpawnCubeActor(*World, MapActor, Location, Scale, GeneratedPrefix + "WallMesh", GeneratedPrefix + "WallBox"))
+				if (SpawnCubeActor(*World, MapActor, Location, Scale, GeneratedPrefix + "WallMesh", GeneratedPrefix + "WallBox", WallMaterial))
 					++Result.WallActors;
 			}
 		}
@@ -306,7 +351,7 @@ FMapWallGenerateResult FMapWallGenerator::Generate(AActor& MapActor)
 				BaseZ - FloorThickness * 0.5f);
 			const FVector Scale(static_cast<float>(Height) * Cell, static_cast<float>(Width) * Cell, FloorThickness);
 
-			if (SpawnCubeActor(*World, MapActor, Location, Scale, GeneratedPrefix + "FloorMesh", FString()))
+			if (SpawnCubeActor(*World, MapActor, Location, Scale, GeneratedPrefix + "FloorMesh", FString(), FloorMaterial))
 				++Result.FloorActors;
 
 			if (Data.bCeiling)

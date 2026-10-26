@@ -51,6 +51,7 @@ UMaterial* UMaterial::CreateInstance(const UMaterial* Source)
 	Instance->SamplerState = Source->SamplerState;
 	Instance->BaseColor = Source->BaseColor;
 	Instance->UVScrollSpeed = Source->UVScrollSpeed;
+	Instance->WorldUVTileSize = Source->WorldUVTileSize;
 	Instance->Shininess = Source->Shininess;
 
 	// ParamBuffer는 TUniquePtr라 복사할 수 없다.
@@ -100,6 +101,7 @@ json UMaterial::SaveMaterial(const UMaterial* Material)
 		Material->UVScrollSpeed.Y
 	};
 	Out["Shininess"] = Material->Shininess;
+	Out["WorldUVTileSize"] = Material->WorldUVTileSize;
 	Out["SamplerState"] = Material->SamplerState == ESamplerState::LinearWrap ? "LinearWrap" : "LinearClamp";
 	Out["BlendState"] = Material->BlendState == EBlendState::AlphaBlend ? "AlphaBlend" : "Opaque";
 
@@ -165,6 +167,10 @@ UMaterial* UMaterial::LoadMaterial(const json& In)
 	if (In.contains("Shininess"))
 	{
 		Instance->Shininess = In["Shininess"].get<float>();
+	}
+	if (In.contains("WorldUVTileSize"))
+	{
+		Instance->WorldUVTileSize = In["WorldUVTileSize"].get<float>();
 	}
 	if (In.contains("SamplerState"))
 	{
@@ -240,6 +246,9 @@ void UMaterial::Serialize(FStructuredArchive::FRecord Record)
 	Record 	<< SA_VALUE("BaseColor", BaseColor)
 			<< SA_VALUE("Shininess", Shininess)
 			<< SA_VALUE("UVScrollSpeed", UVScrollSpeed);
+
+	if (TOptional<FStructuredArchive::FSlot> TileSlot = Record.TryEnterField("WorldUVTileSize", Ar.IsSaving() && WorldUVTileSize > 0.0f))
+		TileSlot.GetValue() << WorldUVTileSize;
 
 	// enum은 이름 문자열로 (UE 텍스트 포맷도 enum을 이름으로 쓴다)
 	FString Sampler = SamplerState == ESamplerState::LinearWrap ? "LinearWrap" : "LinearClamp";

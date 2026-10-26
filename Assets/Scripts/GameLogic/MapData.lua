@@ -5,6 +5,10 @@ return {
     bCeiling = true,
     bAllowDiagonal = false,
 
+    WallBaseColor = "Assets/Textures/StoneWall/StoneWall_BaseColor.png",
+    WallNormal = "Assets/Textures/StoneWall/StoneWall_Normal.png",
+    WallTileSize = 2.0,
+
     Floors = {
         [1] = [[
 ##############################################################
