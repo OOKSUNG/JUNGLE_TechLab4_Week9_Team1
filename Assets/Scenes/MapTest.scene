@@ -33293,6 +33293,170 @@
                     ],
                     "Properties": {},
                     "RootComponent": "DefaultSceneRoot"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "UStaticMeshComponent_0",
+                            "OverrideMaterials": [],
+                            "Parent": "UBoxComponent_2",
+                            "Properties": {
+                                "StaticMesh": "Models/Door_old/Door_Metal.obj",
+                                "Transform": {
+                                    "Location": {
+                                        "X": -2.700000047683716,
+                                        "Y": -0.11999999731779099,
+                                        "Z": -0.4848485291004181
+                                    },
+                                    "Rotation": {
+                                        "Pitch": -0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": -24.1299991607666
+                                    },
+                                    "Scale": {
+                                        "X": 0.6365236043930054,
+                                        "Y": 0.8688141107559204,
+                                        "Z": 0.3030303418636322
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "UBoxComponent_2",
+                            "Parent": "",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 0.5,
+                                    "Y": 0.5,
+                                    "Z": 0.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": -2.00654935836792,
+                                        "Y": 6.719934940338135,
+                                        "Z": 1.8035420179367065
+                                    },
+                                    "Rotation": {
+                                        "Pitch": -0.0,
+                                        "Roll": 1.5,
+                                        "Yaw": -3.0999999046325684
+                                    },
+                                    "Scale": {
+                                        "X": 0.9999999403953552,
+                                        "Y": 2.0999999046325684,
+                                        "Z": 4.0
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": false,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UScriptComponent",
+                            "Name": "UScriptComponent_0",
+                            "Parent": "",
+                            "Properties": {
+                                "ScriptPath": "Assets/Scripts/GameLogic/Exit_Door.lua"
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "UBoxComponent_2"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UScriptComponent",
+                            "Name": "UScriptComponent_1",
+                            "Parent": "",
+                            "Properties": {
+                                "ScriptPath": "Assets/Scripts/GameLogic/Exit_Car.lua"
+                            }
+                        },
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "UStaticMeshComponent_1",
+                            "OverrideMaterials": [],
+                            "Parent": "",
+                            "Properties": {
+                                "StaticMesh": "Models/Post_Apocalyptic_UAZ/Post_Apocalyptic_UAZ.obj",
+                                "Transform": {
+                                    "Location": {
+                                        "X": -6.499024391174316,
+                                        "Y": 15.856966972351074,
+                                        "Z": 0.0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": -0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 1.0,
+                                        "Y": 1.0,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "UBoxComponent_3",
+                            "Parent": "UStaticMeshComponent_1",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 0.5,
+                                    "Y": 0.5,
+                                    "Z": 0.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 1.9359631538391113,
+                                        "Y": 0.0,
+                                        "Z": 0.8278636932373047
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0.0,
+                                        "Roll": 0.0,
+                                        "Yaw": 0.0
+                                    },
+                                    "Scale": {
+                                        "X": 6.0,
+                                        "Y": 3.9600000381469727,
+                                        "Z": 1.0
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": false,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "UStaticMeshComponent_1"
                 }
             ],
             "Properties": {}
