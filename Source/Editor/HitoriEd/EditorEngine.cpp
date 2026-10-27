@@ -28,6 +28,7 @@
 
 #include "Render/RenderCommand.h"
 #include "Editor/Outliner/OutlinerPanel.h"
+#include "Editor/Sequence/SequencePanel.h"
 #include "Editor/HitoriEd/EditorFileUtils.h"
 #include "Editor/HitoriEd/EditorResourcePaths.h"
 #include "Core/ResourcePaths.h"
@@ -181,6 +182,7 @@ bool UEditorEngine::Init()
 	EditorControlsPanel = EditorUI->AddEditorPanel<FEditorControlsPanel>();
 	ViewportsPanel = EditorUI->AddEditorPanel<FViewportsPanel>();
 	ContentDrawerPanel = EditorUI->AddEditorPanel<FContentDrawerPanel>();
+	EditorUI->AddEditorPanel<FSequencePanel>();
 
 	// OutLine
 	OutlineRenderer = MakeUnique<FOutlineRenderer>();
