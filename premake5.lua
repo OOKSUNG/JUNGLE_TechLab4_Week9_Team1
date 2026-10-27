@@ -223,6 +223,8 @@ project "HitoriEditor"
 	{
 		"Source/Editor/**.h",
 		"Source/Editor/**.cpp",
+		"Source/ThirdParty/ImNeoSequencer/*.h",
+		"Source/ThirdParty/ImNeoSequencer/*.cpp",
 		"Source/Programs/**.h",
 		"Source/Programs/**.cpp",
 		"Source/Editor/**.rc",   -- 창·exe 아이콘
@@ -249,6 +251,10 @@ project "HitoriEditor"
 		"dxguid.lib",
 		"d3dcompiler.lib",
 	}
+
+	filter "files:Source/ThirdParty/ImNeoSequencer/*.cpp"
+		flags { "NoPCH" }
+	filter {}
 
 	filter "configurations:Debug or Benchmark_Debug"
 		libdirs
