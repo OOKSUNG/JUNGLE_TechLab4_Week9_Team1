@@ -123,6 +123,11 @@ void UWorld::Tick(float DeltaTime)
 	// 에디터 월드면 더이상 틱을 돌리지 않는다.
 	if (WorldType != EWorldType::Editor)
 	{
+		// 입력받은 실제 DeltaTime으로 이번 프레임의 FGameTime을 만든 뒤,
+		// 기존 Tick 경로에는 Time Dilation이 적용된 월드 DeltaTime을 전달한다.
+		UpdateGameTime(DeltaTime);
+		DeltaTime = GameTime.GetDeltaWorldTimeSeconds();
+
 		bInGameTick = true;
 		while (!BeginPlayList.IsEmpty())
 		{
@@ -147,6 +152,36 @@ void UWorld::Tick(float DeltaTime)
 	}
 
 
+}
+
+void UWorld::SetTimeScale(float InTimeScale)
+{
+	if (!std::isfinite(InTimeScale))
+	{
+		HTR_LOG(Warning, "[Time] Ignored non-finite time scale");
+		return;
+	}
+
+	TimeScale = std::clamp(InTimeScale, 0.0f, 10.0f);
+}
+
+void UWorld::ResetTimeEffects()
+{
+	TimeScale = 1.0f;
+}
+
+void UWorld::UpdateGameTime(float DeltaTime)
+{
+	const float DeltaRealTimeSeconds =
+		std::isfinite(DeltaTime) ? std::max(0.0f, DeltaTime) : 0.0f;
+
+	const float DeltaWorldTimeSeconds = DeltaRealTimeSeconds * TimeScale;
+
+	GameTime.DeltaRealTimeSeconds = DeltaRealTimeSeconds;
+	GameTime.DeltaWorldTimeSeconds = DeltaWorldTimeSeconds;
+	GameTime.RealTimeSeconds += static_cast<double>(DeltaRealTimeSeconds);
+	GameTime.WorldTimeSeconds += static_cast<double>(DeltaWorldTimeSeconds);
+	GameTime.TimeDilation = TimeScale;
 }
 
 void UWorld::ClearWorld()
@@ -1108,6 +1143,10 @@ void UWorld::EndPlay()
 		if (FLuaVM* LuaVM = GEngine ? GEngine->GetLuaVM() : nullptr)
 			LuaVM->ResetCoroutines();
 	}
+
+	// 장면 전환이나 PIE 재시작에 이전 장면의 슬로모가 남지 않게 한다.
+	ResetTimeEffects();
+	GameTime = FGameTime{};
 
 }
 

@@ -357,9 +357,72 @@ void UScriptComponent::BindScriptContext(sol::environment& TargetEnvironment)
         AActor* Actor = GetOwner();
         return GEngine && Actor ? GEngine->GetGameViewportInfo(Actor->GetWorld()) : FGameViewportInfo{};
     };
+	const auto GetOwnerWorld = [this]() -> UWorld*
+	{
+		AActor* Actor = GetOwner();
+		return Actor ? Actor->GetWorld() : nullptr;
+	};
+
     TargetEnvironment.set_function("GetViewportSize", [GetViewportInfo]() { return GetViewportInfo().Size; });
     TargetEnvironment.set_function("GetMousePosition", [GetViewportInfo]() { return GetViewportInfo().MousePosition; });
     TargetEnvironment.set_function("IsMouseOverGameViewport", [GetViewportInfo]() { return GetViewportInfo().bAcceptsMouseInput; });
+	TargetEnvironment.set_function("SetTimeScale", [GetOwnerWorld](float Scale)
+	{
+		if (UWorld* World = GetOwnerWorld())
+			World->SetTimeScale(Scale);
+	});
+	TargetEnvironment.set_function("SetGlobalTimeDilation", [GetOwnerWorld](float TimeDilation)
+	{
+		if (UWorld* World = GetOwnerWorld())
+			World->SetTimeScale(TimeDilation);
+	});
+	TargetEnvironment.set_function("GetTimeScale", [GetOwnerWorld]()
+	{
+		if (UWorld* World = GetOwnerWorld())
+			return World->GetTimeScale();
+		return 1.0f;
+	});
+	TargetEnvironment.set_function("GetGlobalTimeDilation", [GetOwnerWorld]()
+	{
+		if (UWorld* World = GetOwnerWorld())
+			return World->GetTimeScale();
+		return 1.0f;
+	});
+	TargetEnvironment.set_function("GetEffectiveTimeDilation", [GetOwnerWorld]()
+	{
+		if (UWorld* World = GetOwnerWorld())
+			return World->GetGameTime().GetTimeDilation();
+		return 1.0f;
+	});
+	TargetEnvironment.set_function("GetUnscaledDeltaTime", [GetOwnerWorld]()
+	{
+		if (UWorld* World = GetOwnerWorld())
+			return World->GetGameTime().GetDeltaRealTimeSeconds();
+		return 0.0f;
+	});
+	TargetEnvironment.set_function("GetWorldDeltaTime", [GetOwnerWorld]()
+	{
+		if (UWorld* World = GetOwnerWorld())
+			return World->GetGameTime().GetDeltaWorldTimeSeconds();
+		return 0.0f;
+	});
+	TargetEnvironment.set_function("GetRealTimeSeconds", [GetOwnerWorld]()
+	{
+		if (UWorld* World = GetOwnerWorld())
+			return World->GetGameTime().GetRealTimeSeconds();
+		return 0.0;
+	});
+	TargetEnvironment.set_function("GetWorldTimeSeconds", [GetOwnerWorld]()
+	{
+		if (UWorld* World = GetOwnerWorld())
+			return World->GetGameTime().GetWorldTimeSeconds();
+		return 0.0;
+	});
+	TargetEnvironment.set_function("ResetTimeEffects", [GetOwnerWorld]()
+	{
+		if (UWorld* World = GetOwnerWorld())
+			World->ResetTimeEffects();
+	});
 	TargetEnvironment.set_function("IsExecutableGame", [this]() {
 #if defined(EXECUTABLE)
 		AActor* Actor{ GetOwner() };

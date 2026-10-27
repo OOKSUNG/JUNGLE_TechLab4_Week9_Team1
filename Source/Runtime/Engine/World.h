@@ -15,6 +15,8 @@
 #include "Asset/LOD/StaticMeshLODSelector.h"
 #include "Engine/EngineTypes.h"
 #include "Containers/Queue.h"
+#include "GameTime.h"
+
 //class ACameraActor;
 class ULevel;
 class UShapeComponent;
@@ -65,6 +67,15 @@ public:
 	}
 
 	void Tick(float DeltaTime);
+
+	void SetTimeScale(float InTimeScale);
+	float GetTimeScale() const { return TimeScale; }
+
+	void ResetTimeEffects();
+
+	const FGameTime& GetGameTime() const { return GameTime; }
+	float GetDeltaSeconds() const { return GameTime.GetDeltaWorldTimeSeconds(); }
+	float GetUnscaledDeltaTime() const { return GameTime.GetDeltaRealTimeSeconds(); }
 
 	void ClearWorld();
 
@@ -167,6 +178,7 @@ public:
 	UShapeComponent* FindShapeByUUID(uint32 UUID);
 private:
 	void InitializePlayCamera();
+	void UpdateGameTime(float DeltaTime);
 
 	// 활성 Lit View 중 하나에서 Receiver 후보가 보이면 유지한다.
 	// LocalLight와 ReceiverFrustum은 지정한 경우에만 영향 구와 투영 범위를 제한한다.
@@ -178,6 +190,9 @@ private:
 	static bool IsSmallShadowCaster(const FLODSphere& Sphere, const FLODViewContext* Views, int32 ViewCount, float MinScreenRadiusSquared);
 
 	EWorldType WorldType = EWorldType::None;
+
+	FGameTime GameTime;
+	float TimeScale = 1.0f;
 
 	struct alignas(64) FGatherChunk
 	{
