@@ -136,7 +136,7 @@
                                 "bCastShadow": true,
                                 "bGenerateOverlapEvents": false,
                                 "bReceiveShadow": true,
-                                "bVisible": true
+                                "bVisible": false
                             }
                         },
                         {
@@ -813,7 +813,7 @@
                             "Properties": {
                                 "BoxExtent": {
                                     "X": 1.0,
-                                    "Y": 0.8,
+                                    "Y": 0.800000011920929,
                                     "Z": 0.8999999761581421
                                 },
                                 "ShapeColor": 4288517599,
@@ -35707,7 +35707,7 @@
                             "Properties": {
                                 "BoxExtent": {
                                     "X": 0.5,
-                                    "Y": 0.8,
+                                    "Y": 0.800000011920929,
                                     "Z": 1.2000000476837158
                                 },
                                 "ShapeColor": 4288517599,

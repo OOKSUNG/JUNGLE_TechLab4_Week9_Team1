@@ -228,7 +228,7 @@ Test("game over without a killer and successful escape skip the scare", function
     assert(GameManager.Phase == GameManager.EPhase.GameOver and Runtime.mPlayed == 0)
     GameManager.StartGame()
     GameManager.Escape("Car")
-    assert(GameManager.Phase == GameManager.EPhase.Escaped and Runtime.mPlayed == 0)
+    assert(GameManager.Phase == GameManager.EPhase.Ending and Runtime.mPlayed == 0)
 end)
 
 Test("missing view falls back to immediate game over", function(Player, View, Enemy)
@@ -344,7 +344,7 @@ Test("unregistered enemies and ended games cannot trigger tile capture", functio
     GameManager.RegisterEnemy(Enemy)
     GameManager.Escape("Car")
     GameManager.Tick(0.016)
-    assert(GameManager.Phase == GameManager.EPhase.Escaped and Runtime.mPlayed == 0)
+    assert(GameManager.Phase == GameManager.EPhase.Ending and Runtime.mPlayed == 0)
 end)
 
 GameManager.Reset()

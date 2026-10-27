@@ -1,4 +1,5 @@
 local JumpScare = require("JumpScare")
+local EndingCutscene = require("EndingCutscene")
 local GameManager = {}
 
 GameManager.EPhase = {
@@ -7,6 +8,7 @@ GameManager.EPhase = {
     JumpScare = "JumpScare",
     GameOver = "GameOver",
     Escaped = "Escaped",
+    Ending = "Ending",
 }
 
 local function ResetProgress()
@@ -41,6 +43,26 @@ local function FindRegisteredEnemy(Actor)
     return Index and GameManager.Enemies[Index] or nil, Index
 end
 
+local function CheckPlayerCapture()
+    local Map = GameManager.Map
+    local PlayerLocation = GameManager.GetPlayerLocation()
+    if Map == nil or PlayerLocation == nil then
+        return
+    end
+
+    local PlayerCell = Map:WorldToCell(PlayerLocation)
+    local PlayerFloor = math.floor((PlayerLocation.Z - Map.Origin.Z) / Map.FloorHeight)
+    for _, Enemy in ipairs(GameManager.Enemies) do
+        local EnemyLocation = Enemy:GetActorLocation()
+        local EnemyFloor = math.floor((EnemyLocation.Z - Map.Origin.Z) / Map.FloorHeight)
+        if PlayerFloor == EnemyFloor and Map.IsSameCell(PlayerCell, Map:WorldToCell(EnemyLocation)) then
+            local Reason = GameManager.EnemyScareProfiles[Enemy] == "Watcher" and "CaughtByWatcher" or "CaughtByEnemy"
+            GameManager.GameOver(Reason, Enemy)
+            return
+        end
+    end
+end
+
 function GameManager.Reset()
     SetCursorMode(CursorMode.Free)
     JumpScare.Stop()
@@ -50,6 +72,7 @@ end
 
 function GameManager.StartGame()
     JumpScare.Stop()
+    EndingCutscene.ClearPending()
     ResetProgress()
     GameManager.Phase = GameManager.EPhase.Playing
     SetCursorMode(CursorMode.Locked)
@@ -59,6 +82,7 @@ end
 function GameManager.Tick(dt)
     if GameManager.Phase == GameManager.EPhase.Playing then
         GameManager.ElapsedTime = GameManager.ElapsedTime + dt
+        CheckPlayerCapture()
     elseif GameManager.IsJumpScaring() and JumpScare.Update(dt) then
         GameManager.Phase = GameManager.EPhase.GameOver
         SetCursorMode(CursorMode.Free)
@@ -224,14 +248,14 @@ function GameManager.GameOver(Reason, Killer)
     print("[GameManager] GameOver:", Reason)
 end
 
-function GameManager.Escape(route)
+function GameManager.Escape(Route)
     if not GameManager.IsPlaying() then
         return
     end
-    GameManager.Phase = GameManager.EPhase.Escaped
+    GameManager.Route = Route
+    GameManager.Phase = EndingCutscene.Prepare(Route, GameManager.GetResult()) and GameManager.EPhase.Ending or GameManager.EPhase.Escaped
     SetCursorMode(CursorMode.Free)
-    GameManager.Route = route
-    print("[GameManager] Escaped:", route)
+    print("[GameManager] Escaped:", Route)
 end
 
 function GameManager.GetResult()

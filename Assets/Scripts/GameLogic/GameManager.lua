@@ -1,4 +1,5 @@
 local JumpScare = require("JumpScare")
+local EndingCutscene = require("EndingCutscene")
 local GameManager = {}
 
 GameManager.EPhase = {
@@ -7,6 +8,7 @@ GameManager.EPhase = {
     JumpScare = "JumpScare",
     GameOver = "GameOver",
     Escaped = "Escaped",
+    Ending = "Ending",
 }
 
 local function ResetProgress()
@@ -70,6 +72,7 @@ end
 
 function GameManager.StartGame()
     JumpScare.Stop()
+    EndingCutscene.ClearPending()
     ResetProgress()
     GameManager.Phase = GameManager.EPhase.Playing
     SetCursorMode(CursorMode.Locked)
@@ -245,14 +248,14 @@ function GameManager.GameOver(Reason, Killer)
     print("[GameManager] GameOver:", Reason)
 end
 
-function GameManager.Escape(route)
+function GameManager.Escape(Route)
     if not GameManager.IsPlaying() then
         return
     end
-    GameManager.Phase = GameManager.EPhase.Escaped
+    GameManager.Route = Route
+    GameManager.Phase = EndingCutscene.Prepare(Route, GameManager.GetResult()) and GameManager.EPhase.Ending or GameManager.EPhase.Escaped
     SetCursorMode(CursorMode.Free)
-    GameManager.Route = route
-    print("[GameManager] Escaped:", route)
+    print("[GameManager] Escaped:", Route)
 end
 
 function GameManager.GetResult()
