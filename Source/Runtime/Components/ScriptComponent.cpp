@@ -394,11 +394,6 @@ void UScriptComponent::BindScriptContext(sol::environment& TargetEnvironment)
 			return World->GetGameTime().GetTimeDilation();
 		return 1.0f;
 	});
-	TargetEnvironment.set_function("HitStop", [GetOwnerWorld](float Duration, sol::optional<float> Scale)
-	{
-		if (UWorld* World = GetOwnerWorld())
-			World->ApplyHitStop(Duration, Scale.value_or(0.0f));
-	});
 	TargetEnvironment.set_function("GetUnscaledDeltaTime", [GetOwnerWorld]()
 	{
 		if (UWorld* World = GetOwnerWorld())

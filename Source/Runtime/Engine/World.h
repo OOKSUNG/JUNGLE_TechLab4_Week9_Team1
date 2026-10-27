@@ -71,7 +71,6 @@ public:
 	void SetTimeScale(float InTimeScale);
 	float GetTimeScale() const { return TimeScale; }
 
-	void ApplyHitStop(float Duration, float InHitStopScale = 0.0f);
 	void ResetTimeEffects();
 
 	const FGameTime& GetGameTime() const { return GameTime; }
@@ -194,8 +193,6 @@ private:
 
 	FGameTime GameTime;
 	float TimeScale = 1.0f;
-	float HitStopScale = 0.0f;
-	float HitStopRemainingTime = 0.0f;
 
 	struct alignas(64) FGatherChunk
 	{
