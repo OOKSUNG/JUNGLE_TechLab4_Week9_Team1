@@ -17,7 +17,7 @@
                                     "Location": {
                                         "X": 0.0,
                                         "Y": 0.0,
-                                        "Z": 2.294635057449341
+                                        "Z": 0.0
                                     },
                                     "Rotation": {
                                         "Pitch": -0.0,
@@ -151,7 +151,7 @@
                                     "Location": {
                                         "X": 0.0,
                                         "Y": 0.0,
-                                        "Z": -2.101583242416382
+                                        "Z": -0.5099999904632568
                                     },
                                     "Rotation": {
                                         "Pitch": 0.0,
@@ -402,15 +402,39 @@
                         {
                             "Class": "UStaticMeshComponent",
                             "Name": "UStaticMeshComponent",
-                            "OverrideMaterials": [],
+                            "OverrideMaterials": [
+                                {
+                                    "Base": "DefaultMaterial",
+                                    "Instance": {
+                                        "BaseColor": {
+                                            "W": 1.0,
+                                            "X": 1.0,
+                                            "Y": 0.0,
+                                            "Z": 0.0
+                                        },
+                                        "BlendState": "Opaque",
+                                        "Properties": {},
+                                        "SamplerState": "LinearClamp",
+                                        "Shininess": 32.0,
+                                        "Textures": [
+                                            "WhiteTexture",
+                                            "FlatNormalTexture"
+                                        ],
+                                        "UVScrollSpeed": [
+                                            0.0,
+                                            0.0
+                                        ]
+                                    }
+                                }
+                            ],
                             "Parent": "",
                             "Properties": {
                                 "StaticMesh": "Cube",
                                 "Transform": {
                                     "Location": {
-                                        "X": 3.0,
-                                        "Y": 0.0,
-                                        "Z": 5.0
+                                        "X": 2.5,
+                                        "Y": -0.5,
+                                        "Z": 4.0
                                     },
                                     "Rotation": {
                                         "Pitch": 0.0,
@@ -419,8 +443,8 @@
                                     },
                                     "Scale": {
                                         "X": 1.0,
-                                        "Y": 10.0,
-                                        "Z": 10.0
+                                        "Y": 5.0,
+                                        "Z": 8.0
                                     }
                                 },
                                 "bBlockComponent": false,
@@ -440,7 +464,31 @@
                         {
                             "Class": "UStaticMeshComponent",
                             "Name": "UStaticMeshComponent",
-                            "OverrideMaterials": [],
+                            "OverrideMaterials": [
+                                {
+                                    "Base": "DefaultMaterial",
+                                    "Instance": {
+                                        "BaseColor": {
+                                            "W": 1.0,
+                                            "X": 0.0,
+                                            "Y": 0.0,
+                                            "Z": 1.0
+                                        },
+                                        "BlendState": "Opaque",
+                                        "Properties": {},
+                                        "SamplerState": "LinearClamp",
+                                        "Shininess": 32.0,
+                                        "Textures": [
+                                            "WhiteTexture",
+                                            "FlatNormalTexture"
+                                        ],
+                                        "UVScrollSpeed": [
+                                            0.0,
+                                            0.0
+                                        ]
+                                    }
+                                }
+                            ],
                             "Parent": "",
                             "Properties": {
                                 "StaticMesh": "Cube",
@@ -448,7 +496,7 @@
                                     "Location": {
                                         "X": -0.007556915283203125,
                                         "Y": 1.5,
-                                        "Z": 5.0
+                                        "Z": 4.0
                                     },
                                     "Rotation": {
                                         "Pitch": 0.0,
@@ -456,9 +504,9 @@
                                         "Yaw": 0.0
                                     },
                                     "Scale": {
-                                        "X": 5.0,
+                                        "X": 4.0,
                                         "Y": 1.0,
-                                        "Z": 10.0
+                                        "Z": 8.0
                                     }
                                 },
                                 "bBlockComponent": false,
@@ -478,15 +526,39 @@
                         {
                             "Class": "UStaticMeshComponent",
                             "Name": "UStaticMeshComponent",
-                            "OverrideMaterials": [],
+                            "OverrideMaterials": [
+                                {
+                                    "Base": "DefaultMaterial",
+                                    "Instance": {
+                                        "BaseColor": {
+                                            "W": 1.0,
+                                            "X": 0.0,
+                                            "Y": 1.0,
+                                            "Z": 0.0
+                                        },
+                                        "BlendState": "Opaque",
+                                        "Properties": {},
+                                        "SamplerState": "LinearClamp",
+                                        "Shininess": 32.0,
+                                        "Textures": [
+                                            "WhiteTexture",
+                                            "FlatNormalTexture"
+                                        ],
+                                        "UVScrollSpeed": [
+                                            0.0,
+                                            0.0
+                                        ]
+                                    }
+                                }
+                            ],
                             "Parent": "",
                             "Properties": {
                                 "StaticMesh": "Cube",
                                 "Transform": {
                                     "Location": {
-                                        "X": 0.0,
-                                        "Y": -5.0,
-                                        "Z": 5.0
+                                        "X": 0.5,
+                                        "Y": -3.5,
+                                        "Z": 4.0
                                     },
                                     "Rotation": {
                                         "Pitch": 0.0,
@@ -496,7 +568,7 @@
                                     "Scale": {
                                         "X": 5.0,
                                         "Y": 1.0,
-                                        "Z": 10.0
+                                        "Z": 8.0
                                     }
                                 },
                                 "bBlockComponent": false,
