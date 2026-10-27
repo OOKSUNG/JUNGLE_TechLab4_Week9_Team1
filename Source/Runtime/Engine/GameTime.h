@@ -1,7 +1,7 @@
 #pragma once
 
 // 한 프레임에서 실제 시간과 Time Dilation이 적용된 월드 시간을 함께 보관한다.
-// 시간 배율과 Hit Stop 정책은 UWorld가 관리하고 FGameTime은 계산 결과만 제공한다.
+// 시간 배율 정책은 UWorld가 관리하고 FGameTime은 계산 결과만 제공한다.
 class FGameTime
 {
 public:
