@@ -4,19 +4,8 @@
 #include "Editor/EditorUI/EditorPanel.h"
 #include "ThirdParty/ImNeoSequencer/imgui_neo_sequencer.h"
 
-#include <variant>
-
-struct CameraKey	// KeyFrame에서의 Camera 정보
-{
-	FVector Location;
-	FRotator Rotation;
-};
-
-struct FadeKey	// KeyFrame 구간 내에서의 Fade 정보
-{
-	float StartAlpha;
-	float EndAlpha;
-};
+#include "Sequence/SequencePlayer.h"
+#include <functional>
 
 class FSequencePanel : public IEditorPanel
 {
@@ -25,52 +14,20 @@ public:
 	void Tick(float DeltaTime) override;
 	void OnRender() override;
 
+	const FSequenceData& GetSequenceData() const { return PreviewPlayer.GetSequenceData(); }	// Sequencer UI에서 편집한 Data 값을 가져옴
+	const FSequencePlayer& GetPreviewPlayer() const { return PreviewPlayer; }	// 편집용 Sequencer 객체 가져옴
+
 	const char* GetPanelName() const override { return "Sequence"; }
+	void SetViewportCameraProvider(std::function<bool(CameraKey&)> InProvider) { ViewportCameraProvider = std::move(InProvider); }	// 키 기록용 현재 뷰포트 카메라
 
 private:
 
-	struct FCameraSection	// KeyFrame 구간 정보가 같이 담긴 Camera Section
-	{
-		int32 KeyFrames[2] = {};
-		int KeyCount = 0;
-		CameraKey KeyCam[2] = {};
-	};
+	static bool IsFadeLayoutValid(const FFadeTimelineTrack& Track);
 
-	struct FFadeSection		// KeyFrame 구간 정보가 같이 담긴 Fade Section
-	{
-		int32 KeyFrames[2] = {};
-		int KeyCount = 0;
-		FadeKey KeyFade;
-	};
-	struct FCameraTimelineTrack
-	{
-		std::vector<FCameraSection> CamSections;
-	};
+	FSequencePlayer PreviewPlayer;
+	std::function<bool(CameraKey&)> ViewportCameraProvider;
 
-	struct FFadeTimelineTrack
-	{
-		std::vector<FFadeSection> FadeSections;
-	};
-
-	struct FTimelineTrack	// 타임라인 한줄에 담긴 정보, Row의 경우 카메라 or Fade 효과냐에 따라 쓸 Row가 다르므로 Variant 사용
-	{
-		const char* Name;
-		ImVec4 Color;
-		std::variant<FCameraTimelineTrack, FFadeTimelineTrack> Rows;
-	};
-
-
-	FTimelineTrack Rows[3] = { // Row 기본세팅
-		{ "Camera", ImVec4(0.31f, 0.59f, 0.90f, 0.30f), FCameraTimelineTrack{} },
-		{ "Fade In", ImVec4(0.59f, 0.43f, 0.82f, 0.30f), FFadeTimelineTrack{} },
-		{ "Fade Out", ImVec4(0.82f, 0.51f, 0.31f, 0.30f), FFadeTimelineTrack{} }
-	};
-
-	int32 StartFrame = 0;
-	int32 EndFrameSecond = 100;
-	int32 EndFrame = 0;
 	int SelectedTrack = 0;
-	float PlaybackFrame = 0;	// Play할때 시작하는 프레임값
-	int PlaybackFPS = 30;	// Play 할때 사용할 FPS
-	bool bIsPlaying = false;
+	int SelectedFadeSection = 0;
+	float NewFadeKeyAlpha = 0.0f;
 };

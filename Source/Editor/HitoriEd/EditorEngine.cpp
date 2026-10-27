@@ -182,7 +182,21 @@ bool UEditorEngine::Init()
 	EditorControlsPanel = EditorUI->AddEditorPanel<FEditorControlsPanel>();
 	ViewportsPanel = EditorUI->AddEditorPanel<FViewportsPanel>();
 	ContentDrawerPanel = EditorUI->AddEditorPanel<FContentDrawerPanel>();
-	EditorUI->AddEditorPanel<FSequencePanel>();
+	FSequencePanel* SequencePanel = EditorUI->AddEditorPanel<FSequencePanel>();
+	SequencePanel->SetViewportCameraProvider([this](CameraKey& OutKey)
+	{
+		int32 ViewIndex = MultipleViewportsAdapter.GetActiveViewIndex();
+		if (ViewIndex < 0 || ViewIndex >= FLevelViewportLayout::ViewCount || !MultipleViewportsAdapter.IsViewActive(ViewIndex))
+			ViewIndex = MultipleViewportsAdapter.GetEditorViewIndex();
+		if (ViewIndex < 0 || ViewIndex >= FLevelViewportLayout::ViewCount || !MultipleViewportsAdapter.IsViewActive(ViewIndex))
+			return false;
+
+		const FViewCamera& Camera = MultipleViewportsAdapter.GetEffectiveCamera(ViewIndex);
+		OutKey.Location = Camera.Transform.Location;
+		OutKey.Rotation = Camera.Transform.Rotation.ToFRotator();
+		OutKey.FieldOfView = Camera.Projection.FovDegrees;
+		return true;
+	});
 
 	// OutLine
 	OutlineRenderer = MakeUnique<FOutlineRenderer>();
