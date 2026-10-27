@@ -136,7 +136,7 @@
                                 "bCastShadow": true,
                                 "bGenerateOverlapEvents": false,
                                 "bReceiveShadow": true,
-                                "bVisible": true
+                                "bVisible": false
                             }
                         },
                         {
@@ -812,8 +812,8 @@
                             "Parent": "DefaultSceneRoot",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 0.4000000059604645,
-                                    "Y": 0.4000000059604645,
+                                    "X": 1.0,
+                                    "Y": 0.800000011920929,
                                     "Z": 0.8999999761581421
                                 },
                                 "ShapeColor": 4288517599,
@@ -35706,8 +35706,8 @@
                             "Parent": "WatcherRoot",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 0.3499999940395355,
-                                    "Y": 0.550000011920929,
+                                    "X": 0.5,
+                                    "Y": 0.800000011920929,
                                     "Z": 1.2000000476837158
                                 },
                                 "ShapeColor": 4288517599,
@@ -38171,7 +38171,7 @@
                                 "Transform": {
                                     "Location": {
                                         "X": -21.520000457763672,
-                                        "Y": 27.799999237060547,
+                                        "Y": 26.148590087890625,
                                         "Z": 1.9500000476837158
                                     },
                                     "Rotation": {
@@ -53500,9 +53500,9 @@
                             "Parent": "",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 0.06,
-                                    "Y": 0.92,
-                                    "Z": 1.48
+                                    "X": 0.05999999865889549,
+                                    "Y": 0.9200000166893005,
+                                    "Z": 1.4800000190734863
                                 },
                                 "ShapeColor": 4288517599,
                                 "Transform": {
@@ -53533,8 +53533,8 @@
                         {
                             "Class": "UStaticMeshComponent",
                             "Name": "FacilityDoor01Panel",
-                            "Parent": "FacilityDoor01",
                             "OverrideMaterials": [],
+                            "Parent": "FacilityDoor01",
                             "Properties": {
                                 "StaticMesh": "Models/Facility/SteelDoor.obj",
                                 "Transform": {
@@ -53582,9 +53582,9 @@
                             "Parent": "",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 0.06,
-                                    "Y": 0.92,
-                                    "Z": 1.48
+                                    "X": 0.05999999865889549,
+                                    "Y": 0.9200000166893005,
+                                    "Z": 1.4800000190734863
                                 },
                                 "ShapeColor": 4288517599,
                                 "Transform": {
@@ -53615,8 +53615,8 @@
                         {
                             "Class": "UStaticMeshComponent",
                             "Name": "FacilityDoor02Panel",
-                            "Parent": "FacilityDoor02",
                             "OverrideMaterials": [],
+                            "Parent": "FacilityDoor02",
                             "Properties": {
                                 "StaticMesh": "Models/Facility/SteelDoor.obj",
                                 "Transform": {
@@ -53664,9 +53664,9 @@
                             "Parent": "",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 0.06,
-                                    "Y": 0.92,
-                                    "Z": 1.48
+                                    "X": 0.05999999865889549,
+                                    "Y": 0.9200000166893005,
+                                    "Z": 1.4800000190734863
                                 },
                                 "ShapeColor": 4288517599,
                                 "Transform": {
@@ -53697,8 +53697,8 @@
                         {
                             "Class": "UStaticMeshComponent",
                             "Name": "FacilityDoor03Panel",
-                            "Parent": "FacilityDoor03",
                             "OverrideMaterials": [],
+                            "Parent": "FacilityDoor03",
                             "Properties": {
                                 "StaticMesh": "Models/Facility/SteelDoor.obj",
                                 "Transform": {
@@ -53746,9 +53746,9 @@
                             "Parent": "",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 0.06,
-                                    "Y": 0.92,
-                                    "Z": 1.48
+                                    "X": 0.05999999865889549,
+                                    "Y": 0.9200000166893005,
+                                    "Z": 1.4800000190734863
                                 },
                                 "ShapeColor": 4288517599,
                                 "Transform": {
@@ -53779,8 +53779,8 @@
                         {
                             "Class": "UStaticMeshComponent",
                             "Name": "FacilityDoor04Panel",
-                            "Parent": "FacilityDoor04",
                             "OverrideMaterials": [],
+                            "Parent": "FacilityDoor04",
                             "Properties": {
                                 "StaticMesh": "Models/Facility/SteelDoor.obj",
                                 "Transform": {
@@ -53828,9 +53828,9 @@
                             "Parent": "",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 0.06,
-                                    "Y": 0.92,
-                                    "Z": 1.48
+                                    "X": 0.05999999865889549,
+                                    "Y": 0.9200000166893005,
+                                    "Z": 1.4800000190734863
                                 },
                                 "ShapeColor": 4288517599,
                                 "Transform": {
@@ -53861,8 +53861,8 @@
                         {
                             "Class": "UStaticMeshComponent",
                             "Name": "FacilityDoor05Panel",
-                            "Parent": "FacilityDoor05",
                             "OverrideMaterials": [],
+                            "Parent": "FacilityDoor05",
                             "Properties": {
                                 "StaticMesh": "Models/Facility/SteelDoor.obj",
                                 "Transform": {
@@ -53910,9 +53910,9 @@
                             "Parent": "",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 0.06,
-                                    "Y": 0.92,
-                                    "Z": 1.48
+                                    "X": 0.05999999865889549,
+                                    "Y": 0.9200000166893005,
+                                    "Z": 1.4800000190734863
                                 },
                                 "ShapeColor": 4288517599,
                                 "Transform": {
@@ -53943,8 +53943,8 @@
                         {
                             "Class": "UStaticMeshComponent",
                             "Name": "FacilityDoor06Panel",
-                            "Parent": "FacilityDoor06",
                             "OverrideMaterials": [],
+                            "Parent": "FacilityDoor06",
                             "Properties": {
                                 "StaticMesh": "Models/Facility/SteelDoor.obj",
                                 "Transform": {
@@ -53992,9 +53992,9 @@
                             "Parent": "",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 0.06,
-                                    "Y": 0.92,
-                                    "Z": 1.48
+                                    "X": 0.05999999865889549,
+                                    "Y": 0.9200000166893005,
+                                    "Z": 1.4800000190734863
                                 },
                                 "ShapeColor": 4288517599,
                                 "Transform": {
@@ -54025,8 +54025,8 @@
                         {
                             "Class": "UStaticMeshComponent",
                             "Name": "FacilityDoor07Panel",
-                            "Parent": "FacilityDoor07",
                             "OverrideMaterials": [],
+                            "Parent": "FacilityDoor07",
                             "Properties": {
                                 "StaticMesh": "Models/Facility/SteelDoor.obj",
                                 "Transform": {
@@ -54074,9 +54074,9 @@
                             "Parent": "",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 0.06,
-                                    "Y": 0.92,
-                                    "Z": 1.48
+                                    "X": 0.05999999865889549,
+                                    "Y": 0.9200000166893005,
+                                    "Z": 1.4800000190734863
                                 },
                                 "ShapeColor": 4288517599,
                                 "Transform": {
@@ -54107,8 +54107,8 @@
                         {
                             "Class": "UStaticMeshComponent",
                             "Name": "FacilityDoor08Panel",
-                            "Parent": "FacilityDoor08",
                             "OverrideMaterials": [],
+                            "Parent": "FacilityDoor08",
                             "Properties": {
                                 "StaticMesh": "Models/Facility/SteelDoor.obj",
                                 "Transform": {
@@ -54156,9 +54156,9 @@
                             "Parent": "",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 0.06,
-                                    "Y": 0.92,
-                                    "Z": 1.48
+                                    "X": 0.05999999865889549,
+                                    "Y": 0.9200000166893005,
+                                    "Z": 1.4800000190734863
                                 },
                                 "ShapeColor": 4288517599,
                                 "Transform": {
@@ -54189,8 +54189,8 @@
                         {
                             "Class": "UStaticMeshComponent",
                             "Name": "FacilityDoor09Panel",
-                            "Parent": "FacilityDoor09",
                             "OverrideMaterials": [],
+                            "Parent": "FacilityDoor09",
                             "Properties": {
                                 "StaticMesh": "Models/Facility/SteelDoor.obj",
                                 "Transform": {
@@ -54238,9 +54238,9 @@
                             "Parent": "",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 0.06,
-                                    "Y": 0.92,
-                                    "Z": 1.48
+                                    "X": 0.05999999865889549,
+                                    "Y": 0.9200000166893005,
+                                    "Z": 1.4800000190734863
                                 },
                                 "ShapeColor": 4288517599,
                                 "Transform": {
@@ -54271,8 +54271,8 @@
                         {
                             "Class": "UStaticMeshComponent",
                             "Name": "FacilityDoor10Panel",
-                            "Parent": "FacilityDoor10",
                             "OverrideMaterials": [],
+                            "Parent": "FacilityDoor10",
                             "Properties": {
                                 "StaticMesh": "Models/Facility/SteelDoor.obj",
                                 "Transform": {
@@ -54320,9 +54320,9 @@
                             "Parent": "",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 0.06,
-                                    "Y": 0.92,
-                                    "Z": 1.48
+                                    "X": 0.05999999865889549,
+                                    "Y": 0.9200000166893005,
+                                    "Z": 1.4800000190734863
                                 },
                                 "ShapeColor": 4288517599,
                                 "Transform": {
@@ -54353,8 +54353,8 @@
                         {
                             "Class": "UStaticMeshComponent",
                             "Name": "FacilityDoor11Panel",
-                            "Parent": "FacilityDoor11",
                             "OverrideMaterials": [],
+                            "Parent": "FacilityDoor11",
                             "Properties": {
                                 "StaticMesh": "Models/Facility/SteelDoor.obj",
                                 "Transform": {
@@ -54423,8 +54423,8 @@
                         {
                             "Class": "UStaticMeshComponent",
                             "Name": "FacilityDoor01FrameMesh",
-                            "Parent": "FacilityDoor01Frame",
                             "OverrideMaterials": [],
+                            "Parent": "FacilityDoor01Frame",
                             "Properties": {
                                 "StaticMesh": "Models/Facility/SteelDoorFrame.obj",
                                 "Transform": {
@@ -54457,15 +54457,15 @@
                             "Parent": "FacilityDoor01Frame",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 1.02,
-                                    "Y": 0.03,
+                                    "X": 1.0199999809265137,
+                                    "Y": 0.029999999329447746,
                                     "Z": 1.5
                                 },
                                 "ShapeColor": 4288517599,
                                 "Transform": {
                                     "Location": {
                                         "X": 0.0,
-                                        "Y": -0.97,
+                                        "Y": -0.9700000286102295,
                                         "Z": 1.5
                                     },
                                     "Rotation": {
@@ -54493,15 +54493,15 @@
                             "Parent": "FacilityDoor01Frame",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 1.02,
-                                    "Y": 0.03,
+                                    "X": 1.0199999809265137,
+                                    "Y": 0.029999999329447746,
                                     "Z": 1.5
                                 },
                                 "ShapeColor": 4288517599,
                                 "Transform": {
                                     "Location": {
                                         "X": 0.0,
-                                        "Y": 0.97,
+                                        "Y": 0.9700000286102295,
                                         "Z": 1.5
                                     },
                                     "Rotation": {
@@ -54529,7 +54529,7 @@
                             "Parent": "FacilityDoor01Frame",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 1.02,
+                                    "X": 1.0199999809265137,
                                     "Y": 1.0,
                                     "Z": 0.5
                                 },
@@ -54593,8 +54593,8 @@
                         {
                             "Class": "UStaticMeshComponent",
                             "Name": "FacilityDoor02FrameMesh",
-                            "Parent": "FacilityDoor02Frame",
                             "OverrideMaterials": [],
+                            "Parent": "FacilityDoor02Frame",
                             "Properties": {
                                 "StaticMesh": "Models/Facility/SteelDoorFrame.obj",
                                 "Transform": {
@@ -54627,15 +54627,15 @@
                             "Parent": "FacilityDoor02Frame",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 1.02,
-                                    "Y": 0.03,
+                                    "X": 1.0199999809265137,
+                                    "Y": 0.029999999329447746,
                                     "Z": 1.5
                                 },
                                 "ShapeColor": 4288517599,
                                 "Transform": {
                                     "Location": {
                                         "X": 0.0,
-                                        "Y": -0.97,
+                                        "Y": -0.9700000286102295,
                                         "Z": 1.5
                                     },
                                     "Rotation": {
@@ -54663,15 +54663,15 @@
                             "Parent": "FacilityDoor02Frame",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 1.02,
-                                    "Y": 0.03,
+                                    "X": 1.0199999809265137,
+                                    "Y": 0.029999999329447746,
                                     "Z": 1.5
                                 },
                                 "ShapeColor": 4288517599,
                                 "Transform": {
                                     "Location": {
                                         "X": 0.0,
-                                        "Y": 0.97,
+                                        "Y": 0.9700000286102295,
                                         "Z": 1.5
                                     },
                                     "Rotation": {
@@ -54699,7 +54699,7 @@
                             "Parent": "FacilityDoor02Frame",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 1.02,
+                                    "X": 1.0199999809265137,
                                     "Y": 1.0,
                                     "Z": 0.5
                                 },
@@ -54763,8 +54763,8 @@
                         {
                             "Class": "UStaticMeshComponent",
                             "Name": "FacilityDoor03FrameMesh",
-                            "Parent": "FacilityDoor03Frame",
                             "OverrideMaterials": [],
+                            "Parent": "FacilityDoor03Frame",
                             "Properties": {
                                 "StaticMesh": "Models/Facility/SteelDoorFrame.obj",
                                 "Transform": {
@@ -54797,15 +54797,15 @@
                             "Parent": "FacilityDoor03Frame",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 1.02,
-                                    "Y": 0.03,
+                                    "X": 1.0199999809265137,
+                                    "Y": 0.029999999329447746,
                                     "Z": 1.5
                                 },
                                 "ShapeColor": 4288517599,
                                 "Transform": {
                                     "Location": {
                                         "X": 0.0,
-                                        "Y": -0.97,
+                                        "Y": -0.9700000286102295,
                                         "Z": 1.5
                                     },
                                     "Rotation": {
@@ -54833,15 +54833,15 @@
                             "Parent": "FacilityDoor03Frame",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 1.02,
-                                    "Y": 0.03,
+                                    "X": 1.0199999809265137,
+                                    "Y": 0.029999999329447746,
                                     "Z": 1.5
                                 },
                                 "ShapeColor": 4288517599,
                                 "Transform": {
                                     "Location": {
                                         "X": 0.0,
-                                        "Y": 0.97,
+                                        "Y": 0.9700000286102295,
                                         "Z": 1.5
                                     },
                                     "Rotation": {
@@ -54869,7 +54869,7 @@
                             "Parent": "FacilityDoor03Frame",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 1.02,
+                                    "X": 1.0199999809265137,
                                     "Y": 1.0,
                                     "Z": 0.5
                                 },
@@ -54933,8 +54933,8 @@
                         {
                             "Class": "UStaticMeshComponent",
                             "Name": "FacilityDoor04FrameMesh",
-                            "Parent": "FacilityDoor04Frame",
                             "OverrideMaterials": [],
+                            "Parent": "FacilityDoor04Frame",
                             "Properties": {
                                 "StaticMesh": "Models/Facility/SteelDoorFrame.obj",
                                 "Transform": {
@@ -54967,15 +54967,15 @@
                             "Parent": "FacilityDoor04Frame",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 1.02,
-                                    "Y": 0.03,
+                                    "X": 1.0199999809265137,
+                                    "Y": 0.029999999329447746,
                                     "Z": 1.5
                                 },
                                 "ShapeColor": 4288517599,
                                 "Transform": {
                                     "Location": {
                                         "X": 0.0,
-                                        "Y": -0.97,
+                                        "Y": -0.9700000286102295,
                                         "Z": 1.5
                                     },
                                     "Rotation": {
@@ -55003,15 +55003,15 @@
                             "Parent": "FacilityDoor04Frame",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 1.02,
-                                    "Y": 0.03,
+                                    "X": 1.0199999809265137,
+                                    "Y": 0.029999999329447746,
                                     "Z": 1.5
                                 },
                                 "ShapeColor": 4288517599,
                                 "Transform": {
                                     "Location": {
                                         "X": 0.0,
-                                        "Y": 0.97,
+                                        "Y": 0.9700000286102295,
                                         "Z": 1.5
                                     },
                                     "Rotation": {
@@ -55039,7 +55039,7 @@
                             "Parent": "FacilityDoor04Frame",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 1.02,
+                                    "X": 1.0199999809265137,
                                     "Y": 1.0,
                                     "Z": 0.5
                                 },
@@ -55103,8 +55103,8 @@
                         {
                             "Class": "UStaticMeshComponent",
                             "Name": "FacilityDoor05FrameMesh",
-                            "Parent": "FacilityDoor05Frame",
                             "OverrideMaterials": [],
+                            "Parent": "FacilityDoor05Frame",
                             "Properties": {
                                 "StaticMesh": "Models/Facility/SteelDoorFrame.obj",
                                 "Transform": {
@@ -55137,15 +55137,15 @@
                             "Parent": "FacilityDoor05Frame",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 1.02,
-                                    "Y": 0.03,
+                                    "X": 1.0199999809265137,
+                                    "Y": 0.029999999329447746,
                                     "Z": 1.5
                                 },
                                 "ShapeColor": 4288517599,
                                 "Transform": {
                                     "Location": {
                                         "X": 0.0,
-                                        "Y": -0.97,
+                                        "Y": -0.9700000286102295,
                                         "Z": 1.5
                                     },
                                     "Rotation": {
@@ -55173,15 +55173,15 @@
                             "Parent": "FacilityDoor05Frame",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 1.02,
-                                    "Y": 0.03,
+                                    "X": 1.0199999809265137,
+                                    "Y": 0.029999999329447746,
                                     "Z": 1.5
                                 },
                                 "ShapeColor": 4288517599,
                                 "Transform": {
                                     "Location": {
                                         "X": 0.0,
-                                        "Y": 0.97,
+                                        "Y": 0.9700000286102295,
                                         "Z": 1.5
                                     },
                                     "Rotation": {
@@ -55209,7 +55209,7 @@
                             "Parent": "FacilityDoor05Frame",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 1.02,
+                                    "X": 1.0199999809265137,
                                     "Y": 1.0,
                                     "Z": 0.5
                                 },
@@ -55273,8 +55273,8 @@
                         {
                             "Class": "UStaticMeshComponent",
                             "Name": "FacilityDoor06FrameMesh",
-                            "Parent": "FacilityDoor06Frame",
                             "OverrideMaterials": [],
+                            "Parent": "FacilityDoor06Frame",
                             "Properties": {
                                 "StaticMesh": "Models/Facility/SteelDoorFrame.obj",
                                 "Transform": {
@@ -55307,15 +55307,15 @@
                             "Parent": "FacilityDoor06Frame",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 1.02,
-                                    "Y": 0.03,
+                                    "X": 1.0199999809265137,
+                                    "Y": 0.029999999329447746,
                                     "Z": 1.5
                                 },
                                 "ShapeColor": 4288517599,
                                 "Transform": {
                                     "Location": {
                                         "X": 0.0,
-                                        "Y": -0.97,
+                                        "Y": -0.9700000286102295,
                                         "Z": 1.5
                                     },
                                     "Rotation": {
@@ -55343,15 +55343,15 @@
                             "Parent": "FacilityDoor06Frame",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 1.02,
-                                    "Y": 0.03,
+                                    "X": 1.0199999809265137,
+                                    "Y": 0.029999999329447746,
                                     "Z": 1.5
                                 },
                                 "ShapeColor": 4288517599,
                                 "Transform": {
                                     "Location": {
                                         "X": 0.0,
-                                        "Y": 0.97,
+                                        "Y": 0.9700000286102295,
                                         "Z": 1.5
                                     },
                                     "Rotation": {
@@ -55379,7 +55379,7 @@
                             "Parent": "FacilityDoor06Frame",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 1.02,
+                                    "X": 1.0199999809265137,
                                     "Y": 1.0,
                                     "Z": 0.5
                                 },
@@ -55443,8 +55443,8 @@
                         {
                             "Class": "UStaticMeshComponent",
                             "Name": "FacilityDoor07FrameMesh",
-                            "Parent": "FacilityDoor07Frame",
                             "OverrideMaterials": [],
+                            "Parent": "FacilityDoor07Frame",
                             "Properties": {
                                 "StaticMesh": "Models/Facility/SteelDoorFrame.obj",
                                 "Transform": {
@@ -55477,15 +55477,15 @@
                             "Parent": "FacilityDoor07Frame",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 1.02,
-                                    "Y": 0.03,
+                                    "X": 1.0199999809265137,
+                                    "Y": 0.029999999329447746,
                                     "Z": 1.5
                                 },
                                 "ShapeColor": 4288517599,
                                 "Transform": {
                                     "Location": {
                                         "X": 0.0,
-                                        "Y": -0.97,
+                                        "Y": -0.9700000286102295,
                                         "Z": 1.5
                                     },
                                     "Rotation": {
@@ -55513,15 +55513,15 @@
                             "Parent": "FacilityDoor07Frame",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 1.02,
-                                    "Y": 0.03,
+                                    "X": 1.0199999809265137,
+                                    "Y": 0.029999999329447746,
                                     "Z": 1.5
                                 },
                                 "ShapeColor": 4288517599,
                                 "Transform": {
                                     "Location": {
                                         "X": 0.0,
-                                        "Y": 0.97,
+                                        "Y": 0.9700000286102295,
                                         "Z": 1.5
                                     },
                                     "Rotation": {
@@ -55549,7 +55549,7 @@
                             "Parent": "FacilityDoor07Frame",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 1.02,
+                                    "X": 1.0199999809265137,
                                     "Y": 1.0,
                                     "Z": 0.5
                                 },
@@ -55613,8 +55613,8 @@
                         {
                             "Class": "UStaticMeshComponent",
                             "Name": "FacilityDoor08FrameMesh",
-                            "Parent": "FacilityDoor08Frame",
                             "OverrideMaterials": [],
+                            "Parent": "FacilityDoor08Frame",
                             "Properties": {
                                 "StaticMesh": "Models/Facility/SteelDoorFrame.obj",
                                 "Transform": {
@@ -55647,15 +55647,15 @@
                             "Parent": "FacilityDoor08Frame",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 1.02,
-                                    "Y": 0.03,
+                                    "X": 1.0199999809265137,
+                                    "Y": 0.029999999329447746,
                                     "Z": 1.5
                                 },
                                 "ShapeColor": 4288517599,
                                 "Transform": {
                                     "Location": {
                                         "X": 0.0,
-                                        "Y": -0.97,
+                                        "Y": -0.9700000286102295,
                                         "Z": 1.5
                                     },
                                     "Rotation": {
@@ -55683,15 +55683,15 @@
                             "Parent": "FacilityDoor08Frame",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 1.02,
-                                    "Y": 0.03,
+                                    "X": 1.0199999809265137,
+                                    "Y": 0.029999999329447746,
                                     "Z": 1.5
                                 },
                                 "ShapeColor": 4288517599,
                                 "Transform": {
                                     "Location": {
                                         "X": 0.0,
-                                        "Y": 0.97,
+                                        "Y": 0.9700000286102295,
                                         "Z": 1.5
                                     },
                                     "Rotation": {
@@ -55719,7 +55719,7 @@
                             "Parent": "FacilityDoor08Frame",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 1.02,
+                                    "X": 1.0199999809265137,
                                     "Y": 1.0,
                                     "Z": 0.5
                                 },
@@ -55783,8 +55783,8 @@
                         {
                             "Class": "UStaticMeshComponent",
                             "Name": "FacilityDoor09FrameMesh",
-                            "Parent": "FacilityDoor09Frame",
                             "OverrideMaterials": [],
+                            "Parent": "FacilityDoor09Frame",
                             "Properties": {
                                 "StaticMesh": "Models/Facility/SteelDoorFrame.obj",
                                 "Transform": {
@@ -55817,15 +55817,15 @@
                             "Parent": "FacilityDoor09Frame",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 1.02,
-                                    "Y": 0.03,
+                                    "X": 1.0199999809265137,
+                                    "Y": 0.029999999329447746,
                                     "Z": 1.5
                                 },
                                 "ShapeColor": 4288517599,
                                 "Transform": {
                                     "Location": {
                                         "X": 0.0,
-                                        "Y": -0.97,
+                                        "Y": -0.9700000286102295,
                                         "Z": 1.5
                                     },
                                     "Rotation": {
@@ -55853,15 +55853,15 @@
                             "Parent": "FacilityDoor09Frame",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 1.02,
-                                    "Y": 0.03,
+                                    "X": 1.0199999809265137,
+                                    "Y": 0.029999999329447746,
                                     "Z": 1.5
                                 },
                                 "ShapeColor": 4288517599,
                                 "Transform": {
                                     "Location": {
                                         "X": 0.0,
-                                        "Y": 0.97,
+                                        "Y": 0.9700000286102295,
                                         "Z": 1.5
                                     },
                                     "Rotation": {
@@ -55889,7 +55889,7 @@
                             "Parent": "FacilityDoor09Frame",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 1.02,
+                                    "X": 1.0199999809265137,
                                     "Y": 1.0,
                                     "Z": 0.5
                                 },
@@ -55953,8 +55953,8 @@
                         {
                             "Class": "UStaticMeshComponent",
                             "Name": "FacilityDoor10FrameMesh",
-                            "Parent": "FacilityDoor10Frame",
                             "OverrideMaterials": [],
+                            "Parent": "FacilityDoor10Frame",
                             "Properties": {
                                 "StaticMesh": "Models/Facility/SteelDoorFrame.obj",
                                 "Transform": {
@@ -55987,15 +55987,15 @@
                             "Parent": "FacilityDoor10Frame",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 1.02,
-                                    "Y": 0.03,
+                                    "X": 1.0199999809265137,
+                                    "Y": 0.029999999329447746,
                                     "Z": 1.5
                                 },
                                 "ShapeColor": 4288517599,
                                 "Transform": {
                                     "Location": {
                                         "X": 0.0,
-                                        "Y": -0.97,
+                                        "Y": -0.9700000286102295,
                                         "Z": 1.5
                                     },
                                     "Rotation": {
@@ -56023,15 +56023,15 @@
                             "Parent": "FacilityDoor10Frame",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 1.02,
-                                    "Y": 0.03,
+                                    "X": 1.0199999809265137,
+                                    "Y": 0.029999999329447746,
                                     "Z": 1.5
                                 },
                                 "ShapeColor": 4288517599,
                                 "Transform": {
                                     "Location": {
                                         "X": 0.0,
-                                        "Y": 0.97,
+                                        "Y": 0.9700000286102295,
                                         "Z": 1.5
                                     },
                                     "Rotation": {
@@ -56059,7 +56059,7 @@
                             "Parent": "FacilityDoor10Frame",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 1.02,
+                                    "X": 1.0199999809265137,
                                     "Y": 1.0,
                                     "Z": 0.5
                                 },
@@ -56123,8 +56123,8 @@
                         {
                             "Class": "UStaticMeshComponent",
                             "Name": "FacilityDoor11FrameMesh",
-                            "Parent": "FacilityDoor11Frame",
                             "OverrideMaterials": [],
+                            "Parent": "FacilityDoor11Frame",
                             "Properties": {
                                 "StaticMesh": "Models/Facility/SteelDoorFrame.obj",
                                 "Transform": {
@@ -56157,15 +56157,15 @@
                             "Parent": "FacilityDoor11Frame",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 1.02,
-                                    "Y": 0.03,
+                                    "X": 1.0199999809265137,
+                                    "Y": 0.029999999329447746,
                                     "Z": 1.5
                                 },
                                 "ShapeColor": 4288517599,
                                 "Transform": {
                                     "Location": {
                                         "X": 0.0,
-                                        "Y": -0.97,
+                                        "Y": -0.9700000286102295,
                                         "Z": 1.5
                                     },
                                     "Rotation": {
@@ -56193,15 +56193,15 @@
                             "Parent": "FacilityDoor11Frame",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 1.02,
-                                    "Y": 0.03,
+                                    "X": 1.0199999809265137,
+                                    "Y": 0.029999999329447746,
                                     "Z": 1.5
                                 },
                                 "ShapeColor": 4288517599,
                                 "Transform": {
                                     "Location": {
                                         "X": 0.0,
-                                        "Y": 0.97,
+                                        "Y": 0.9700000286102295,
                                         "Z": 1.5
                                     },
                                     "Rotation": {
@@ -56229,7 +56229,7 @@
                             "Parent": "FacilityDoor11Frame",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 1.02,
+                                    "X": 1.0199999809265137,
                                     "Y": 1.0,
                                     "Z": 0.5
                                 },
