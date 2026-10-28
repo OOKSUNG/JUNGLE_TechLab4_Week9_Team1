@@ -1,0 +1,18 @@
+return {
+    Spawn = { X = 9.0, Y = 14.5, Z = 0.5 },
+    Destination = { X = -6.0, Y = 14.5, Z = 0.5 },
+    Door = { X = 1.0, Y = 14.5, Z = 1.5 },
+    Yaw = 180.0,
+    Duration = 10.0,
+    FadeDuration = 3.0,
+    WalkStart = 2.6,
+    ApproachEnd = 4.8,
+    WalkEnd = 8.8,
+    BlendStart = 3.0,
+    BlendDuration = 2.2,
+    DoorOpenStart = 3.0,
+    DoorOpenDuration = 1.6,
+    DoorCloseStart = 8.1,
+    DoorCloseDuration = 1.4,
+    DoorTravel = 3.2,
+}

@@ -48,6 +48,33 @@ local Ending = require("EndingCutscene")
 local GameManager = require("GameManager")
 local View = { mCamera = {}, mLocation = nil, mRotation = nil }
 local Subject = { mLocation = nil, mRotation = nil }
+local Manager = {}
+
+function Manager.GetViewTarget(Self)
+    return nil
+end
+
+function Manager.GetViewTargetCamera(Self)
+    return nil
+end
+
+function Manager.RemoveAllCameraModifiers(Self)
+end
+
+function Manager.SetViewTargetWithBlend(Self, Target, Duration)
+    return true
+end
+
+function Manager.IsValid(Self)
+    return true
+end
+
+function Manager.SetViewTargetCamera(Self, Camera)
+end
+
+function View.GetPlayerCameraManager(Self)
+    return Manager
+end
 
 function View.GetCamera(Self)
     return Self.mCamera
@@ -67,6 +94,14 @@ end
 
 Subject.SetActorLocation = View.SetActorLocation
 Subject.SetActorRotation = View.SetActorRotation
+
+function Subject.GetActorLocation(Self)
+    return FVector.new(Self.mLocation.X, Self.mLocation.Y, Self.mLocation.Z)
+end
+
+function Subject.GetActorRotation(Self)
+    return FRotator.new(Self.mRotation.Pitch, Self.mRotation.Yaw, Self.mRotation.Roll)
+end
 
 local function Near(First, Second)
     assert(math.abs(First - Second) < 0.0001, tostring(First) .. " differs from " .. tostring(Second))
@@ -121,6 +156,55 @@ Test("car departs and finishes once while negative time does not rewind", functi
     Near(Subject.mLocation.X, X)
 end)
 
+Test("car camera follows at a fixed distance throughout acceleration", function()
+    Ending.RegisterSubject(Subject)
+    Ending.Start(View, "Ending_Car")
+    for Index = 1, 24 do
+        Ending.Update(0.5)
+        local DistanceX = Subject.mLocation.X - View.mLocation.X
+        local DistanceY = Subject.mLocation.Y - View.mLocation.Y
+        assert(DistanceX * DistanceX + DistanceY * DistanceY < 36.0, "camera falls behind the escaping vehicle")
+        if Ending.GetState().mElapsed >= 2.2 then
+            Near(DistanceX, 4.3)
+        end
+    end
+    assert(Ending.GetState().mFinished)
+end)
+
+Test("fence gate slides on the ground in its own orientation and resets after interruption", function()
+    local Gate = { mLocation = FVector.new(-60.3, 50.5, 0.0), mRotation = FRotator.new(0.0, 0.0, 0.0) }
+    Gate.GetActorLocation = Subject.GetActorLocation
+    Gate.GetActorRotation = Subject.GetActorRotation
+    Gate.SetActorLocation = View.SetActorLocation
+    function Gate.GetNavigationExtent(Self)
+        return FVector.new(0.1, 4.15, 2.8)
+    end
+    local Environment = { self = Gate }
+    setmetatable(Environment, { __index = _G })
+    setfenv(assert(loadfile("Assets/Scripts/GameLogic/EndingGate.lua")), Environment)()
+    for _, Yaw in ipairs({ 0.0, 90.0 }) do
+        Subject.mLocation = FVector.new(-11.0, 50.5, 0.0)
+        Subject.mRotation = FRotator.new(0.0, 0.0, 0.0)
+        Gate.mRotation = FRotator.new(0.0, Yaw, 0.0)
+        Environment.BeginPlay()
+        Ending.RegisterSubject(Subject, "Car")
+        assert(Ending.Start(View, "Car"))
+        Ending.Update(require("Transition").Config.Duration + 2.6)
+        Near(Gate.mLocation.Z, 0.0)
+        assert(math.abs(Gate.mLocation.X + 60.3) + math.abs(Gate.mLocation.Y - 50.5) > 0.0)
+        Ending.Update(5.0)
+        Near(Gate.mLocation.X, -60.3 - math.sin(math.rad(Yaw)) * 8.5)
+        Near(Gate.mLocation.Y, 50.5 + math.cos(math.rad(Yaw)) * 8.5)
+        Near(Gate.mLocation.Z, 0.0)
+        Ending.Stop()
+        Near(Gate.mLocation.X, -60.3)
+        Near(Gate.mLocation.Y, 50.5)
+        Near(Gate.mLocation.Z, 0.0)
+        Near(Subject.mLocation.X, -11.0)
+        Environment.EndPlay()
+    end
+end)
+
 Test("door unlocks, opens, is crossed, and closes behind the camera", function()
     Ending.RegisterSubject(Subject)
     Ending.Start(View, "Ending_Door")
@@ -158,7 +242,7 @@ Test("standalone scene preview and new games discard previous results", function
     assert(Ending.GetState().mResult.BatteriesUsed == 0)
 end)
 
-Test("the skip key cannot also activate the result menu in the same frame", function()
+Test("skip inputs cannot activate the result menu before credits finish", function()
     local Environment = { self = View, sceneName = "Ending_Car" }
     setmetatable(Environment, { __index = _G })
     function Environment.GetViewportSize()
@@ -188,11 +272,104 @@ Test("the skip key cannot also activate the result menu in the same frame", func
     Environment.Tick(0.016)
     Runtime.mPressed = Key.R
     Environment.Tick(0.016)
+    assert(#Runtime.mLoads == 0)
+    Runtime.mPressed = nil
+    Environment.Tick(0.6)
+    Runtime.mPressed = Key.Enter
+    Environment.Tick(0.016)
+    assert(#Runtime.mLoads == 0)
+    Runtime.mPressed = nil
+    Environment.Tick(0.016)
+    Runtime.mPressed = Key.R
+    Environment.Tick(0.016)
     assert(#Runtime.mLoads == 1 and Runtime.mLoads[1] == "Assets/Scenes/MapTest.scene")
     Environment.Tick(0.016)
     assert(#Runtime.mLoads == 1)
     Environment.EndPlay()
     assert(Ending.GetState() == nil)
+end)
+
+Test("each route plays only its own fade after the cinematic and holds completion until black", function()
+    local Sequences = {}
+    for _, Route in ipairs({ "Car", "Door" }) do
+        local Sequence = { mStarts = 0, mStops = 0, mFinished = false, mPlaying = false }
+        function Sequence.PlaySequence(Self)
+            Self.mStarts = Self.mStarts + 1
+            Self.mPlaying = true
+            return true
+        end
+        function Sequence.StopSequence(Self)
+            Self.mStops = Self.mStops + 1
+            Self.mFinished = false
+            Self.mPlaying = false
+            return true
+        end
+        function Sequence.IsSequenceFinished(Self)
+            return Self.mFinished
+        end
+        Sequences[Route] = Sequence
+        Ending.RegisterFadeSequence(Sequence, Route)
+    end
+    for _, Route in ipairs({ "Car", "Door" }) do
+        local Sequence = Sequences[Route]
+        local Other = Sequences[Route == "Car" and "Door" or "Car"]
+        local OtherStarts = Other.mStarts
+        Ending.RegisterSubject(Subject)
+        Ending.Start(View, "Ending_" .. Route)
+        Ending.Update(Ending.Config[Route].Duration - 0.1)
+        assert(Sequence.mStarts == 0 and not Ending.GetState().mFading)
+        Ending.Update(0.1)
+        local State = Ending.GetState()
+        assert(State.mFading and not State.mFinished and Sequence.mStarts == 1)
+        assert(Other.mStarts == OtherStarts)
+        local LocationX = Subject.mLocation.X
+        Ending.BeginFadeOut()
+        Ending.Update(1.0)
+        assert(State.mFading and not State.mFinished and Sequence.mStarts == 1)
+        if Route == "Car" then
+            assert(Subject.mLocation.X > LocationX, "car must keep moving during fade")
+            Near(Subject.mLocation.X - View.mLocation.X, 4.3)
+        end
+        Sequence.mFinished = true
+        Ending.Update(0.016)
+        assert(State.mFinished and not State.mFading and next(Runtime.mSounds) == nil)
+        assert(Sequence.mPlaying, "completed fade must hold black through credits")
+        Ending.Stop()
+        assert(not Sequence.mPlaying and Sequence.mStops == 2)
+    end
+    for _, Sequence in pairs(Sequences) do
+        Ending.UnregisterFadeSequence(Sequence)
+    end
+end)
+
+Test("skipping starts fade once and interrupted fade releases native playback", function()
+    local Sequence = { mStarts = 0, mPlaying = false }
+    function Sequence.PlaySequence(Self)
+        Self.mStarts = Self.mStarts + 1
+        Self.mPlaying = true
+        return true
+    end
+    function Sequence.StopSequence(Self)
+        Self.mPlaying = false
+        return true
+    end
+    function Sequence.IsSequenceFinished(Self)
+        return false
+    end
+    Ending.RegisterFadeSequence(Sequence, "Door")
+    Ending.Start(View, "Ending_Door")
+    Ending.Update(1.0)
+    assert(Ending.BeginFadeOut())
+    assert(not Ending.BeginFadeOut())
+    Ending.Update(0.25)
+    assert(Ending.GetState().mFading and not Ending.GetState().mFinished and Sequence.mStarts == 1)
+    Ending.Stop()
+    assert(not Sequence.mPlaying and Ending.GetState() == nil)
+    Ending.Start(View, "Ending_Door")
+    assert(Ending.BeginFadeOut())
+    Ending.UnregisterFadeSequence(Sequence)
+    Ending.Update(0.016)
+    assert(Ending.GetState().mFinished)
 end)
 
 Ending.Stop()

@@ -1,6 +1,7 @@
 #include "EnginePCH.h"
 #include "Scripting/LuaVM.h"
 #include "Scripting/CameraManagerBindings.h"
+#include "Sequence/SequenceActor.h"
 
 #include "GameFramework/Actor.h"
 #include "Components/SceneComponent.h"
@@ -564,6 +565,46 @@ namespace
 		return Extent;
 	}
 
+	ASequenceActor* ResolveActorSequence(const AActor* Actor) {
+		for (UObject* Object : GUObjectArray) {
+			if (Object == Actor) {
+				ASequenceActor* Sequence{ Cast<ASequenceActor>(Object) };
+				return Sequence && !Sequence->IsActorBeingDestroyed() ? Sequence : nullptr;
+			}
+		}
+		return nullptr;
+	}
+
+	bool PlayActorSequence(const AActor* Actor) {
+		ASequenceActor* Sequence{ ResolveActorSequence(Actor) };
+		if (!Sequence) {
+			return false;
+		}
+		Sequence->Play();
+		return true;
+	}
+
+	bool StopActorSequence(const AActor* Actor) {
+		ASequenceActor* Sequence{ ResolveActorSequence(Actor) };
+		if (!Sequence) {
+			return false;
+		}
+		Sequence->Stop();
+		return true;
+	}
+
+	bool IsActorSequenceFinished(const AActor* Actor) {
+		const ASequenceActor* Sequence{ ResolveActorSequence(Actor) };
+		return Sequence && Sequence->GetSequencePlayer().HasFinished();
+	}
+
+	void BindSequenceAPI(sol::state& LuaState) {
+		sol::usertype<AActor> ActorType{ LuaState.get<sol::usertype<AActor>>("AActor") };
+		ActorType.set_function("PlaySequence", &PlayActorSequence);
+		ActorType.set_function("StopSequence", &StopActorSequence);
+		ActorType.set_function("IsSequenceFinished", &IsActorSequenceFinished);
+	}
+
 	void BindActorAPI(sol::state& LuaState)
 	{
 		LuaState.new_usertype<AActor>(
@@ -803,6 +844,7 @@ void FLuaVM::BindEngineAPI()
 	BindLightAPI(*State);
 	BindCameraAPI(*State);
 	BindActorAPI(*State);
+	BindSequenceAPI(*State);
 	BindPlayerCameraManagerAPI(*State);
 	BindAudioAPI(*State);
 }

@@ -1,9 +1,11 @@
 local JumpScare = require("JumpScare")
 local EndingCutscene = require("EndingCutscene")
+local IntroCutscene = require("IntroCutscene")
 local GameManager = {}
 
 GameManager.EPhase = {
     Ready = "Ready",
+    Intro = "Intro",
     Playing = "Playing",
     JumpScare = "JumpScare",
     GameOver = "GameOver",
@@ -67,22 +69,29 @@ function GameManager.Reset()
     SetCursorMode(CursorMode.Free)
     JumpScare.Stop()
     EndingCutscene.Stop()
+    IntroCutscene.Stop()
     ResetProgress()
     ClearReferences()
 end
 
-function GameManager.StartGame()
+function GameManager.StartGame(PlayIntro)
     JumpScare.Stop()
     EndingCutscene.Stop()
+    IntroCutscene.Stop()
     EndingCutscene.ClearPending()
     ResetProgress()
-    GameManager.Phase = GameManager.EPhase.Playing
+    GameManager.Phase = PlayIntro and GameManager.EPhase.Intro or GameManager.EPhase.Playing
     SetCursorMode(CursorMode.Locked)
     print("[GameManager] StartGame")
 end
 
 function GameManager.Tick(dt)
-    if GameManager.Phase == GameManager.EPhase.Playing then
+    if GameManager.Phase == GameManager.EPhase.Intro then
+        if IntroCutscene.Update(dt, GameManager.Player) then
+            GameManager.Phase = GameManager.EPhase.Playing
+            SetCursorMode(CursorMode.Locked)
+        end
+    elseif GameManager.Phase == GameManager.EPhase.Playing then
         GameManager.ElapsedTime = GameManager.ElapsedTime + dt
         CheckPlayerCapture()
     elseif GameManager.IsJumpScaring() and JumpScare.Update(dt) then
@@ -107,6 +116,7 @@ function GameManager.RegisterPlayer(actor)
 end
 
 function GameManager.UnregisterPlayer(Actor)
+    IntroCutscene.ReleaseActor(Actor)
     JumpScare.ReleaseActor(Actor)
     if GameManager.Player == Actor then
         GameManager.Player = nil

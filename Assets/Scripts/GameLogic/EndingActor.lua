@@ -84,6 +84,9 @@ local function DrawCutscene(State, Config, Viewport, Scale)
     local BarHeight = Viewport.Y * 0.115
     AddUIImage(Black, V(Viewport.X, BarHeight), V(0, 0), V(0, 0), V(0, 0))
     AddUIImage(Black, V(Viewport.X, BarHeight), V(0, 1), V(0, 1), V(0, 0))
+    if State.mFading then
+        return
+    end
     if Time > 0.7 and Time < 3.0 then
         AddUIText(Config.Title, 28 * Scale, V(0.07, 0.18), V(0, 0), V(0, 0))
     end
@@ -118,7 +121,7 @@ function Tick(DeltaTime)
     end
     local WasFinished = State.mFinished
     if not State.mFinished and State.mElapsed > 0.35 and (IsKeyPressed(Key.Space) or IsKeyPressed(Key.Enter)) then
-        EndingCutscene.Finish()
+        EndingCutscene.BeginFadeOut()
     end
     EndingCutscene.Update(DeltaTime)
     local Viewport = GetViewportSize()

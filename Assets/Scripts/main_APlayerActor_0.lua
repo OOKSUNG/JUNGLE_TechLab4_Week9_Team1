@@ -1,6 +1,7 @@
 local Inventory = require("Inventory")
 local Stamina = require("Stamina")
 local WalkingCamera = require("WalkingCamera")
+local HorrorCamera = require("HorrorCamera")
 local GameManager = require("GameManager")
 
 local MouseSensitivityX = 0.12
@@ -13,6 +14,7 @@ local Runtime = { mHeadBobStrength = 1.0, mLastHeadBobStrength = 1.0, mViewModel
 local function Initialize()
     local Rotation = self:GetActorRotation()
     Runtime.mHeadBobStrength, Runtime.mViewModelStrength, Runtime.mLightMotionStrength = WalkingCamera.Start(WalkingStateKey, self, Rotation.Pitch)
+    HorrorCamera.Start(WalkingStateKey, self)
     Runtime.mLastHeadBobStrength = Runtime.mHeadBobStrength > 0.0 and Runtime.mHeadBobStrength or 1.0
     Runtime.mLastViewModelStrength = Runtime.mViewModelStrength > 0.0 and Runtime.mViewModelStrength or 1.0
     Runtime.mLastLightMotionStrength = Runtime.mLightMotionStrength > 0.0 and Runtime.mLightMotionStrength or 0.2
@@ -32,6 +34,7 @@ function EndPlay()
         SetCursorMode(CursorMode.Free)
     end
     WalkingCamera.Stop(WalkingStateKey)
+    HorrorCamera.Stop(WalkingStateKey)
 end
 
 function OnOverlap(OtherActor)
@@ -58,7 +61,8 @@ function Tick(DeltaTime)
     if DeltaTime <= 0.0 then
         return
     end
-    if GameManager.IsJumpScaring() or GameManager.Phase == GameManager.EPhase.GameOver or GameManager.Phase == GameManager.EPhase.Ending or GameManager.Phase == GameManager.EPhase.Escaped then
+    if GameManager.Phase == GameManager.EPhase.Intro or GameManager.IsJumpScaring() or GameManager.Phase == GameManager.EPhase.GameOver or GameManager.Phase == GameManager.EPhase.Ending or GameManager.Phase == GameManager.EPhase.Escaped then
+        HorrorCamera.Update(WalkingStateKey, FVector.new(0.0, 0.0, 0.0), DeltaTime, false, false)
         return
     end
 
@@ -115,6 +119,7 @@ function Tick(DeltaTime)
 
     if not GameManager.IsPlaying() then
         WalkingCamera.Update(WalkingStateKey, FVector.new(0.0, 0.0, 0.0), 0.0, DeltaTime, false, false)
+        HorrorCamera.Update(WalkingStateKey, FVector.new(0.0, 0.0, 0.0), DeltaTime, false, false)
         return
     end
 
@@ -166,6 +171,7 @@ function Tick(DeltaTime)
 
     local LocalMovement = FVector.new(Movement.X * CosYaw + Movement.Y * SinYaw, -Movement.X * SinYaw + Movement.Y * CosYaw, 0.0)
     WalkingCamera.Update(WalkingStateKey, LocalMovement, Speed, DeltaTime, IsRunning)
+    HorrorCamera.Update(WalkingStateKey, LocalMovement, DeltaTime, IsRunning)
 end
 
 

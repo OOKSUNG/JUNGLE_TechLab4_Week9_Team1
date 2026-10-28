@@ -177,6 +177,14 @@ function EnemyAudio.GetNearestDistance()
     return nearestDistance
 end
 
+function EnemyAudio.GetHeartbeatStrength()
+    local Layer = layers.Heartbeat
+    if Layer == nil or EnemyAudio.Config.HeartbeatMaxVolume <= 0.0 or not IsSoundPlaying(Layer.Handle) then
+        return 0.0
+    end
+    return math.min(1.0, Layer.Volume / EnemyAudio.Config.HeartbeatMaxVolume)
+end
+
 function EnemyAudio.GetLayerVolume(name)
     local layer = layers[name]
     return layer and layer.Volume or 0.0

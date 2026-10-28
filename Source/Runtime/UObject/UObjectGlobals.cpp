@@ -97,19 +97,22 @@ UObject* StaticConstructObject_Internal(const FStaticConstructObjectParameters& 
 	return Object;
 }
 
-FName MakeUniqueObjectName(UObject* Outer, const UClass* Class, FName BaseName)
-{
-	if (!Class)
-		return FName();
-
-	// 이름을 따로 안 줬으면 Class 이름을 기본 이름으로 사용
-	if (BaseName == NAME_None)
-	{
-		BaseName = FName(Class->Name);
+FName MakeUniqueObjectName(UObject* Outer, const UClass* Class, FName BaseName) {
+	if (!Class) {
+		return FName{};
 	}
 
-	const FString Base = BaseName.ToString();
-	return FName(Base + "_" + std::to_string(Class->ClassUnique++));
+	// 이름을 따로 안 줬으면 Class 이름을 기본 이름으로 사용
+	if (BaseName == NAME_None) {
+		BaseName = FName{ Class->Name };
+	}
+
+	const FString Base{ BaseName.ToString() };
+	FName Candidate{};
+	do {
+		Candidate = FName{ Base + "_" + std::to_string(Class->ClassUnique++) };
+	} while (StaticFindObjectFast(nullptr, Outer, Candidate) != nullptr);
+	return Candidate;
 }
 
 UObject* StaticDuplicateObject(UObject const* SourceObject, UObject* DestOuter, const FName DestName, EObjectFlags FlagMask, UClass* DestClass)

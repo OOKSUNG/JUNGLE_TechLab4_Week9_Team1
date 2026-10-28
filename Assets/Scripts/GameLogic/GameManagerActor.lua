@@ -91,7 +91,7 @@ function BeginPlay()
     Runtime.mDanger = 0.0
     ResetVignette()
     EndingCutscene.SetGameScene("Assets/Scenes/" .. sceneName .. ".scene")
-    GameManager.StartGame()
+    GameManager.StartGame(sceneName == "MapTest")
 end
 
 function Tick(DeltaTime)

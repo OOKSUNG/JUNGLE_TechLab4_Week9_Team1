@@ -1,6 +1,6 @@
 local Transition = require("Transition")
 local EndingCutscene = {}
-local Runtime = { mPendingResult = nil, mState = nil, mSubject = nil, mSubjects = {}, mView = nil, mGate = nil, mGameScene = "Assets/Scenes/MapTest.scene" }
+local Runtime = { mPendingResult = nil, mState = nil, mSubject = nil, mSubjects = {}, mFadeSequences = {}, mView = nil, mGate = nil, mGateOpeningOffset = nil, mGameScene = "Assets/Scenes/MapTest.scene" }
 
 EndingCutscene.Config = {
     Car = { Scene = "Assets/Scenes/Ending_Car.scene", Duration = 12.0, Title = "차량 탈출", Subtitle = "엔진 소리가 어둠 속의 발소리를 지워 버렸다.", Epilogue = "백미러 속 시설이 멀어졌다. 이제 돌아갈 이유는 없다." },
@@ -38,14 +38,16 @@ local function UpdateCar(State)
     end
     if State.mGate ~= nil then
         local Location = State.mGateLocation
-        State.mGate:SetActorLocation(FVector.new(Location.X, Location.Y, Location.Z + 4.2 * Smooth((Time - 0.2) / 2.0)))
+        local Offset = State.mGateOpeningOffset
+        local Opening = Smooth((Time - 0.2) / 4.0)
+        State.mGate:SetActorLocation(FVector.new(Location.X + Offset.X * Opening, Location.Y + Offset.Y * Opening, Location.Z + Offset.Z * Opening))
     end
     if Time < 2.2 then
         local Progress = Smooth(Time / 2.2)
         SetView(State, Blend(-3.8, -4.3, Progress), State.mSide * 3.4, Blend(2.2, 2.6, Progress), 0.0, 0.0, 1.55, Blend(52.0, 55.0, Progress))
     else
         local Progress = Smooth(DrivingTime / 7.0)
-        SetView(State, -4.3 + DrivingTime * DrivingTime * 0.24, State.mSide * Blend(3.4, 2.2, Smooth(DrivingTime / 4.0)), Blend(2.6, 3.6, Progress), Distance + 0.5, 0.0, 1.55, Blend(55.0, 62.0, Progress))
+        SetView(State, Distance - 4.3, State.mSide * Blend(3.4, 2.2, Smooth(DrivingTime / 4.0)), Blend(2.6, 3.6, Progress), Distance + 0.5, 0.0, 1.55, Blend(55.0, 62.0, Progress))
     end
 end
 
@@ -145,6 +147,23 @@ function EndingCutscene.UnregisterSubject(Actor)
     end
 end
 
+function EndingCutscene.RegisterFadeSequence(Actor, Route)
+    if EndingCutscene.Config[Route] ~= nil then
+        Runtime.mFadeSequences[Route] = Actor
+    end
+end
+
+function EndingCutscene.UnregisterFadeSequence(Actor)
+    if Runtime.mState ~= nil and Runtime.mState.mFadeSequence == Actor then
+        Runtime.mState.mFadeSequence = nil
+    end
+    for Route, Sequence in pairs(Runtime.mFadeSequences) do
+        if Sequence == Actor then
+            Runtime.mFadeSequences[Route] = nil
+        end
+    end
+end
+
 function EndingCutscene.RegisterView(View)
     Runtime.mView = View
 end
@@ -156,8 +175,9 @@ function EndingCutscene.UnregisterView(View)
     end
 end
 
-function EndingCutscene.RegisterGate(Actor)
+function EndingCutscene.RegisterGate(Actor, OpeningOffset)
     Runtime.mGate = Actor
+    Runtime.mGateOpeningOffset = OpeningOffset or FVector.new(0.0, 8.5, 0.0)
 end
 
 function EndingCutscene.UnregisterGate(Actor)
@@ -166,6 +186,7 @@ function EndingCutscene.UnregisterGate(Actor)
     end
     if Runtime.mGate == Actor then
         Runtime.mGate = nil
+        Runtime.mGateOpeningOffset = nil
     end
 end
 
@@ -207,6 +228,7 @@ function EndingCutscene.Start(View, Scene)
         mSubjectRotation = Rotation,
         mGate = InPlace and Route == "Car" and Runtime.mGate or nil,
         mGateLocation = Runtime.mGate ~= nil and Runtime.mGate:GetActorLocation() or nil,
+        mGateOpeningOffset = Runtime.mGateOpeningOffset,
         mOrigin = Origin,
         mSide = Side,
         mYaw = Yaw,
@@ -220,6 +242,8 @@ function EndingCutscene.Start(View, Scene)
         mViewModelLocation = nil,
         mElapsed = 0.0,
         mFinished = false,
+        mFading = false,
+        mFadeSequence = nil,
         mSounds = {},
         mPlayedCues = {},
         mResult = Result ~= nil and Result.Route == Route and Result or { Route = Route, ElapsedTime = 0.0, BatteriesUsed = 0, GameScene = InPlace and Runtime.mGameScene or "Assets/Scenes/MapTest.scene" },
@@ -254,6 +278,18 @@ function EndingCutscene.Update(DeltaTime)
     if State == nil or State.mFinished then
         return
     end
+    if State.mFading then
+        State.mElapsed = State.mElapsed + math.max(0.0, DeltaTime)
+        if State.mRoute == "Car" then
+            UpdateCar(State)
+        else
+            UpdateDoor(State)
+        end
+        if State.mFadeSequence == nil or State.mFadeSequence:IsSequenceFinished() then
+            EndingCutscene.Finish()
+        end
+        return
+    end
     local RemainingTime = math.max(0.0, DeltaTime)
     if State.mBlendRemaining > 0.0 then
         local BlendTime = math.min(RemainingTime, State.mBlendRemaining)
@@ -271,14 +307,30 @@ function EndingCutscene.Update(DeltaTime)
     end
     UpdateSound(State)
     if State.mElapsed >= EndingCutscene.Config[State.mRoute].Duration then
-        EndingCutscene.Finish()
+        EndingCutscene.BeginFadeOut()
     end
+end
+
+function EndingCutscene.BeginFadeOut()
+    local State = Runtime.mState
+    if State == nil or State.mFinished or State.mFading then
+        return false
+    end
+    local Sequence = Runtime.mFadeSequences[State.mRoute]
+    if Sequence == nil or not Sequence:StopSequence() or not Sequence:PlaySequence() then
+        EndingCutscene.Finish()
+        return false
+    end
+    State.mFadeSequence = Sequence
+    State.mFading = true
+    return true
 end
 
 function EndingCutscene.Finish()
     local State = Runtime.mState
     if State ~= nil and not State.mFinished then
         State.mFinished = true
+        State.mFading = false
         StopSounds(State)
         SetCursorMode(CursorMode.Free)
     end
@@ -291,6 +343,9 @@ function EndingCutscene.Stop()
     end
     Runtime.mState = nil
     StopSounds(State)
+    if State.mFadeSequence ~= nil then
+        State.mFadeSequence:StopSequence()
+    end
     if State.mInPlace and State.mSubject ~= nil then
         State.mSubject:SetActorLocation(State.mSubjectLocation)
         State.mSubject:SetActorRotation(State.mSubjectRotation)

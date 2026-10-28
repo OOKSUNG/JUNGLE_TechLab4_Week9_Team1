@@ -3334,6 +3334,81 @@
                     ],
                     "Properties": {},
                     "RootComponent": "FenceBase1"
+                },
+                {
+                    "Class": "ASequenceActor",
+                    "Name": "EndingCarFade",
+                    "RootComponent": "SequenceRoot",
+                    "Properties": {
+                        "bAutoPlay": false
+                    },
+                    "Components": [
+                        {
+                            "Class": "USceneComponent",
+                            "Name": "SequenceRoot",
+                            "Parent": "",
+                            "Properties": {
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0,
+                                        "Y": 0,
+                                        "Z": 0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "Class": "UScriptComponent",
+                            "Name": "EndingCarFadeScript",
+                            "Parent": "",
+                            "Properties": {
+                                "ScriptPath": "Assets/Scripts/GameLogic/EndingFadeCar.lua"
+                            }
+                        }
+                    ],
+                    "Sequence": {
+                        "StartFrame": 0,
+                        "DurationSeconds": 2,
+                        "FPS": 30,
+                        "Tracks": [
+                            {
+                                "Name": "Car Escape Fade Out",
+                                "Color": {
+                                    "R": 0.35,
+                                    "G": 0.55,
+                                    "B": 0.9,
+                                    "A": 1.0
+                                },
+                                "Type": "Fade",
+                                "Sections": [
+                                    {
+                                        "Curve": 0,
+                                        "EaseExp": 2.0,
+                                        "Keys": [
+                                            {
+                                                "Frame": 0,
+                                                "Alpha": 0.0
+                                            },
+                                            {
+                                                "Frame": 60,
+                                                "Alpha": 1.0
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
                 }
             ],
             "Properties": {}
