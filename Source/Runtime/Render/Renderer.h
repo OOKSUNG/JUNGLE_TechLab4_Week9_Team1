@@ -409,7 +409,7 @@ private:
 	TUniquePtr<FStructuredBuffer> LocalLightBuffer{};
 	uint32 NumLocalLightsThisFrame = 0;
 
-	EViewMode CurrentViewMode = EViewMode::Lit_Lambert;
+	EViewMode CurrentViewMode = EViewMode::Lit_BlinnPhong;
 
 	// UUID별 기존 타일을 조회하거나 새로 배정해 작업에 연결한다.
 	void PrepareShadowDepthTargets(TArray<FProjectedShadowInfo>& ShadowInfos);

@@ -124,5 +124,5 @@ private:
 
     // 모든 Client가 같은 표시 기본값으로 시작한다.
     FEngineShowFlags ShowFlags{ EShowFlagScope::View };
-    EViewMode ViewMode = EViewMode::Lit_Lambert;
+    EViewMode ViewMode = EViewMode::Lit_BlinnPhong;
 };

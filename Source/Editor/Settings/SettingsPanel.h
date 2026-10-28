@@ -37,7 +37,7 @@ struct FEditorSettings
     bool bViewLocationSaved[4]{};
     bool bViewRotationSaved[4]{};
 	// 조명 모델
-	int32 LightingModel = 1;	// 0 Gouraud 1 Lambert 2 Blinn-Phong
+	int32 LightingModel = 2;	// 0 Gouraud 1 Lambert 2 Blinn-Phong
 
 	int32 LightDebugMode = 0;
 	int32 LightCullingMode = 1;	// ELightCullingMode: 0 Tiled 1 Clustered 2 Tiled 2.5D

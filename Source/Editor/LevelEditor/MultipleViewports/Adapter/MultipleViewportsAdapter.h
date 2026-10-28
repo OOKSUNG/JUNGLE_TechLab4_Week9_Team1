@@ -98,7 +98,7 @@ public:
     EViewMode GetViewMode(int32 Index) const
     {
         return IsViewIndex(Index)
-            ? ViewportClients[Index].GetViewMode() : EViewMode::Lit_Lambert;
+            ? ViewportClients[Index].GetViewMode() : EViewMode::Lit_BlinnPhong;
     }
     // 우클릭 입력을 Capture 중인 View 인덱스를 반환한다.
     int32 GetCapturedViewIndex() const { return InputState.CapturedViewIndex; }
