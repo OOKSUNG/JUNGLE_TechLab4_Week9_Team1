@@ -38,7 +38,5 @@ private:
 	FSequencePlayer SequencePlayer;
 	bool bCameraPlaybackActive = false;
 	uint32 ControlledCameraUUID = 0;
-	// 카메라 부모가 있는 경우에도 원래 배치를 복원할 수 있도록 상대 좌표로 보관한다.
-	CameraKey SavedCameraRelativeState{};
 	bool bSavedCameraTickEnabled = false;
 };

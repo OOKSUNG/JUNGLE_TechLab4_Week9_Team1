@@ -53,7 +53,7 @@ void ASequenceActor::Tick(float DeltaTime)
 	{
 		ApplyCameraView();
 	}
-	// 끝 프레임에 도달한 Tick에서는 마지막 값을 적용하고, 다음 Tick에서 기본 카메라로 복귀한다.
+	// 끝 프레임의 값을 적용한 뒤 다음 Tick에서 제어만 해제한다. 카메라 배치는 유지한다.
 }
 
 void ASequenceActor::Play()
@@ -78,7 +78,7 @@ void ASequenceActor::ApplyCameraView()
 	const bool bHasCamera = SequencePlayer.GetCurrentCameraKey(Key);
 	if (!bHasCamera)
 	{
-		// 구간 밖에서는 원래 시점과 입력을 복원한다. Fade만 있는 연출은 카메라를 건드리지 않는다.
+		// 아직 카메라 구간이 없으면 제어만 해제한다. Fade만 있는 연출은 카메라를 건드리지 않는다.
 		ReleaseCameraView();
 		return;
 	}
@@ -103,16 +103,13 @@ void ASequenceActor::ApplyCameraView()
 
 void ASequenceActor::AcquireCamera(UCameraComponent* Camera)
 {
-	// 같은 카메라를 두 Sequence가 동시에 쓰지 않게 한다. 이전 연출을 복원한 뒤 새 상태를 저장한다.
+	// 같은 카메라를 두 Sequence가 동시에 쓰지 않게 한다. 이전 연출의 제어를 해제한다.
 	for (AActor* Actor : GetWorld()->GetPersistentLevel()->GetActors())
 	{
 		if (auto* Other = Cast<ASequenceActor>(Actor); Other && Other != this && Other->ControlledCameraUUID == Camera->GetUUID())
 			Other->Stop();
 	}
 	ControlledCameraUUID = Camera->GetUUID();
-	SavedCameraRelativeState.Location = Camera->GetRelativeLocation();
-	SavedCameraRelativeState.Rotation = Camera->GetRelativeRotation();
-	SavedCameraRelativeState.FieldOfView = Camera->GetFieldOfView();
 	bSavedCameraTickEnabled = Camera->PrimaryComponentTick.IsTickFunctionRegistered()
 		? Camera->PrimaryComponentTick.IsTickFunctionEnabled()
 		: Camera->PrimaryComponentTick.bStartWithTickEnabled;
@@ -130,8 +127,7 @@ void ASequenceActor::ReleaseCameraView()
 			{
 				if (auto* Camera = Cast<UCameraComponent>(Object))
 				{
-					Camera->SetRelativeLocationAndRotation(SavedCameraRelativeState.Location, SavedCameraRelativeState.Rotation);
-					Camera->SetFieldOfView(SavedCameraRelativeState.FieldOfView);
+					// 마지막 위치/회전/FOV는 그대로 두고 입력용 Tick만 복원한다.
 					Camera->PrimaryComponentTick.SetTickFunctionEnable(bSavedCameraTickEnabled);
 				}
 				break;

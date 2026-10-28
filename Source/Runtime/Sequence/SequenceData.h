@@ -35,6 +35,7 @@ struct FCameraSection	// 한 Track 내에서 생긴 Camera 구간의 정보
 	int32 KeyFrames[2] = {};
 	int KeyCount = 0;
 	CameraKey KeyCam[2] = {};
+	bool bUseShortestRotation = true; // 끄면 입력한 각도 차이(360도 이상 포함)를 그대로 보간한다.
 	CurveType Curve = CurveType::Linear;
 	float EaseExp = 2.0f;
 };

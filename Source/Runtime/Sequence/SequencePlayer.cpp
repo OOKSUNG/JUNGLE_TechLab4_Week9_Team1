@@ -6,6 +6,16 @@
 
 namespace
 {
+	float LerpAngle(float Start, float End, float Alpha, bool bShortest)
+	{
+		if (!bShortest) return std::lerp(Start, End, Alpha);
+		// 각도는 360도마다 같은 방향이다. 경계를 지날 때 한 바퀴 돌아가지 않도록 차이를 줄인다.
+		float Delta = std::fmod(End - Start, 360.0f);
+		if (Delta > 180.0f) Delta -= 360.0f;
+		else if (Delta < -180.0f) Delta += 360.0f;
+		return Start + Delta * Alpha;
+	}
+
 	bool IsSectionActive(float Frame, const int32 (&KeyFrames)[2], int KeyCount)
 	{
 		if (KeyCount != 2 || KeyFrames[0] == KeyFrames[1] || !std::isfinite(Frame))
@@ -87,19 +97,29 @@ bool FSequencePlayer::GetCurrentCameraKey(CameraKey& OutCamera) const
 	if (!Track)
 		return false;
 
-	for (auto Section = Track->CamSections.rbegin(); Section != Track->CamSections.rend(); ++Section)
+	// 시작한 구간 중 가장 최근 구간을 평가한다. 구간 사이와 마지막 키 이후에는 끝 값을 유지한다.
+	const FCameraSection* Section = nullptr;
+	for (const auto& Candidate : Track->CamSections)
 	{
-		if (!IsSectionActive(PlaybackFrame, Section->KeyFrames, Section->KeyCount))
+		if (Candidate.KeyCount != 2 || Candidate.KeyFrames[0] == Candidate.KeyFrames[1] ||
+			PlaybackFrame < FMath::Min(Candidate.KeyFrames[0], Candidate.KeyFrames[1]))
 			continue;
-		float Playratio = (PlaybackFrame - Section->KeyFrames[0]) / (static_cast<float>(Section->KeyFrames[1]) - Section->KeyFrames[0]);
+		if (!Section || FMath::Min(Candidate.KeyFrames[0], Candidate.KeyFrames[1]) >=
+			FMath::Min(Section->KeyFrames[0], Section->KeyFrames[1]))
+			Section = &Candidate;
+	}
+	if (!Section || !std::isfinite(PlaybackFrame)) return false;
+	{
+		float Playratio = FMath::Clamp((PlaybackFrame - Section->KeyFrames[0]) /
+			(static_cast<float>(Section->KeyFrames[1]) - Section->KeyFrames[0]), 0.0f, 1.0f);
 		if (Section->Curve == CurveType::Linear)
 		{
 			OutCamera.Location.X = std::lerp(Section->KeyCam[0].Location.X, Section->KeyCam[1].Location.X, Playratio);
 			OutCamera.Location.Y = std::lerp(Section->KeyCam[0].Location.Y, Section->KeyCam[1].Location.Y, Playratio);
 			OutCamera.Location.Z = std::lerp(Section->KeyCam[0].Location.Z, Section->KeyCam[1].Location.Z, Playratio);
-			OutCamera.Rotation.Pitch = std::lerp(Section->KeyCam[0].Rotation.Pitch, Section->KeyCam[1].Rotation.Pitch, Playratio);
-			OutCamera.Rotation.Yaw = std::lerp(Section->KeyCam[0].Rotation.Yaw, Section->KeyCam[1].Rotation.Yaw, Playratio);
-			OutCamera.Rotation.Roll = std::lerp(Section->KeyCam[0].Rotation.Roll, Section->KeyCam[1].Rotation.Roll, Playratio);
+			OutCamera.Rotation.Pitch = LerpAngle(Section->KeyCam[0].Rotation.Pitch, Section->KeyCam[1].Rotation.Pitch, Playratio, Section->bUseShortestRotation);
+			OutCamera.Rotation.Yaw = LerpAngle(Section->KeyCam[0].Rotation.Yaw, Section->KeyCam[1].Rotation.Yaw, Playratio, Section->bUseShortestRotation);
+			OutCamera.Rotation.Roll = LerpAngle(Section->KeyCam[0].Rotation.Roll, Section->KeyCam[1].Rotation.Roll, Playratio, Section->bUseShortestRotation);
 			OutCamera.FieldOfView = std::lerp(Section->KeyCam[0].FieldOfView, Section->KeyCam[1].FieldOfView, Playratio);
 			return true;
 		}
@@ -110,9 +130,9 @@ bool FSequencePlayer::GetCurrentCameraKey(CameraKey& OutCamera) const
 			OutCamera.Location.X = std::lerp(Section->KeyCam[0].Location.X, Section->KeyCam[1].Location.X, Playratio);
 			OutCamera.Location.Y = std::lerp(Section->KeyCam[0].Location.Y, Section->KeyCam[1].Location.Y, Playratio);
 			OutCamera.Location.Z = std::lerp(Section->KeyCam[0].Location.Z, Section->KeyCam[1].Location.Z, Playratio);
-			OutCamera.Rotation.Pitch = std::lerp(Section->KeyCam[0].Rotation.Pitch, Section->KeyCam[1].Rotation.Pitch, Playratio);
-			OutCamera.Rotation.Yaw = std::lerp(Section->KeyCam[0].Rotation.Yaw, Section->KeyCam[1].Rotation.Yaw, Playratio);
-			OutCamera.Rotation.Roll = std::lerp(Section->KeyCam[0].Rotation.Roll, Section->KeyCam[1].Rotation.Roll, Playratio);
+			OutCamera.Rotation.Pitch = LerpAngle(Section->KeyCam[0].Rotation.Pitch, Section->KeyCam[1].Rotation.Pitch, Playratio, Section->bUseShortestRotation);
+			OutCamera.Rotation.Yaw = LerpAngle(Section->KeyCam[0].Rotation.Yaw, Section->KeyCam[1].Rotation.Yaw, Playratio, Section->bUseShortestRotation);
+			OutCamera.Rotation.Roll = LerpAngle(Section->KeyCam[0].Rotation.Roll, Section->KeyCam[1].Rotation.Roll, Playratio, Section->bUseShortestRotation);
 			OutCamera.FieldOfView = std::lerp(Section->KeyCam[0].FieldOfView, Section->KeyCam[1].FieldOfView, Playratio);
 			return true;
 		}
@@ -122,9 +142,9 @@ bool FSequencePlayer::GetCurrentCameraKey(CameraKey& OutCamera) const
 			OutCamera.Location.X = std::lerp(Section->KeyCam[0].Location.X, Section->KeyCam[1].Location.X, Playratio);
 			OutCamera.Location.Y = std::lerp(Section->KeyCam[0].Location.Y, Section->KeyCam[1].Location.Y, Playratio);
 			OutCamera.Location.Z = std::lerp(Section->KeyCam[0].Location.Z, Section->KeyCam[1].Location.Z, Playratio);
-			OutCamera.Rotation.Pitch = std::lerp(Section->KeyCam[0].Rotation.Pitch, Section->KeyCam[1].Rotation.Pitch, Playratio);
-			OutCamera.Rotation.Yaw = std::lerp(Section->KeyCam[0].Rotation.Yaw, Section->KeyCam[1].Rotation.Yaw, Playratio);
-			OutCamera.Rotation.Roll = std::lerp(Section->KeyCam[0].Rotation.Roll, Section->KeyCam[1].Rotation.Roll, Playratio);
+			OutCamera.Rotation.Pitch = LerpAngle(Section->KeyCam[0].Rotation.Pitch, Section->KeyCam[1].Rotation.Pitch, Playratio, Section->bUseShortestRotation);
+			OutCamera.Rotation.Yaw = LerpAngle(Section->KeyCam[0].Rotation.Yaw, Section->KeyCam[1].Rotation.Yaw, Playratio, Section->bUseShortestRotation);
+			OutCamera.Rotation.Roll = LerpAngle(Section->KeyCam[0].Rotation.Roll, Section->KeyCam[1].Rotation.Roll, Playratio, Section->bUseShortestRotation);
 			OutCamera.FieldOfView = std::lerp(Section->KeyCam[0].FieldOfView, Section->KeyCam[1].FieldOfView, Playratio);
 			return true;
 		}

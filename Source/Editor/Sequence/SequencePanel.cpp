@@ -2,6 +2,23 @@
 #include "SequencePanel.h"
 #include "Sequence/SequenceActor.h"
 #include <type_traits>
+#include <cmath>
+
+namespace
+{
+	void AlignCameraRotation(FCameraSection& Section)
+	{
+		if (Section.KeyCount < 2) return;
+		for (int Axis = 0; Axis < 3; ++Axis)
+		{
+			float Start = Section.KeyCam[0].Rotation[Axis];
+			float Delta = std::fmod(Section.KeyCam[1].Rotation[Axis] - Start, 360.0f);
+			if (Delta > 180.0f) Delta -= 360.0f;
+			else if (Delta < -180.0f) Delta += 360.0f;
+			Section.KeyCam[1].Rotation[Axis] = Start + Delta;
+		}
+	}
+}
 
 bool FSequencePanel::IsFadeLayoutValid(const FFadeTimelineTrack& Track)
 {
@@ -265,6 +282,10 @@ void FSequencePanel::OnRender()
 									Alpha = NewFadeKeyAlpha;
 								}
 								++Section.KeyCount;
+								if constexpr (std::is_same_v<std::decay_t<decltype(Section)>, FCameraSection>)
+								{
+									if (Section.bUseShortestRotation) AlignCameraRotation(Section);
+								}
 							}
 						});
 						PreviewPlayer.Pause();
@@ -337,6 +358,36 @@ void FSequencePanel::OnRender()
 										// 두 키 중 어느 쪽을 우클릭해도 같은 Section의 Curve와 Exp를 편집한다.
 										ImGui::TextUnformatted("Section Curve");
 										ImGui::Separator();
+										if constexpr (std::is_same_v<std::decay_t<decltype(Section)>, FCameraSection>)
+										{
+											if (ImGui::Checkbox("Shortest Rotation", &Section.bUseShortestRotation))
+											{
+												if (Section.bUseShortestRotation) AlignCameraRotation(Section);
+												PreviewPlayer.Pause();
+											}
+											ImGui::TextDisabled("Edit rotation to use the entered angles (e.g. 0 -> 720).");
+											for (int KeyIndex = 0; KeyIndex < Section.KeyCount; ++KeyIndex)
+											{
+												ImGui::PushID(KeyIndex);
+												ImGui::Separator();
+												ImGui::Text("Camera Key %d | Frame %d", KeyIndex + 1, Section.KeyFrames[KeyIndex]);
+												auto& Key = Section.KeyCam[KeyIndex];
+												ImGui::SetNextItemWidth(260.0f);
+												bool bChanged = ImGui::DragFloat3("Location (X/Y/Z)", Key.Location.V, 0.1f);
+												ImGui::SetNextItemWidth(260.0f);
+												if (ImGui::DragFloat3("Rotation (Pitch/Yaw/Roll)", Key.Rotation.V, 0.1f))
+												{
+													// 직접 입력한 회전량은 자동 보정으로 덮어쓰지 않는다.
+													Section.bUseShortestRotation = false;
+													bChanged = true;
+												}
+												ImGui::SetNextItemWidth(120.0f);
+												bChanged |= ImGui::DragFloat("FOV", &Key.FieldOfView, 0.1f, 1.0f, 179.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+												if (bChanged) PreviewPlayer.Pause();
+												ImGui::PopID();
+											}
+											ImGui::Separator();
+										}
 										const CurveType Types[] = { CurveType::Linear, CurveType::EaseIn, CurveType::EaseOut, CurveType::Bezier };
 										const char* Labels[] = { "Linear", "Ease In", "Ease Out", "Bezier" };
 										for (int CurveIndex = 0; CurveIndex < IM_ARRAYSIZE(Types); ++CurveIndex)

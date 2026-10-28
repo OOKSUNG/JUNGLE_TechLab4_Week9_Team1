@@ -26,6 +26,13 @@ namespace
 				Ar.SetError(); return;
 			}
 			Section.Curve = static_cast<CurveType>(Curve);
+			if constexpr (std::is_same_v<SectionType, FCameraSection>)
+			{
+				// 기존 씬에는 이 필드가 없으므로 기본값인 최단 회전을 사용한다.
+				if (Ar.IsLoading()) Section.bUseShortestRotation = true;
+				if (auto Slot = Item.TryEnterField("UseShortestRotation", true))
+					Slot.GetValue() << Section.bUseShortestRotation;
+			}
 			int32 KeyCount = Section.KeyCount;
 			auto Keys = Item.EnterArray("Keys", KeyCount);
 			if (KeyCount < 0 || KeyCount > 2) { Ar.SetError(); return; }
