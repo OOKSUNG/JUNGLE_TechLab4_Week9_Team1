@@ -1289,7 +1289,7 @@ void UEditorEngine::RenderToneMapPass(const int32 ViewIndex, UWorld& ViewWorld, 
 		Vignette.Radius,
 		Vignette.Softness,
 		Vignette.Color);
-	ToneMapRenderer->OnRender(HDRColor, ToneMapMode);
+	ToneMapRenderer->OnRender(HDRColor, ToneMapMode, ASequenceActor::GetWorldFadeAlpha(&ViewWorld));
 	RenderCommand::EndRenderPass(PassInfo);
 
 	// SceneColor가 SRV로 남아 있으면 Overlay 패스에서 RTV로 쓸 때 D3D가 강제로 해제하므로 먼저 비운다

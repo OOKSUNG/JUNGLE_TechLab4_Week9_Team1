@@ -10,6 +10,8 @@ cbuffer ToneMapConstants : register(b0)
 
     float VignetteSoftness;
     float3 VignetteColor;
+    float FadeAlpha;
+    float3 FadePadding;
 };
 
 #define TONEMAP_MODE_ACES        0
@@ -68,7 +70,7 @@ float4 mainPS(PSInput Input) : SV_Target
     // 디버그 뷰는 셰이더가 쓴 값을 그대로 보여준다.
     if (Mode == TONEMAP_MODE_PASSTHROUGH)
     {
-        return float4(saturate(SceneColor), 1.0f);
+        return float4(saturate(SceneColor) * (1.0f - saturate(FadeAlpha)), 1.0f);
     }
 
     // Unlit은 텍스처 원본 색을 보여야 하므로 곡선 없이 인코딩만 한다.
@@ -81,5 +83,6 @@ float4 mainPS(PSInput Input) : SV_Target
 
     // 씬은 선형으로 쌓였으므로 화면에 내보내기 전에 한 번만 sRGB로 인코딩한다.
     // ImGui가 뷰포트 텍스처를 알파 블렌딩으로 그리므로 알파는 1로 고정한다.
-    return float4(LinearToSRGB(FinalColor), 1.0f);
+    // 현재 Fade 값을 최종 RGB에 반영한다. 0은 원래 화면, 1은 검정이며 출력 Alpha는 유지한다.
+    return float4(LinearToSRGB(FinalColor) * (1.0f - saturate(FadeAlpha)), 1.0f);
 }

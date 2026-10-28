@@ -3,6 +3,7 @@
 #include "RenderCommand.h"
 #include "RenderResourceManager.h"
 #include "Texture2D.h"
+#include <cmath>
 
 void FToneMapRenderer::SetVignette(float InIntensity, float InRadius, float InSoftness, const FVector& InColor)
 {
@@ -32,7 +33,7 @@ bool FToneMapRenderer::Init()
 }
 
 // HDR(선형) 입력을 톤 매핑·sRGB 인코딩해 현재 바인딩된 LDR 타깃에 쓴다.
-void FToneMapRenderer::OnRender(FTexture2D* InputTexture, EToneMapMode Mode)
+void FToneMapRenderer::OnRender(FTexture2D* InputTexture, EToneMapMode Mode, float FadeAlpha)
 {
 	if (!InputTexture || !ConstantBuffer)
 		return;
@@ -48,6 +49,7 @@ void FToneMapRenderer::OnRender(FTexture2D* InputTexture, EToneMapMode Mode)
 	Constants.VignetteColor[0] = VignetteColor.X;
 	Constants.VignetteColor[1] = VignetteColor.Y;
 	Constants.VignetteColor[2] = VignetteColor.Z;
+	Constants.FadeAlpha = std::isfinite(FadeAlpha) ? FMath::Clamp(FadeAlpha, 0.0f, 1.0f) : 0.0f;
 
 	RenderCommand::BindPipelineState(PipelineState);
 	RenderCommand::UpdateBufferData(ConstantBuffer.get(), &Constants);

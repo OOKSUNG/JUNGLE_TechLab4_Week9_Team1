@@ -14,6 +14,9 @@ public:
 	void Stop();
 	void Tick(float DeltaTime);
 	bool IsPlaying() const { return bIsPlaying; }
+	// Pause와 구분하기 위한 상태. Stop/데이터 교체 시 초기화하고 끝 프레임 도달 시 완료된다.
+	bool IsStopped() const { return !bPlaybackStarted; }
+	bool HasFinished() const { return bFinished; }
 	float GetPlaybackFrame() const { return PlaybackFrame; }
 	void SetPlaybackFrame(float InFrame);
 	void SetPlaybackSettings(int InFPS, int32 InDurationSeconds);
@@ -25,4 +28,6 @@ private:
 	FSequenceData SequenceData;
 	float PlaybackFrame = 0.0f;
 	bool bIsPlaying = false;
+	bool bPlaybackStarted = false;
+	bool bFinished = false;
 };
