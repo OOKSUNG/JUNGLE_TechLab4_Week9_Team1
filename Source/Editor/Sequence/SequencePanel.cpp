@@ -132,8 +132,8 @@ void FSequencePanel::OnRender()
 		}
 		ImGui::SameLine();
 
-		static constexpr int FPSValues[] = { 30, 45, 60, 90, 144, 240 };
-		static const char* FPSLabels[] = { "30", "45", "60", "90", "144", "240" };
+		static constexpr int FPSValues[]{ 30, 45, 60, 90, 144, 240, 480 };
+		static const char* FPSLabels[]{ "30", "45", "60", "90", "144", "240", "480" };
 		int FPSIndex = 0;
 		for (int Index = 0; Index < IM_ARRAYSIZE(FPSValues); ++Index)	// 현재 적용한 FPS 값으로 FPSIndex 초기화
 		{
@@ -172,7 +172,13 @@ void FSequencePanel::OnRender()
 		FTimeline& SelectedRow = Rows[SelectedTrack];
 		// Row.Rows는 카메라/Fade 중 하나를 담는 variant다. 선택한 종류에 해당하는 포인터만 얻는다.
 		auto* SelectedFadeTrack = std::get_if<FFadeTimelineTrack>(&SelectedRow.Rows);
-		const auto* SelectedCameraTrack = std::get_if<FCameraTimelineTrack>(&SelectedRow.Rows);
+		auto* SelectedCameraTrack{ std::get_if<FCameraTimelineTrack>(&SelectedRow.Rows) };
+		if (SelectedCameraTrack) {
+			ImGui::SameLine();
+			if (ImGui::Checkbox("Catmull-Rom", &SelectedCameraTrack->mUseCatmullRom)) {
+				PreviewPlayer.Pause();
+			}
+		}
 		CameraKey CameraSnapshot{};
 		// 카메라 키에 기록할 현재 뷰포트의 위치/회전/FOV를 EditorEngine의 콜백으로 읽는다.
 		// 아직 저장된 키를 바꾸지는 않고, Add Key가 요청되면 이 스냅샷을 복사한다.
@@ -363,6 +369,9 @@ void FSequencePanel::OnRender()
 											if (ImGui::Checkbox("Shortest Rotation", &Section.bUseShortestRotation))
 											{
 												if (Section.bUseShortestRotation) AlignCameraRotation(Section);
+												PreviewPlayer.Pause();
+											}
+											if (ImGui::Checkbox("Camera Cut", &Section.mCutAtStart)) {
 												PreviewPlayer.Pause();
 											}
 											ImGui::TextDisabled("Edit rotation to use the entered angles (e.g. 0 -> 720).");

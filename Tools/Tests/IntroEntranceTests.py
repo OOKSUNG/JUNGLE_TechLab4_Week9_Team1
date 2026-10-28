@@ -49,9 +49,10 @@ def Main():
     Actors = Json.loads(Target.read_text(encoding="utf-8-sig"))["World"]["PersistentLevel"]["Actors"]
     Verify(Actors, Data)
     print("PASS spawn, fade endpoints, camera input, room collision and component/actor attachments")
-    Before = Copy.deepcopy(Actors)
     Intro.InstallIntroEntrance(Actors, Data)
     Verify(Actors, Data)
+    Before = Copy.deepcopy(Actors)
+    Intro.InstallIntroEntrance(Actors, Data)
     assert Actors == Before
     print("PASS repeated intro generation is idempotent")
     with Tempfile.TemporaryDirectory(prefix="HitoriIntro") as Folder:

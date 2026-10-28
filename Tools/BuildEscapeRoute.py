@@ -239,16 +239,17 @@ def InstallScene(Root, Data):
     for Index, X in enumerate([2, 8, 14, 20]):
         Actors.append(MeshActor("CorridorRib" + str(Index), "CorridorRib", (X, CenterY, 0)))
         Fixture = Campus.MeshActor("EscapeCorridorLamp" + str(Index), "Models/Facility/CeilingLight.obj", (X + 1, CenterY, 3.75), Scale=(0.75, 0.75, 0.75))
-        AddPointLight(Fixture, 4291624908, 1.8, 7)
+        AddPointLight(Fixture, 4291624908, 0.72, 7)
         Actors.append(Fixture)
     for Index, X in enumerate([3, 7, 11, 15, 19]):
         Actors.append(MeshActor("FloorArrow" + str(Index), "FloorArrow", (X, CenterY, 0.03)))
     Actors.append(MeshActor("RouteSign", "RouteSign", (-1.6, CenterY, 3.35)))
     Sign = MeshActor("ExitSign", "ExitSign", (EndX - 0.24, CenterY, 3.5))
-    AddPointLight(Sign, 4286095242, 1.2, 5)
+    AddPointLight(Sign, 4286095242, 0.48, 5)
     Actors.append(Sign)
     from BuildDoorExterior import InstallExterior
-    InstallExterior(Actors, (EndX, CenterY, 0))
+    InstallExterior(Actors, (EndX, CenterY, 0), IntensityScale=0.4)
+    Campus.InstallCeilingLightFlicker(Actors)
     Scene["World"]["PersistentLevel"]["Actors"] = Actors
     Target.write_text(Json.dumps(Scene, ensure_ascii=False, indent=4) + "\n", encoding="utf-8")
 

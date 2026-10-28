@@ -204,6 +204,16 @@ function Map:Heuristic(x, y, goalX, goalY, bAllowDiagonal)
     return (dx + dy) * self.CellSize
 end
 
+local function BuildPath(Key, CameFrom)
+    local Path = {}
+    while Key do
+        local Floor, X, Y = FromKey(Key)
+        table.insert(Path, 1, { Floor = Floor, X = X, Y = Y })
+        Key = CameFrom[Key]
+    end
+    return Path
+end
+
 function Map:FindPath(startCell, goalCell, options)
     options = options or {}
     local bAllowDiagonal = options.bAllowDiagonal
@@ -259,14 +269,7 @@ function Map:FindPath(startCell, goalCell, options)
 
         if not closed[currentKey] then
             if currentKey == goalKey then
-                local path = {}
-                local key = goalKey
-                while key do
-                    local floor, x, y = FromKey(key)
-                    table.insert(path, 1, { Floor = floor, X = x, Y = y })
-                    key = cameFrom[key]
-                end
-                return path, costSoFar[goalKey]
+                return BuildPath(goalKey, cameFrom), costSoFar[goalKey]
             end
 
             closed[currentKey] = true
@@ -306,6 +309,14 @@ function Map:FindPath(startCell, goalCell, options)
                     end
                 end
             end
+        end
+    end
+
+    local FallbackCell = options.GetFallbackCell and options.GetFallbackCell() or nil
+    if FallbackCell ~= nil then
+        local FallbackKey = ToKey(FallbackCell.Floor, FallbackCell.X, FallbackCell.Y)
+        if closed[FallbackKey] then
+            return BuildPath(FallbackKey, cameFrom), costSoFar[FallbackKey], "Unreachable"
         end
     end
 

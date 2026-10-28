@@ -134,7 +134,7 @@ def BuildMeshes(Root):
     SaveMesh(Root, Mesh)
 
 
-def InstallExterior(Actors, Origin, Yaw=0.0):
+def InstallExterior(Actors, Origin, Yaw=0.0, IntensityScale=1.0):
     Mapping = {}
     Retained = []
     for Index, Actor in enumerate(Actors):
@@ -162,7 +162,7 @@ def InstallExterior(Actors, Origin, Yaw=0.0):
         return Add(Name, "Cube", Location, Size, Surface=Surface)
 
     def Light(Actor, Color, Intensity, Radius, Shadows=False):
-        Actor["Components"].append({"Class": "UPointLightComponent", "Name": Actor["RootComponent"] + "Light", "Parent": Actor["RootComponent"], "Properties": {"Transform": Campus.Transform((0.45, 0, -0.1)), "LightColor": Color, "Intensity": Intensity, "AttenuationRadius": Radius, "LightFalloffExponent": 2, "SourceRadius": 0.18, "ShadowMapResolution": 512, "ShadowBias": 0.001, "bCastShadows": Shadows, "bVisible": True}})
+        Actor["Components"].append({"Class": "UPointLightComponent", "Name": Actor["RootComponent"] + "Light", "Parent": Actor["RootComponent"], "Properties": {"Transform": Campus.Transform((0.45, 0, -0.1)), "LightColor": Color, "Intensity": round(Intensity * IntensityScale, 6), "AttenuationRadius": Radius, "LightFalloffExponent": 2, "SourceRadius": 0.18, "ShadowMapResolution": 512, "ShadowBias": 0.001, "bCastShadows": Shadows, "bVisible": True}})
 
     Concrete = Campus.Material((0.68, 0.73, 0.69), "Assets/Textures/Campus/Concrete_BaseColor.png", "Assets/Textures/Campus/Concrete_Normal.png", 2)
     Asphalt = Campus.Material((0.65, 0.72, 0.73), "Assets/Textures/Campus/Asphalt_BaseColor.png", "Assets/Textures/Campus/Asphalt_Normal.png", 4)
@@ -194,7 +194,7 @@ def InstallExterior(Actors, Origin, Yaw=0.0):
         Light(Lamp, 0xFFBCE6FF, 2.4, 9, True)
     for Name, Location, Rotation, Intensity in [("CourtLight", (10.5, -6.8, 0), -90, 4.0), ("GateLight", (22, 6.7, 0), 90, 3.5)]:
         Lamp = Add(Name, "Models/Campus/Floodlight.obj", Location, Rotation=Rotation)
-        Lamp["Components"].append({"Class": "UPointLightComponent", "Name": Name + "Light", "Parent": Lamp["RootComponent"], "Properties": {"Transform": Campus.Transform((0, 0, 5.65)), "LightColor": 0xFFFFDBB8, "Intensity": Intensity, "AttenuationRadius": 20, "LightFalloffExponent": 2, "bCastShadows": False, "bVisible": True}})
+        Lamp["Components"].append({"Class": "UPointLightComponent", "Name": Name + "Light", "Parent": Lamp["RootComponent"], "Properties": {"Transform": Campus.Transform((0, 0, 5.65)), "LightColor": 0xFFFFDBB8, "Intensity": round(Intensity * IntensityScale, 6), "AttenuationRadius": 20, "LightFalloffExponent": 2, "bCastShadows": False, "bVisible": True}})
     Station = Add("AssemblyStation", "Models/DoorExterior/AssemblyStation.obj", (17, -5.8, 0), Rotation=-12)
     Light(Station, 0xFFD5F4D1, 1.1, 5)
     Add("Workshop", "Models/DoorExterior/ServiceBuilding.obj", (32, 10.5, 0))
@@ -216,7 +216,7 @@ def UpdateExterior(Root):
         Yaw = Transform["Rotation"]["Yaw"]
         Location = Transform["Location"]
         Origin = (Location["X"] - 0.92 * Math.sin(Math.radians(Yaw)), Location["Y"] + 0.92 * Math.cos(Math.radians(Yaw)), Location["Z"] - 1.5)
-        InstallExterior(Actors, Origin, Yaw)
+        InstallExterior(Actors, Origin, Yaw, IntensityScale=0.4)
         Target.write_text(Json.dumps(Scene, ensure_ascii=False, indent=4) + "\n", encoding="utf-8")
     print("Updated emergency exit exterior in the gameplay scene")
 

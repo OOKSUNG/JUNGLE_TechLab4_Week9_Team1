@@ -87,9 +87,6 @@ local function DrawCutscene(State, Config, Viewport, Scale)
     if State.mFading then
         return
     end
-    if Time > 0.7 and Time < 3.0 then
-        AddUIText(Config.Title, 28 * Scale, V(0.07, 0.18), V(0, 0), V(0, 0))
-    end
     if Time > 1.2 and Time < 5.8 then
         AddUIText(Config.Subtitle, 24 * Scale, V(0.5, 0.925), V(0.5, 0.5), V(0, 0))
     elseif Time >= 7.8 and Time < Config.Duration - 0.7 then

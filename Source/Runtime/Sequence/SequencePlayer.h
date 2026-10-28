@@ -20,11 +20,13 @@ public:
 	float GetPlaybackFrame() const { return PlaybackFrame; }
 	void SetPlaybackFrame(float InFrame);
 	void SetPlaybackSettings(int InFPS, int32 InDurationSeconds);
+	bool EvaluateAtTime(double Time);
 
 	bool GetCurrentCameraKey(CameraKey& OutCamera) const;	// 현재 PlaybackFrame의 Camera 정보를 가져옴 
 	bool GetCurrentFadeAlpha(float& OutAlpha) const;	// 현재 PlaybackFrame의 Alpha를 가져옴 
 
 private:
+	double mSampleFrame{};
 	FSequenceData SequenceData;
 	float PlaybackFrame = 0.0f;
 	bool bIsPlaying = false;

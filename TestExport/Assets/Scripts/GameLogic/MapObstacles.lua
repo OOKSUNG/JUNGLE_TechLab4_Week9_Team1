@@ -32,6 +32,7 @@ local function CopyFloor(Data)
 end
 
 function MapObstacles.Apply(Map, Layout)
+    local Origin = Layout.Origin or Map.Origin
     local UpdatedFloors = {}
     local BlockedCells = 0
     for _, Prop in ipairs(Layout.Props or {}) do
@@ -48,7 +49,7 @@ function MapObstacles.Apply(Map, Layout)
             local Cosine = math.cos(Angle)
             local Sine = math.sin(Angle)
             local Offset = Definition.Center
-            local Position = { X = Map.Origin.X + Prop.Location.X + Offset.X * Cosine - Offset.Y * Sine, Y = Map.Origin.Y + Prop.Location.Y + Offset.X * Sine + Offset.Y * Cosine }
+            local Position = { X = Origin.X + Prop.Location.X + Offset.X * Cosine - Offset.Y * Sine, Y = Origin.Y + Prop.Location.Y + Offset.X * Sine + Offset.Y * Cosine }
             local Extent = Definition.Extent
             local WorldExtentX = Extent.X * math.abs(Cosine) + Extent.Y * math.abs(Sine)
             local WorldExtentY = Extent.X * math.abs(Sine) + Extent.Y * math.abs(Cosine)

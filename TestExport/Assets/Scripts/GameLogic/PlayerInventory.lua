@@ -44,6 +44,13 @@ function Tick(dt)
         return
     end
 
+    if IsKeyPressed(Key.LeftBracket) then
+        Inventory.Add("CarKey")
+        Inventory.Add("FuelCan")
+        Inventory.Add("CardKey")
+        LogSlots()
+    end
+
     if IsKeyPressed(PICKUP_KEY) then
         TryPickup()
     end

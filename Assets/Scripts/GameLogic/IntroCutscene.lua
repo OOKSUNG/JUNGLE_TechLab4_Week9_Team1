@@ -1,6 +1,6 @@
 local IntroCutscene = {}
 local Config = require("IntroData")
-local Runtime = { mView = nil, mPlayerView = nil, mDoor = nil, mFade = nil, mState = nil }
+local Runtime = { mView = nil, mPlayerView = nil, mDoor = nil, mFade = nil, mCameraSequence = nil, mBobSequence = nil, mState = nil }
 
 IntroCutscene.Config = Config
 
@@ -42,23 +42,23 @@ local function SetPlayerLocation(Player, X, Yaw)
 end
 
 local function Start(Player)
-    if Player == nil or Runtime.mView == nil or Runtime.mPlayerView == nil or Runtime.mDoor == nil or Runtime.mFade == nil then
+    if Player == nil or Runtime.mView == nil or Runtime.mPlayerView == nil or Runtime.mDoor == nil or Runtime.mFade == nil or Runtime.mCameraSequence == nil or Runtime.mBobSequence == nil then
         return false
     end
     local Manager = Runtime.mView:GetPlayerCameraManager()
     local Camera = Runtime.mPlayerView:GetCamera()
-    if Manager == nil or Camera == nil then
+    local IntroCamera = Runtime.mView:GetCamera()
+    if Manager == nil or Camera == nil or IntroCamera == nil then
         return false
     end
     if not Manager:SetViewTarget(Runtime.mView) then
         return false
     end
     local ViewModel = Camera:FindChildComponent("FlashlightMesh")
-    local State = { mPlayer = Player, mManager = Manager, mCamera = Camera, mCameraLocation = Camera:GetRelativeLocation(), mViewModel = ViewModel, mViewModelLocation = ViewModel ~= nil and ViewModel:GetRelativeLocation() or nil, mElapsed = 0.0, mBlending = false, mFinished = false, mSounds = {}, mPlayedCues = {} }
+    local State = { mPlayer = Player, mManager = Manager, mCamera = Camera, mIntroCamera = IntroCamera, mCameraLocation = Camera:GetRelativeLocation(), mViewModel = ViewModel, mViewModelLocation = ViewModel ~= nil and ViewModel:GetRelativeLocation() or nil, mElapsed = 0.0, mBlending = false, mFinished = false, mSounds = {}, mPlayedCues = {} }
     Runtime.mState = State
     SetPlayerLocation(Player, Config.Spawn.X)
-    Runtime.mView:SetActorLocation(FVector.new(Config.CameraStart.X, Config.CameraStart.Y, Config.CameraStart.Z))
-    Runtime.mView:SetActorRotation(FRotator.new(Config.CameraStart.Pitch, Config.CameraStart.Yaw, 0.0))
+    Runtime.mCameraSequence:EvaluateCameraSequence(0.0, IntroCamera, FVector.new(0.0, 0.0, 0.0), 0.0, 1.0, false, false)
     SetDoor(0.0)
     if ViewModel ~= nil then
         ViewModel:SetRelativeLocation(FVector.new(0.0, 0.0, -10.0))
@@ -85,11 +85,15 @@ function IntroCutscene.RegisterFade(Actor)
     Runtime.mFade = Actor
 end
 
+function IntroCutscene.RegisterCameraSequence(Actor, Bob)
+    Runtime[Bob and "mBobSequence" or "mCameraSequence"] = Actor
+end
+
 function IntroCutscene.ReleaseActor(Actor)
-    if Actor == Runtime.mView or Actor == Runtime.mPlayerView or (Runtime.mState ~= nil and Actor == Runtime.mState.mPlayer) then
+    if Actor == Runtime.mView or Actor == Runtime.mPlayerView or Actor == Runtime.mCameraSequence or Actor == Runtime.mBobSequence or (Runtime.mState ~= nil and Actor == Runtime.mState.mPlayer) then
         IntroCutscene.Stop()
     end
-    for _, Field in ipairs({ "mView", "mPlayerView", "mDoor", "mFade" }) do
+    for _, Field in ipairs({ "mView", "mPlayerView", "mDoor", "mFade", "mCameraSequence", "mBobSequence" }) do
         if Runtime[Field] == Actor then
             Runtime[Field] = nil
         end
@@ -116,6 +120,8 @@ function IntroCutscene.Finish()
         Runtime.mFade:StopSequence()
     end
     StopSounds(State)
+    Runtime.mCameraSequence:StopSequence()
+    Runtime.mBobSequence:StopSequence()
     State.mFinished = true
 end
 
@@ -137,15 +143,12 @@ function IntroCutscene.Update(DeltaTime, Player)
     local Entry = Smooth((Time - Config.ApproachEnd) / (Config.WalkEnd - Config.ApproachEnd))
     local LookBack = Smooth((Time - Config.LookBackStart) / Config.LookBackDuration) * (1.0 - Smooth((Time - Config.LookForwardStart) / Config.LookForwardDuration))
     SetPlayerLocation(State.mPlayer, Time < Config.ApproachEnd and Blend(Config.Spawn.X, Config.ApproachX, Approach) or Blend(Config.ApproachX, Config.Destination.X, Entry), Config.Yaw + 180.0 * LookBack)
-    local Bob = Time > Config.WalkStart and Time < Config.WalkEnd and math.sin((Time - Config.WalkStart) * math.pi * 4.0) * 0.012 * math.sin(math.pi * (Time - Config.WalkStart) / (Config.WalkEnd - Config.WalkStart)) or 0.0
-    State.mCamera:SetRelativeLocation(FVector.new(State.mCameraLocation.X, State.mCameraLocation.Y, State.mCameraLocation.Z + Bob))
+    Runtime.mBobSequence:EvaluateCameraSequence(Time, State.mCamera, State.mCameraLocation, 0.0, 1.0, true, true)
     local Opening = Smooth((Time - Config.DoorOpenStart) / Config.DoorOpenDuration)
     local Closing = Smooth((Time - Config.DoorCloseStart) / Config.DoorCloseDuration)
     SetDoor(Opening * (1.0 - Closing))
     if not State.mBlending then
-        local Dolly = Smooth(Time / Config.BlendStart)
-        Runtime.mView:SetActorLocation(FVector.new(Blend(Config.CameraStart.X, Config.CameraEnd.X, Dolly), Blend(Config.CameraStart.Y, Config.CameraEnd.Y, Dolly), Blend(Config.CameraStart.Z, Config.CameraEnd.Z, Dolly)))
-        Runtime.mView:SetActorRotation(FRotator.new(Blend(Config.CameraStart.Pitch, Config.CameraEnd.Pitch, Dolly), Blend(Config.CameraStart.Yaw, Config.CameraEnd.Yaw, Dolly), 0.0))
+        Runtime.mCameraSequence:EvaluateCameraSequence(Time, State.mIntroCamera, FVector.new(0.0, 0.0, 0.0), 0.0, 1.0, false, false)
         if Time >= Config.BlendStart then
             State.mManager:SetViewTargetCamera(State.mCamera, Config.BlendDuration)
             State.mBlending = true
@@ -162,6 +165,12 @@ end
 
 function IntroCutscene.Stop()
     local State = Runtime.mState
+    if Runtime.mCameraSequence ~= nil then
+        Runtime.mCameraSequence:StopSequence()
+    end
+    if Runtime.mBobSequence ~= nil then
+        Runtime.mBobSequence:StopSequence()
+    end
     if State ~= nil then
         if not State.mFinished then
             State.mManager:SetViewTargetCamera(State.mCamera)

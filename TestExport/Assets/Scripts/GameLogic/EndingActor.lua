@@ -1,6 +1,29 @@
 local EndingCutscene = require("EndingCutscene")
+local GameManager = require("GameManager")
 local Black = "Assets/UI/Title/Black.png"
-local Runtime = { mActionRequested = false }
+local Runtime = { mActionRequested = false, mCreditsTime = 0.0, mCreditsDone = false }
+
+-- { 문구, 글자 크기 }. 빈 문구는 줄 간격만 차지한다.
+local Credits = {
+    { "The Basement", 56 },
+    { "", 0 },
+    { "김승범", 24 },
+    { "권성욱", 24 },
+    { "신용준", 24 },
+    { "최효석", 24 },
+    { "", 0 },
+    { "", 0 },
+    { "", 0 },
+    { "Krafton Jungle TechLab 4 · Week 9 Team 1", 22 },
+    { "", 0 },
+    { "", 0 },
+    { "", 0 },
+    { "Thanks for playing", 34 },
+}
+local CreditsSpeed = 70.0
+local CreditsLineGap = 1.6
+-- 컷신 스킵 입력이 크레딧까지 넘기지 않도록 잠시 스킵을 막는다.
+local CreditsSkipDelay = 0.5
 
 local function V(X, Y)
     return FVector2.new(X, Y)
@@ -31,18 +54,38 @@ local function DrawResult(State, Config, Viewport, Scale)
     local Title = DrawButton("[Enter] 타이틀로", X, Y + Height + 16 * Scale, Width, Height, Viewport)
     if not Runtime.mActionRequested and (Restart or Title or IsKeyPressed(Key.R) or IsKeyPressed(Key.Enter)) then
         Runtime.mActionRequested = true
-        LoadScene((Restart or IsKeyPressed(Key.R)) and State.mResult.GameScene or "Assets/Scenes/Title.scene")
+        LoadScene((Restart or IsKeyPressed(Key.R)) and State.mResult.GameScene or "Assets/Scenes/Demo/05_TheBasement.scene")
+    end
+end
+
+local function DrawCredits(DeltaTime, Viewport, Scale)
+    Runtime.mCreditsTime = Runtime.mCreditsTime + DeltaTime
+    AddUIImage(Black, Viewport, V(0, 0), V(0, 0), V(0, 0))
+    -- 첫 줄의 윗변이 화면 아래쪽 끝에서 시작해 위로 올라간다.
+    local Y = -Runtime.mCreditsTime * CreditsSpeed * Scale
+    for _, Line in ipairs(Credits) do
+        local Size = math.max(Line[2], 24) * Scale
+        if Line[1] ~= "" and Y < 0 and Y > -Viewport.Y - Size then
+            AddUIText(Line[1], Line[2] * Scale, V(0.5, 1.0), V(0.5, 0.0), V(0, Y))
+        end
+        Y = Y + Size * CreditsLineGap
+    end
+    local CanSkip = Runtime.mCreditsTime > CreditsSkipDelay
+    if CanSkip then
+        AddUIText("[Space / Enter] 건너뛰기", 16 * Scale, V(0.98, 0.985), V(1, 1), V(0, 0))
+    end
+    if Y < -Viewport.Y or (CanSkip and (IsKeyPressed(Key.Space) or IsKeyPressed(Key.Enter))) then
+        Runtime.mCreditsDone = true
     end
 end
 
 local function DrawCutscene(State, Config, Viewport, Scale)
     local Time = State.mElapsed
-    local Shutter = math.max(math.max(0.0, 1.0 - Time / 0.7), math.max(0.0, (Time - Config.Duration + 1.0)))
-    local BarHeight = Viewport.Y * (0.115 + 0.385 * math.min(1.0, Shutter))
+    local BarHeight = Viewport.Y * 0.115
     AddUIImage(Black, V(Viewport.X, BarHeight), V(0, 0), V(0, 0), V(0, 0))
     AddUIImage(Black, V(Viewport.X, BarHeight), V(0, 1), V(0, 1), V(0, 0))
-    if Time > 0.7 and Time < 3.0 then
-        AddUIText(Config.Title, 28 * Scale, V(0.07, 0.18), V(0, 0), V(0, 0))
+    if State.mFading then
+        return
     end
     if Time > 1.2 and Time < 5.8 then
         AddUIText(Config.Subtitle, 24 * Scale, V(0.5, 0.925), V(0.5, 0.5), V(0, 0))
@@ -54,17 +97,26 @@ end
 
 function BeginPlay()
     Runtime.mActionRequested = false
-    EndingCutscene.Start(self, sceneName)
+    Runtime.mCreditsTime = 0.0
+    Runtime.mCreditsDone = false
+    EndingCutscene.RegisterView(self)
 end
 
 function Tick(DeltaTime)
     local State = EndingCutscene.GetState()
     if State == nil then
-        return
+        if GameManager.Phase == GameManager.EPhase.Ending then
+            ResetTimeEffects()
+            EndingCutscene.StartPending()
+        end
+        State = EndingCutscene.GetState()
+        if State == nil then
+            return
+        end
     end
     local WasFinished = State.mFinished
     if not State.mFinished and State.mElapsed > 0.35 and (IsKeyPressed(Key.Space) or IsKeyPressed(Key.Enter)) then
-        EndingCutscene.Finish()
+        EndingCutscene.BeginFadeOut()
     end
     EndingCutscene.Update(DeltaTime)
     local Viewport = GetViewportSize()
@@ -75,7 +127,9 @@ function Tick(DeltaTime)
     local Config = EndingCutscene.Config[State.mRoute]
     if State.mFinished then
         if not WasFinished then
-            AddUIImage(Black, Viewport, V(0, 0), V(0, 0), V(0, 0))
+            -- 컷신이 끝난 프레임은 비워 두고, 다음 프레임부터 크레딧을 띄운다.
+        elseif not Runtime.mCreditsDone then
+            DrawCredits(DeltaTime, Viewport, Scale)
         else
             DrawResult(State, Config, Viewport, Scale)
         end
@@ -85,5 +139,5 @@ function Tick(DeltaTime)
 end
 
 function EndPlay()
-    EndingCutscene.Stop()
+    EndingCutscene.UnregisterView(self)
 end

@@ -43,7 +43,7 @@ static void TestScene(FLuaVM& VM, const FString& Path, int32 ExpectedTracks) {
 	auto Document{ json::parse(File) };
 	auto Actors{ json::array() };
 	for (auto Actor : Document["World"]["PersistentLevel"]["Actors"]) {
-		if (Actor["Class"] == "ASequenceActor") {
+		if (Actor["Class"] == "ASequenceActor" && (Actor["Name"] == "EndingCarFade" || Actor["Name"] == "EndingDoorFade")) {
 			auto Components{ json::array() };
 			for (const auto& Component : Actor["Components"]) {
 				if (Component["Class"] != "UScriptComponent") {

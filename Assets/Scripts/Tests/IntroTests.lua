@@ -39,6 +39,9 @@ local Camera = { mLocation = FVector.new(0, 0, 1.38) }
 local Model = { mLocation = FVector.new(0.49, 0.19, -0.09) }
 local Manager = { mTarget = Camera, mBlendDuration = 0.0 }
 local Fade = { mPlaying = false }
+local CameraSupport = assert(loadfile("Assets/Scripts/Tests/CameraSequenceSupport.lua"))()
+local Dolly = CameraSupport.New("IntroCamera", View)
+local Bob = CameraSupport.New("IntroBob", View)
 
 function Player.SetActorLocation(Self, Location)
     Self.mLocation = Location
@@ -121,6 +124,8 @@ local function Test(Name, Run)
     Intro.RegisterPlayerView(View)
     Intro.RegisterDoor(Door)
     Intro.RegisterFade(Fade)
+    Intro.RegisterCameraSequence(Dolly, false)
+    Intro.RegisterCameraSequence(Bob, true)
     Run()
     Runtime.mPassed = Runtime.mPassed + 1
     print("PASS " .. Name)
@@ -157,7 +162,9 @@ Test("arrival stays on clear map cells, crosses the open door, closes it and han
             assert(Door.mLocation.Z - 1.5 > 1.0, "shutter blocks the player")
         end
     end
-    GameManager.Tick(0.001)
+    if GameManager.Phase == GameManager.EPhase.Intro then
+        GameManager.Tick(0.001)
+    end
     assert(Crossed and GameManager.IsPlaying())
     assert(GameManager.ElapsedTime == 0.0 and Player.mLocation.X == Config.Destination.X)
     assert(Manager.mTarget == Camera and Door.mLocation.Z == Config.Door.Z)
@@ -185,8 +192,9 @@ Test("negative time, interrupted teardown and replay restore model and camera", 
     GameManager.StartGame(true)
     GameManager.Tick(4.0)
     local Time = Intro.GetState().mElapsed
+    local BlendDuration = Manager.mBlendDuration
     GameManager.Tick(-1.0)
-    assert(Intro.GetState().mElapsed == Time and Manager.mBlendDuration == Config.BlendDuration)
+    assert(Intro.GetState().mElapsed == Time and Manager.mBlendDuration == BlendDuration)
     Intro.ReleaseActor(View)
     assert(Intro.GetState() == nil and Manager.mTarget == Camera and not Fade.mPlaying)
     assert(Model.mLocation.X == 0.49 and Camera.mLocation.Z == 1.38 and next(Runtime.mSounds) == nil)

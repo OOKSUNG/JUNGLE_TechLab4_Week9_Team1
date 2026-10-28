@@ -1,15 +1,10 @@
 local Transition = require("Transition")
 local EndingCutscene = {}
-local Runtime = { mPendingResult = nil, mState = nil, mSubject = nil, mSubjects = {}, mFadeSequences = {}, mView = nil, mGate = nil, mGateOpeningOffset = nil, mGameScene = "Assets/Scenes/Demo/06_Game.scene" }
+local Runtime = { mPendingResult = nil, mState = nil, mSubject = nil, mSubjects = {}, mFadeSequences = {}, mCameraSequences = {}, mView = nil, mGate = nil, mGateOpeningOffset = nil, mGameScene = "Assets/Scenes/Demo/06_Game.scene" }
 
 EndingCutscene.Config = {
     Car = { Duration = 12.0, Title = "차량 탈출", Subtitle = "엔진 소리가 어둠 속의 발소리를 지워 버렸다.", Epilogue = "백미러 속 시설이 멀어졌다. 이제 돌아갈 이유는 없다." },
     Door = { Duration = 11.0, Title = "비상문 탈출", Subtitle = "잠금이 풀렸다. 문틈 너머로 새벽 공기가 흘러들었다.", Epilogue = "문이 닫히자, 뒤쫓던 소리도 마침내 끊어졌다." },
-}
-
-EndingCutscene.Fog = {
-    Car = { Density = 0.18, HeightFalloff = 0.015, StartDistance = 8.0, MaxOpacity = 1.0, Color = { X = 0.32, Y = 0.39, Z = 0.44 } },
-    Door = { Density = 0.20, HeightFalloff = 0.015, StartDistance = 4.0, MaxOpacity = 1.0, Color = { X = 0.32, Y = 0.39, Z = 0.44 } },
 }
 
 local function Smooth(Value)
@@ -17,21 +12,12 @@ local function Smooth(Value)
     return Progress * Progress * (3.0 - 2.0 * Progress)
 end
 
-local function Blend(First, Second, Progress)
-    return First + (Second - First) * Progress
-end
-
 local function ToWorld(State, X, Y, Z)
     return FVector.new(State.mOrigin.X + X * State.mCosine - Y * State.mSine, State.mOrigin.Y + X * State.mSine + Y * State.mCosine, State.mOrigin.Z + Z)
 end
 
-local function SetView(State, X, Y, Z, TargetX, TargetY, TargetZ, FieldOfView)
-    local DeltaX = TargetX - X
-    local DeltaY = TargetY - Y
-    local Distance = math.sqrt(DeltaX * DeltaX + DeltaY * DeltaY)
-    State.mView:SetActorLocation(ToWorld(State, X, Y, Z))
-    State.mView:SetActorRotation(FRotator.new(math.deg(math.atan2(Z - TargetZ, Distance)), State.mYaw + math.deg(math.atan2(DeltaY, DeltaX)), 0.0))
-    State.mCamera:SetFieldOfView(FieldOfView)
+local function UpdateView(State)
+    State.mCameraSequence:EvaluateCameraSequence(State.mElapsed, State.mCamera, State.mOrigin, State.mYaw, State.mRoute == "Car" and State.mSide or 1.0, false, false)
 end
 
 local function UpdateCar(State)
@@ -47,18 +33,7 @@ local function UpdateCar(State)
         local Opening = Smooth((Time - 0.2) / 4.0)
         State.mGate:SetActorLocation(FVector.new(Location.X + Offset.X * Opening, Location.Y + Offset.Y * Opening, Location.Z + Offset.Z * Opening))
     end
-    if Time < 2.2 then
-        local Progress = Smooth(Time / 2.2)
-        SetView(State, Blend(-3.8, -4.3, Progress), State.mSide * 3.4, Blend(2.2, 2.6, Progress), 0.0, 0.0, 1.55, Blend(52.0, 55.0, Progress))
-    else
-        local FollowTime = math.min(DrivingTime, 8.0)
-        local ReleaseTime = math.max(0.0, FollowTime - 6.0)
-        local CameraTime = FollowTime - ReleaseTime * ReleaseTime * 0.25
-        local CameraDistance = CameraTime * CameraTime * 0.72
-        local Progress = Smooth(CameraTime / 7.0)
-        local TargetDistance = CameraDistance + Blend(0.5, 30.0, Smooth(ReleaseTime / 2.0))
-        SetView(State, CameraDistance - 4.3, State.mSide * Blend(3.4, 2.2, Smooth(CameraTime / 4.0)), Blend(2.6, 3.6, Progress), TargetDistance, 0.0, 1.55, Blend(55.0, 62.0, Progress))
-    end
+    UpdateView(State)
 end
 
 local function UpdateDoor(State)
@@ -69,17 +44,7 @@ local function UpdateDoor(State)
         local Rotation = State.mSubjectRotation
         State.mSubject:SetActorRotation(FRotator.new(Rotation.Pitch, Rotation.Yaw - 102.0 * Opening * (1.0 - Closing), Rotation.Roll))
     end
-    if Time < 3.6 then
-        local Progress = Smooth(Time / 3.6)
-        SetView(State, Blend(-2.6, -1.6, Progress), 0.0, 1.65, 0.0, 0.0, 1.5, 58.0)
-    elseif Time < 7.8 then
-        local Progress = Smooth((Time - 3.6) / 4.2)
-        local Step = math.sin((Time - 3.6) * math.pi * 4.0) * 0.018 * math.sin(Progress * math.pi)
-        SetView(State, Blend(-1.6, 5.0, Progress), 0.0, 1.65 + Step, 16.0, 0.0, 1.75, Blend(58.0, 66.0, Progress))
-    else
-        local Progress = Smooth((Time - 7.8) / 2.0)
-        SetView(State, Blend(5.0, 6.5, Progress), Blend(0.0, -2.8, Progress), Blend(1.65, 2.1, Progress), Blend(16.0, 0.0, Progress), 0.0, Blend(1.75, 1.5, Progress), Blend(66.0, 52.0, Progress))
-    end
+    UpdateView(State)
 end
 
 local function PlayCue(State, Name, Path, Time, Volume)
@@ -173,6 +138,21 @@ function EndingCutscene.RegisterView(View)
     Runtime.mView = View
 end
 
+function EndingCutscene.RegisterCameraSequence(Actor, Route)
+    Runtime.mCameraSequences[Route] = Actor
+end
+
+function EndingCutscene.UnregisterCameraSequence(Actor)
+    if Runtime.mState ~= nil and Runtime.mState.mCameraSequence == Actor then
+        EndingCutscene.Stop()
+    end
+    for Route, Sequence in pairs(Runtime.mCameraSequences) do
+        if Sequence == Actor then
+            Runtime.mCameraSequences[Route] = nil
+        end
+    end
+end
+
 function EndingCutscene.UnregisterView(View)
     if Runtime.mView == View then
         EndingCutscene.Stop()
@@ -206,6 +186,10 @@ end
 function EndingCutscene.Start(View, Scene)
     EndingCutscene.Stop()
     local Route = (Scene == "Ending_Car" or Scene == "Car") and "Car" or "Door"
+    local CameraSequence = Runtime.mCameraSequences[Route]
+    if CameraSequence == nil or View:GetCamera() == nil then
+        return false
+    end
     local InPlace = Scene == "Car" or Scene == "Door"
     local Result = Runtime.mPendingResult
     local Subject = InPlace and Runtime.mSubjects[Route] or Runtime.mSubject
@@ -227,6 +211,7 @@ function EndingCutscene.Start(View, Scene)
     local State = {
         mView = View,
         mCamera = View:GetCamera(),
+        mCameraSequence = CameraSequence,
         mRoute = Route,
         mSubject = Subject,
         mSubjectLocation = Location,
@@ -273,8 +258,6 @@ function EndingCutscene.Start(View, Scene)
             State.mViewModel:SetRelativeLocation(FVector.new(0.0, 0.0, -10.0))
         end
     end
-    local Fog = EndingCutscene.Fog[Route]
-    View:SetFogOverride(Fog.Density, Fog.HeightFalloff, Fog.StartDistance, Fog.MaxOpacity, FVector.new(Fog.Color.X, Fog.Color.Y, Fog.Color.Z), Origin.Z)
     Runtime.mPendingResult = nil
     SetCursorMode(CursorMode.Free)
     return true
@@ -338,6 +321,7 @@ function EndingCutscene.Finish()
     if State ~= nil and not State.mFinished then
         State.mFinished = true
         State.mFading = false
+        State.mCameraSequence:StopSequence()
         StopSounds(State)
         SetCursorMode(CursorMode.Free)
     end
@@ -349,7 +333,7 @@ function EndingCutscene.Stop()
         return
     end
     Runtime.mState = nil
-    State.mView:ResetFogOverride()
+    State.mCameraSequence:StopSequence()
     StopSounds(State)
     if State.mFadeSequence ~= nil then
         State.mFadeSequence:StopSequence()

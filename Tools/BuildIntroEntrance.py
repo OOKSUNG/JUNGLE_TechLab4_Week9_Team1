@@ -78,7 +78,7 @@ def InstallIntroEntrance(Actors, Data):
         Actors.append(Campus.CubeActor("Intro_Threshold" + str(X), (X, 14.5, 0.015), (0.12, 1.65, 0.025), Warning))
     Actors.append(Campus.MeshActor("Intro_Console", "Models/FacilityProps/ControlConsole.obj", (3.0, 17.2, 0), Yaw=90, Extent=(0.95, 0.47, 0.78), Center=(0, 0, 0.78)))
     Actors.append(Campus.MeshActor("Intro_Rack", "Models/FacilityProps/StorageRack.obj", (6.0, 12.0, 0), Yaw=90, Extent=(0.47, 1.45, 1.34), Center=(0, 0, 1.34)))
-    for Name, Position, Color, Intensity in [("EntryLight", (8, 17.5, 3.5), 4294960860, 2.2), ("DoorLight", (2.6, 14.5, 3.35), 4285772287, 1.8)]:
+    for Name, Position, Color, Intensity in [("EntryLight", (8, 17.5, 3.5), 4294960860, 0.88), ("DoorLight", (2.6, 14.5, 3.35), 4285772287, 0.72)]:
         Light = Campus.MeshActor("Intro_" + Name, "Models/Facility/CeilingLight.obj", Position, Scale=(0.65, 0.65, 0.65))
         Light["Components"].append({"Class": "UPointLightComponent", "Name": Name + "Point", "Parent": Light["RootComponent"], "Properties": {"Transform": Campus.Transform(), "AttenuationRadius": 9, "Intensity": Intensity, "LightColor": Color, "LightFalloffExponent": 2, "bCastShadows": False, "bVisible": True}})
         Actors.append(Light)
@@ -90,6 +90,9 @@ def InstallIntroEntrance(Actors, Data):
     Actors.append({"Class": "ASequenceActor", "Name": "Campus_Intro_Fade", "RootComponent": "Campus_Intro_Fade", "Properties": {"bAutoPlay": True}, "Components": [{"Class": "USceneComponent", "Name": "Campus_Intro_Fade", "Parent": "", "Properties": {"Transform": Campus.Transform()}}, Script("IntroFadeScript", "IntroFade")], "Sequence": {"StartFrame": 0, "DurationSeconds": FadeDuration, "FPS": 30, "Tracks": [{"Name": "Facility Arrival Fade In", "Type": "Fade", "Color": {"R": 0.2, "G": 0.5, "B": 0.7, "A": 1}, "Sections": [{"Curve": 0, "EaseExp": 2, "Keys": [{"Frame": 0, "Alpha": 1}, {"Frame": 15, "Alpha": 1}]}, {"Curve": 2, "EaseExp": 2, "Keys": [{"Frame": 15, "Alpha": 1}, {"Frame": round(FadeDuration * 30), "Alpha": 0}]}]}]}})
     Player = next(Actor for Actor in Actors if Actor["Class"] == "APlayerActor")
     Campus.RootComponent(Player)["Properties"]["Transform"] = Campus.Transform(tuple(Data["Intro"]["Spawn"][Axis] for Axis in ["X", "Y", "Z"]), Yaw=Data["Intro"]["Yaw"])
+    from BuildCameraSequences import InstallIntroSequences
+    InstallIntroSequences(Actors, Data["Intro"])
+    Campus.InstallCeilingLightFlicker(Actors)
 
 
 def UpdateIntroEntrance(Root):

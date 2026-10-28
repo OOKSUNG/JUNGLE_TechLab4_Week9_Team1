@@ -7,8 +7,9 @@ EnemyAudio.Config = {
     HeartbeatSound = "Assets/Sounds/심장소리.mp3",
 
     FootstepFullDistance = 3.0,
-    FootstepSilentDistance = 25.0,
-    HeartbeatDistance = 8.0,
+    FootstepSilentDistance = 40.0,
+    HeartbeatFullDistance = 6.0,
+    HeartbeatSilentDistance = 16.0,
 
     FootstepMaxVolume = 0.7,
     FootstepPitch = 1.0,
@@ -97,15 +98,24 @@ local function PathDistance(state, enemyLocation, playerLocation)
     return distance
 end
 
-function EnemyAudio.FootstepVolumeForDistance(distance)
-    local config = EnemyAudio.Config
-    if distance <= config.FootstepFullDistance then
+local function VolumeForDistance(distance, fullDistance, silentDistance)
+    if distance <= fullDistance then
         return 1.0
     end
-    if distance >= config.FootstepSilentDistance then
+    if distance >= silentDistance then
         return 0.0
     end
-    return 1.0 - (distance - config.FootstepFullDistance) / (config.FootstepSilentDistance - config.FootstepFullDistance)
+    return 1.0 - (distance - fullDistance) / (silentDistance - fullDistance)
+end
+
+function EnemyAudio.FootstepVolumeForDistance(distance)
+    local config = EnemyAudio.Config
+    return VolumeForDistance(distance, config.FootstepFullDistance, config.FootstepSilentDistance)
+end
+
+function EnemyAudio.HeartbeatVolumeForDistance(distance)
+    local config = EnemyAudio.Config
+    return VolumeForDistance(distance, config.HeartbeatFullDistance, config.HeartbeatSilentDistance)
 end
 
 function EnemyAudio.Start()
@@ -160,11 +170,19 @@ function EnemyAudio.Tick(dt)
 
     UpdateLayerPitch("Footstep", FootstepPitch)
     UpdateLayer("Footstep", footstepTarget * config.FootstepMaxVolume, dt)
-    UpdateLayer("Heartbeat", nearestDistance <= config.HeartbeatDistance and config.HeartbeatMaxVolume or 0.0, dt)
+    UpdateLayer("Heartbeat", EnemyAudio.HeartbeatVolumeForDistance(nearestDistance) * config.HeartbeatMaxVolume, dt)
 end
 
 function EnemyAudio.GetNearestDistance()
     return nearestDistance
+end
+
+function EnemyAudio.GetHeartbeatStrength()
+    local Layer = layers.Heartbeat
+    if Layer == nil or EnemyAudio.Config.HeartbeatMaxVolume <= 0.0 or not IsSoundPlaying(Layer.Handle) then
+        return 0.0
+    end
+    return math.min(1.0, Layer.Volume / EnemyAudio.Config.HeartbeatMaxVolume)
 end
 
 function EnemyAudio.GetLayerVolume(name)

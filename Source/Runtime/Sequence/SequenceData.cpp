@@ -32,6 +32,12 @@ namespace
 				if (Ar.IsLoading()) Section.bUseShortestRotation = true;
 				if (auto Slot = Item.TryEnterField("UseShortestRotation", true))
 					Slot.GetValue() << Section.bUseShortestRotation;
+				if (Ar.IsLoading()) {
+					Section.mCutAtStart = false;
+				}
+				if (auto Slot{ Item.TryEnterField("CutAtStart", true) }) {
+					Slot.GetValue() << Section.mCutAtStart;
+				}
 			}
 			int32 KeyCount = Section.KeyCount;
 			auto Keys = Item.EnterArray("Keys", KeyCount);
@@ -94,7 +100,14 @@ void FSequenceData::Serialize(FStructuredArchive::FRecord Record)
 		{
 			HasCamera = true;
 			if (Ar.IsLoading()) Row.Rows = FCameraTimelineTrack{};
-			SerializeSections(Track, std::get<FCameraTimelineTrack>(Row.Rows).CamSections);
+			auto& CameraTrack{ std::get<FCameraTimelineTrack>(Row.Rows) };
+			if (Ar.IsLoading()) {
+				CameraTrack.mUseCatmullRom = false;
+			}
+			if (auto Slot{ Track.TryEnterField("UseCatmullRom", true) }) {
+				Slot.GetValue() << CameraTrack.mUseCatmullRom;
+			}
+			SerializeSections(Track, CameraTrack.CamSections);
 		}
 		else if (Type == "Fade" && !HasFade)
 		{

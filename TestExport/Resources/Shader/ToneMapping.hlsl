@@ -5,7 +5,13 @@ cbuffer ToneMapConstants : register(b0)
 {
     float Exposure;     // 기본 1.0 (FToneMapRenderer::SetExposure로 조절)
     uint  Mode;         // 0 = ACES + sRGB 인코딩(Lit), 1 = sRGB 인코딩만(Unlit), 2 = 그대로 출력(WorldNormal·Heatmap 등 디버그)
-    float2 ToneMapPadding;
+    float VignetteIntensity;
+    float VignetteRadius;
+
+    float VignetteSoftness;
+    float3 VignetteColor;
+    float FadeAlpha;
+    float3 FadePadding;
 };
 
 #define TONEMAP_MODE_ACES        0
@@ -31,6 +37,23 @@ float3 ToneMapACES(float3 X)
     return saturate((X * (A * X + B)) / (X * (C * X + D) + E));
 }
 
+float3 Vignetting(float2 InputUV, float3 Mapped)
+{
+    float2 CenteredUV = InputUV * 2.0f - 1.0f;
+    float DistanceFromCenter = length(CenteredUV);
+
+    float Edge = smoothstep(
+        VignetteRadius,
+        VignetteRadius + max(VignetteSoftness, 0.001f),
+        DistanceFromCenter
+    );
+
+    float VignetteAmount = saturate(VignetteIntensity) * Edge;
+    float3 FinalColor = lerp(Mapped, VignetteColor, VignetteAmount);
+
+    return FinalColor;
+}
+
 PSInput mainVS(uint VertexID : SV_VertexID)
 {
     PSInput Output;
@@ -47,7 +70,7 @@ float4 mainPS(PSInput Input) : SV_Target
     // 디버그 뷰는 셰이더가 쓴 값을 그대로 보여준다.
     if (Mode == TONEMAP_MODE_PASSTHROUGH)
     {
-        return float4(saturate(SceneColor), 1.0f);
+        return float4(saturate(SceneColor) * (1.0f - saturate(FadeAlpha)), 1.0f);
     }
 
     // Unlit은 텍스처 원본 색을 보여야 하므로 곡선 없이 인코딩만 한다.
@@ -55,7 +78,11 @@ float4 mainPS(PSInput Input) : SV_Target
         ? saturate(SceneColor)
         : ToneMapACES(SceneColor * Exposure);
 
+    // 비네팅
+    float3 FinalColor = Vignetting(Input.UV, Mapped);
+
     // 씬은 선형으로 쌓였으므로 화면에 내보내기 전에 한 번만 sRGB로 인코딩한다.
     // ImGui가 뷰포트 텍스처를 알파 블렌딩으로 그리므로 알파는 1로 고정한다.
-    return float4(LinearToSRGB(Mapped), 1.0f);
+    // 현재 Fade 값을 최종 RGB에 반영한다. 0은 원래 화면, 1은 검정이며 출력 Alpha는 유지한다.
+    return float4(LinearToSRGB(FinalColor) * (1.0f - saturate(FadeAlpha)), 1.0f);
 }

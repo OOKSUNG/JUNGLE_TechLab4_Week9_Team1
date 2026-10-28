@@ -180,7 +180,6 @@ function JumpScare.Update(DeltaTime)
         if not State.mBlackout then
             State.mBlackout = true
             StopSoundEffect(State)
-            RestoreLight(State)
         end
     else
         ApplyPose(State)

@@ -27,9 +27,6 @@ function Tick(DeltaTime)
     local Bars = Viewport.Y * 0.115 * (1.0 - math.max(0.0, math.min(1.0, (Time - Config.BarsFadeStart) / (Config.Duration - Config.BarsFadeStart))))
     AddUIImage("Assets/UI/Title/Black.png", FVector2.new(Viewport.X, Bars), FVector2.new(0, 0), FVector2.new(0, 0), FVector2.new(0, 0))
     AddUIImage("Assets/UI/Title/Black.png", FVector2.new(Viewport.X, Bars), FVector2.new(0, 1), FVector2.new(0, 1), FVector2.new(0, 0))
-    if Time >= Config.TitleStart and Time < Config.TitleEnd then
-        AddUIText(Config.Title, 28 * Scale, FVector2.new(0.07, 0.18), FVector2.new(0, 0), FVector2.new(0, 0))
-    end
     for _, Dialogue in ipairs(Config.Dialogues) do
         if Time >= Dialogue.Start and Time < Dialogue.End then
             AddUIText(Dialogue.Text, 24 * Scale, FVector2.new(0.5, 0.925), FVector2.new(0.5, 0.5), FVector2.new(0, 0))

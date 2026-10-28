@@ -49,6 +49,9 @@ local GameManager = require("GameManager")
 local View = { mCamera = {}, mLocation = nil, mRotation = nil }
 local Subject = { mLocation = nil, mRotation = nil }
 local Manager = {}
+local CameraSupport = assert(loadfile("Assets/Scripts/Tests/CameraSequenceSupport.lua"))()
+Ending.RegisterCameraSequence(CameraSupport.New("Car", View), "Car")
+Ending.RegisterCameraSequence(CameraSupport.New("Door", View), "Door")
 
 function Manager.GetViewTarget(Self)
     return nil
@@ -80,6 +83,16 @@ function View.GetCamera(Self)
     return Self.mCamera
 end
 
+function View.SetFogOverride(Self, Density, HeightFalloff, StartDistance, MaxOpacity, Color, Height)
+    Self.mFog = { mDensity = Density, mHeightFalloff = HeightFalloff, mStartDistance = StartDistance, mMaxOpacity = MaxOpacity, mColor = Color, mHeight = Height }
+    return true
+end
+
+function View.ResetFogOverride(Self)
+    Self.mFog = nil
+    return true
+end
+
 function View.SetActorLocation(Self, Location)
     Self.mLocation = Location
 end
@@ -98,6 +111,8 @@ Subject.SetActorRotation = View.SetActorRotation
 function Subject.GetActorLocation(Self)
     return FVector.new(Self.mLocation.X, Self.mLocation.Y, Self.mLocation.Z)
 end
+
+View.GetActorLocation = Subject.GetActorLocation
 
 function Subject.GetActorRotation(Self)
     return FRotator.new(Self.mRotation.Pitch, Self.mRotation.Yaw, Self.mRotation.Roll)
@@ -154,16 +169,20 @@ Test("car departs and finishes once while negative time does not rewind", functi
     Near(Subject.mLocation.X, X)
 end)
 
-Test("car camera follows at a fixed distance throughout acceleration", function()
+Test("car camera follows acceleration and releases the departing vehicle", function()
     Ending.RegisterSubject(Subject)
     Ending.Start(View, "Ending_Car")
     for Index = 1, 24 do
         Ending.Update(0.5)
         local DistanceX = Subject.mLocation.X - View.mLocation.X
         local DistanceY = Subject.mLocation.Y - View.mLocation.Y
-        assert(DistanceX * DistanceX + DistanceY * DistanceY < 36.0, "camera falls behind the escaping vehicle")
-        if Ending.GetState().mElapsed >= 2.2 then
+        if Ending.GetState().mElapsed <= 8.2 then
+            assert(DistanceX * DistanceX + DistanceY * DistanceY < 36.0, "camera falls behind before the release")
+        end
+        if Ending.GetState().mElapsed >= 2.2 and Ending.GetState().mElapsed <= 8.2 then
             Near(DistanceX, 4.3)
+        elseif Ending.GetState().mElapsed > 8.2 then
+            assert(DistanceX > 4.3)
         end
     end
     assert(Ending.GetState().mFinished)
@@ -214,6 +233,28 @@ Test("door unlocks, opens, is crossed, and closes behind the camera", function()
     Near(Subject.mRotation.Yaw, 0.0)
     Ending.Update(1.0)
     assert(Ending.GetState().mFinished and next(Runtime.mSounds) == nil)
+end)
+
+Test("camera transitions, both exits and interrupted endings preserve the world's distance fog", function()
+    for _, Route in ipairs({ "Car", "Door" }) do
+        for _, Yaw in ipairs({ 0.0, 90.0 }) do
+            Subject.mLocation = FVector.new(12.0, -4.0, 0.5)
+            Subject.mRotation = FRotator.new(0.0, Yaw, 0.0)
+            Ending.RegisterSubject(Subject, Route)
+            local WorldFog = { mDensity = 0.08, mStartDistance = 45.0 }
+            View.mFog = WorldFog
+            assert(Ending.Start(View, Route))
+            assert(View.mFog == WorldFog, "starting a cutscene replaced the world's fog")
+            for Frame = 1, 140 do
+                Ending.Update(0.1)
+                assert(View.mFog == WorldFog, "the cutscene changed fog during camera movement or fading")
+            end
+            Ending.Finish()
+            Ending.Stop()
+            assert(View.mFog == WorldFog, "ending cleanup cleared the world's distance fog")
+            Ending.UnregisterSubject(Subject)
+        end
+    end
 end)
 
 Test("skip and interrupted scene cleanup stop all cues and release actors", function()
@@ -335,7 +376,7 @@ Test("each route plays only its own fade after the cinematic and holds completio
         assert(State.mFading and not State.mFinished and Sequence.mStarts == 1)
         if Route == "Car" then
             assert(Subject.mLocation.X > LocationX, "car must keep moving during fade")
-            Near(Subject.mLocation.X - View.mLocation.X, 4.3)
+            assert(Subject.mLocation.X - View.mLocation.X > 4.3)
         end
         Sequence.mFinished = true
         Ending.Update(0.016)

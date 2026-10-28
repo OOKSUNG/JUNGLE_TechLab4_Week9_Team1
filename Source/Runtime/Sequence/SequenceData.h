@@ -38,6 +38,7 @@ struct FCameraSection	// 한 Track 내에서 생긴 Camera 구간의 정보
 	bool bUseShortestRotation = true; // 끄면 입력한 각도 차이(360도 이상 포함)를 그대로 보간한다.
 	CurveType Curve = CurveType::Linear;
 	float EaseExp = 2.0f;
+	bool mCutAtStart{};
 };
 
 struct FFadeSection		// 한 Track 내에서 생긴 Fade 구간의 정보
@@ -52,6 +53,7 @@ struct FFadeSection		// 한 Track 내에서 생긴 Fade 구간의 정보
 struct FCameraTimelineTrack	// Camera Section 모음, 한 Row의 정보
 {
 	std::vector<FCameraSection> CamSections;
+	bool mUseCatmullRom{ true };
 };
 
 struct FFadeTimelineTrack	// Fade Section 모음, 한 Row의 정보

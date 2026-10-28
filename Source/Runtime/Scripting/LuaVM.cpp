@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Components/SceneComponent.h"
 #include "Components/PrimitiveComponent.h"
+#include "Components/PointLightComponent.h"
 #include "Components/SpotLightComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Math/Vector.h"
@@ -598,11 +599,52 @@ namespace
 		return Sequence && Sequence->GetSequencePlayer().HasFinished();
 	}
 
+	bool EvaluateCameraSequence(const AActor* Actor, double Time, UCameraComponent* Camera, const FVector& Origin, float Yaw, float Side, bool Relative, bool PositionOnly) {
+		ASequenceActor* Sequence{ ResolveActorSequence(Actor) };
+		if (!Sequence || !Camera || !std::isfinite(Yaw) || (Side != -1.0f && Side != 1.0f)) {
+			return false;
+		}
+		bool Found{};
+		for (UObject* Object : GUObjectArray) {
+			if (Object && Object == Camera) {
+				Found = true;
+				break;
+			}
+		}
+		if (!Found || !Camera->GetOwner() || Camera->GetOwner()->IsActorBeingDestroyed() || Camera->GetWorld() != Sequence->GetWorld() || !Sequence->GetSequencePlayer().EvaluateAtTime(Time)) {
+			return false;
+		}
+		CameraKey Key{};
+		if (!Sequence->GetSequencePlayer().GetCurrentCameraKey(Key)) {
+			return false;
+		}
+		const float Angle{ FMath::DegreesToRadians(Yaw) };
+		const float Cosine{ std::cos(Angle) };
+		const float Sine{ std::sin(Angle) };
+		const FVector Location{ Origin.X + Key.Location.X * Cosine - Key.Location.Y * Side * Sine, Origin.Y + Key.Location.X * Sine + Key.Location.Y * Side * Cosine, Origin.Z + Key.Location.Z };
+		if (Relative) {
+			Camera->SetRelativeLocation(Location);
+		} else {
+			Camera->SetWorldLocation(Location, false);
+		}
+		if (!PositionOnly) {
+			const FRotator Rotation{ Key.Rotation.Pitch, Yaw + Key.Rotation.Yaw * Side, Key.Rotation.Roll };
+			if (Relative) {
+				Camera->SetRelativeRotation(Rotation);
+			} else {
+				Camera->SetWorldRotation(Rotation, false);
+			}
+			Camera->SetFieldOfView(Key.FieldOfView);
+		}
+		return true;
+	}
+
 	void BindSequenceAPI(sol::state& LuaState) {
 		sol::usertype<AActor> ActorType{ LuaState.get<sol::usertype<AActor>>("AActor") };
 		ActorType.set_function("PlaySequence", &PlayActorSequence);
 		ActorType.set_function("StopSequence", &StopActorSequence);
 		ActorType.set_function("IsSequenceFinished", &IsActorSequenceFinished);
+		ActorType.set_function("EvaluateCameraSequence", &EvaluateCameraSequence);
 	}
 
 	bool SetActorFogOverride(const AActor& Actor, float Density, float HeightFalloff, float StartDistance, float MaxOpacity, const FVector& Color, float Height) {
@@ -637,12 +679,23 @@ namespace
 		ActorType.set_function("ResetFogOverride", &ResetActorFogOverride);
 	}
 
+	UPointLightComponent* GetActorPointLight(const AActor& Actor) {
+		for (UActorComponent* Component : Actor.GetComponents()) {
+			UPointLightComponent* Light{ Cast<UPointLightComponent>(Component) };
+			if (Light && !Cast<USpotLightComponent>(Light)) {
+				return Light;
+			}
+		}
+		return nullptr;
+	}
+
 	void BindActorAPI(sol::state& LuaState)
 	{
 		LuaState.new_usertype<AActor>(
 			"AActor",
 			sol::no_constructor,
 			"GetNavigationExtent", &GetActorNavigationExtent,
+			"GetPointLight", &GetActorPointLight,
 			"GetName", [](const AActor& Actor)
 			{
 				return Actor.GetName();
@@ -725,6 +778,20 @@ namespace
 
 	void BindLightAPI(sol::state& LuaState)
 	{
+		sol::usertype<UPointLightComponent> PointLightType{ LuaState.new_usertype<UPointLightComponent>("UPointLightComponent", sol::no_constructor) };
+		PointLightType.set_function("SetIntensity", [](UPointLightComponent& Light, float Intensity) {
+			Light.SetIntensity(Intensity);
+		});
+		PointLightType.set_function("GetIntensity", [](const UPointLightComponent& Light) {
+			return Light.GetIntensity();
+		});
+		PointLightType.set_function("IsVisible", [](const UPointLightComponent& Light) {
+			return Light.IsVisible();
+		});
+		PointLightType.set_function("GetWorldLocation", [](const UPointLightComponent& Light) {
+			return Light.GetWorldLocation();
+		});
+
 		LuaState.new_usertype<USpotLightComponent>(
 			"USpotLightComponent",
 			sol::no_constructor,

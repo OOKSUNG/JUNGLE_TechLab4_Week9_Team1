@@ -4,7 +4,6 @@ local Inventory = require("Inventory")
 local ItemData = require("ItemData")
 local Stamina = require("Stamina")
 local Minimap = require("Minimap")
-local JumpScare = require("JumpScare")
 
 local SMALL = 30
 local MEDIUM = 40
@@ -22,6 +21,25 @@ end
 
 local function DrawTime()
     AddUIText(string.format("시간 %.1f", GameManager.ElapsedTime), MEDIUM, V(1, 0), V(1, 0), V(-MARGIN, MARGIN))
+end
+
+local CONTROL_GUIDE = {
+    "WASD: 이동",
+    "Shift: 달리기",
+    "마우스: 시점 회전",
+    "F: 손전등 On/Off",
+    "E: 줍기 / 상호작용",
+    "Tab: 인벤토리 On/Off",
+}
+
+local function DrawControlGuide()
+    local size = SMALL * 0.8
+    local lineHeight = size * 1.3
+    local y = MARGIN + MEDIUM + 10
+    for _, text in ipairs(CONTROL_GUIDE) do
+        AddUIText(text, size, V(1, 0), V(1, 0), V(-MARGIN, y))
+        y = y + lineHeight
+    end
 end
 
 local function DrawBattery()
@@ -126,18 +144,19 @@ local function DrawResult()
         if RestartClicked then
             RestartScene()
         else
-            LoadScene("Assets/Scenes/Title.scene")
+            LoadScene("Assets/Scenes/Demo/05_TheBasement.scene")
         end
     end
 end
 
 function Tick(dt)
-    if JumpScare.IsBlackout() then
+    if GameManager.Phase == GameManager.EPhase.GameOver then
         AddUIImage("Assets/UI/Title/Black.png", GetViewportSize(), V(0.5, 0.5), V(0.5, 0.5), V(0.0, 0.0))
     end
     if GameManager.IsPlaying() then
         Minimap.Draw()
         DrawTime()
+        DrawControlGuide()
         DrawBattery()
         DrawStamina()
         DrawPickupPrompt()

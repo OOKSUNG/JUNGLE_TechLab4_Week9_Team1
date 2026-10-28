@@ -79,6 +79,8 @@ def InstallEndingFadeSequences(Actors, Routes=("Car", "Door")):
             Actors.append(Sequence)
         else:
             Actors[Existing] = Sequence
+    from BuildCameraSequences import InstallEndingSequences
+    InstallEndingSequences(Actors, Routes)
 
 
 def RootComponent(Actor):
@@ -442,6 +444,16 @@ def BuildMeshes(Root):
     BuildYardEntranceMeshes(Root)
 
 
+def InstallCeilingLightFlicker(Actors):
+    ScriptPath = "Assets/Scripts/GameLogic/CeilingLightFlickerActor.lua"
+    for Actor in Actors:
+        Components = Actor["Components"]
+        if not any(Component["Properties"].get("StaticMesh") == "Models/Facility/CeilingLight.obj" for Component in Components) or not any(Component["Class"] == "UPointLightComponent" for Component in Components):
+            continue
+        if not any(Component["Properties"].get("ScriptPath") == ScriptPath for Component in Components):
+            Components.append({"Class": "UScriptComponent", "Name": "CeilingLightFlickerScript", "Parent": "", "Properties": {"ScriptPath": ScriptPath}})
+
+
 def BuildScene(Root, Data):
     ScenePath = Root / "Assets/Scenes/Demo/06_Game.scene"
     Scene = Json.loads(ScenePath.read_text(encoding="utf-8-sig"))
@@ -482,10 +494,13 @@ def BuildScene(Root, Data):
         if Name == "FacilityAtmosphere":
             for Component in Actor["Components"]:
                 if Component["Class"] == "USkyLightComponent":
-                    Component["Properties"]["Intensity"] = 0.075
+                    Component["Properties"]["Intensity"] = 0.03
                 elif Component["Class"] == "UExponentialHeightFogComponent":
                     Component["Properties"]["FogColor"] = {"X": 0.19, "Y": 0.27, "Z": 0.31, "W": 1}
-                    Component["Properties"]["FogDensity"] = 0.009
+                    Component["Properties"]["FogDensity"] = 0.08
+                    Component["Properties"]["FogMaxOpacity"] = 0.98
+                    Component["Properties"]["FogHeightFalloff"] = 0.03
+                    Component["Properties"]["StartDistance"] = 45.0
     Rows = Data["Floors"][0].strip("\r\n").splitlines()
     Origin = Data.get("Origin", Vector())
     WallMaterial = Material(Texture=Data["WallBaseColor"], Normal=Data["WallNormal"], Tile=4)
@@ -557,8 +572,8 @@ def BuildScene(Root, Data):
     Actors.append(CubeActor("SouthExteriorGround", (-162.5, 50.5, -0.36), (210, 36, 0.6), Material((0.21, 0.24, 0.22), "Assets/Textures/StoneGround/StoneGround_BaseColor.png", "Assets/Textures/StoneGround/StoneGround_Normal.png", 5)))
     SunTransform = Transform((-35, 50, 20), Yaw=-30)
     SunTransform["Rotation"]["Pitch"] = 55
-    Actors.append({"Class": "AActor", "RootComponent": "Campus_ExteriorSun", "Properties": {}, "Components": [{"Class": "UDirectionalLightComponent", "Name": "Campus_ExteriorSun", "Parent": "", "Properties": {"Transform": SunTransform, "Intensity": 0.4, "LightColor": 4294960860, "ShadowDistance": 90, "ShadowMapResolution": 1024, "ShadowBias": 0.001, "ShadowPCFKernelSize": 2, "SourceAngle": 3.0, "bUseCSM": False, "bCastShadows": True, "bVisible": True}}]})
-    for Name, Location, Color, Intensity, Radius in [("GarageWarm", (-9, 50.5, 4.8), 4291880959, 2.8, 15), ("GarageService", (-14, 44.5, 4.8), 4291559423, 1.8, 10), ("YardNorth", (-26, 55, 5.8), 4294960860, 2.2, 21), ("YardSouth", (-46, 55, 5.8), 4294960860, 2.0, 23), ("FuelWarm", (-31, 45, 3.5), 4285772287, 1.1, 9)]:
+    Actors.append({"Class": "AActor", "RootComponent": "Campus_ExteriorSun", "Properties": {}, "Components": [{"Class": "UDirectionalLightComponent", "Name": "Campus_ExteriorSun", "Parent": "", "Properties": {"Transform": SunTransform, "Intensity": 0.16, "LightColor": 4294960860, "ShadowDistance": 90, "ShadowMapResolution": 1024, "ShadowBias": 0.001, "ShadowPCFKernelSize": 2, "SourceAngle": 3.0, "bUseCSM": False, "bCastShadows": True, "bVisible": True}}]})
+    for Name, Location, Color, Intensity, Radius in [("GarageWarm", (-9, 50.5, 4.8), 4291880959, 1.12, 15), ("GarageService", (-14, 44.5, 4.8), 4291559423, 0.72, 10), ("YardNorth", (-26, 55, 5.8), 4294960860, 0.88, 21), ("YardSouth", (-46, 55, 5.8), 4294960860, 0.8, 23), ("FuelWarm", (-31, 45, 3.5), 4285772287, 0.44, 9)]:
         Actor = MeshActor(Name, "Models/Facility/CeilingLight.obj", Location, Scale=(0.7, 0.7, 0.7)) if Name.startswith("Garage") else {"Class": "AActor", "Components": [{"Class": "USceneComponent", "Name": "Campus_" + Name, "Parent": "", "Properties": {"Transform": Transform(Location)}}], "Properties": {}, "RootComponent": "Campus_" + Name}
         Actor["Components"].append({"Class": "UPointLightComponent", "Name": "Campus_" + Name + "Light", "Parent": Actor["RootComponent"], "Properties": {"AttenuationRadius": Radius, "Intensity": Intensity, "LightColor": Color, "LightFalloffExponent": 2.0, "SourceRadius": 0.15, "ShadowBias": 0.001, "ShadowMapResolution": 256, "ShadowPCFKernelSize": 1, "Transform": Transform(), "bCastShadows": False, "bUsePCSS": False, "bVisible": True}})
         Actors.append(Actor)
