@@ -235,13 +235,13 @@ void UExecutableEngine::RenderScene(const FMinimalViewInfo& Camera, const FViewC
 }
 
 void UExecutableEngine::RenderPostProcess(const FMinimalViewInfo& Camera) {
-	const TArray<FExponentialHeightFogSceneInfo>& FogInfos{ mWorld->GetScene().FogInfos };
-	if (!Camera.GetIsOrthogonal() && !FogInfos.IsEmpty()) {
+	const FFogInfo* FogInfo{ mWorld->GetScene().GetFogInfo() };
+	if (!Camera.GetIsOrthogonal() && FogInfo) {
 		FRenderingInfo FogPass{ mRenderingInfo };
 		FogPass.ColorRenderTargets[0].LoadOp = ERenderTargetLoadOp::Load;
 		FogPass.DepthStencil.Texture = nullptr;
 		RenderCommand::BeginRenderPass(FogPass);
-		mFogRenderer.OnRender(mDepthTarget.get(), Camera.GetViewProjectionMatrix(), Camera.GetLocation(), FogInfos[0].FogInfo);
+		mFogRenderer.OnRender(mDepthTarget.get(), Camera.GetViewProjectionMatrix(), Camera.GetLocation(), *FogInfo);
 		RenderCommand::EndRenderPass(FogPass);
 	}
 

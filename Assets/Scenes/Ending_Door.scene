@@ -105,7 +105,34 @@
                                 "bReceiveShadow": true,
                                 "bVisible": true
                             },
-                            "OverrideMaterials": []
+                            "OverrideMaterials": [
+                                {},
+                                {},
+                                {
+                                    "Base": "DefaultMaterial",
+                                    "Instance": {
+                                        "BaseColor": {
+                                            "X": 1,
+                                            "Y": 1,
+                                            "Z": 1,
+                                            "W": 1
+                                        },
+                                        "BlendState": "Opaque",
+                                        "Properties": {},
+                                        "SamplerState": "LinearWrap",
+                                        "Shininess": 32,
+                                        "Textures": [
+                                            "Assets/Textures/EscapeRoute/EmergencyDoorPaint_BaseColor.png",
+                                            "FlatNormalTexture"
+                                        ],
+                                        "UVScrollSpeed": [
+                                            0,
+                                            0
+                                        ],
+                                        "WorldUVTileSize": 0
+                                    }
+                                }
+                            ]
                         },
                         {
                             "Class": "UScriptComponent",
@@ -210,15 +237,15 @@
                             "Parent": "EndingAtmosphere",
                             "Properties": {
                                 "FogColor": {
-                                    "X": 0.4,
-                                    "Y": 0.5,
-                                    "Z": 0.6,
+                                    "X": 0.32,
+                                    "Y": 0.39,
+                                    "Z": 0.44,
                                     "W": 1.0
                                 },
-                                "FogDensity": 0.014,
-                                "FogHeightFalloff": 0.03,
-                                "FogMaxOpacity": 0.8,
-                                "StartDistance": 15.0,
+                                "FogDensity": 0.2,
+                                "FogHeightFalloff": 0.015,
+                                "FogMaxOpacity": 1.0,
+                                "StartDistance": 4.0,
                                 "FogCutoffDistance": 0.0,
                                 "Transform": {
                                     "Location": {

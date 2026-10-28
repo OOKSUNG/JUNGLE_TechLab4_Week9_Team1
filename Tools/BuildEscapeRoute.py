@@ -11,6 +11,16 @@ def NewMesh(Name):
     return {"Name": Name, "Lines": ["mtllib EscapeRoute.mtl", "o " + Name], "Count": 0}
 
 
+def AddDoorPaintPanel(Mesh, Center, Size):
+    X, Y, Z = Center
+    HalfX, HalfY, HalfZ = [Value * 0.5 for Value in Size]
+    Points = [(X - HalfX, Y - HalfY, Z - HalfZ), (X + HalfX, Y - HalfY, Z - HalfZ), (X + HalfX, Y + HalfY, Z - HalfZ), (X - HalfX, Y + HalfY, Z - HalfZ), (X - HalfX, Y - HalfY, Z + HalfZ), (X + HalfX, Y - HalfY, Z + HalfZ), (X + HalfX, Y + HalfY, Z + HalfZ), (X - HalfX, Y + HalfY, Z + HalfZ)]
+    for Indices, Normal in [([0, 3, 2, 1], (0, 0, -1)), ([4, 5, 6, 7], (0, 0, 1)), ([0, 4, 7, 3], (-1, 0, 0)), ([1, 2, 6, 5], (1, 0, 0)), ([0, 1, 5, 4], (0, -1, 0)), ([3, 7, 6, 2], (0, 1, 0))]:
+        Face = [Points[Index] for Index in Indices]
+        Coordinates = [(Point[1] / 1.8, Point[2] / 1.8) if Normal[0] != 0 else (Point[0] / 1.8, Point[2] / 1.8) if Normal[1] != 0 else (Point[0] / 1.8, Point[1] / 1.8) for Point in reversed(Face)]
+        Campus.AddFace(Mesh, Face, Normal, "DoorPaint", Coordinates)
+
+
 def SaveMesh(Root, Mesh):
     Target = Root / "Assets/Models/EscapeRoute" / (Mesh["Name"] + ".obj")
     Target.write_text("\n".join(Mesh["Lines"]) + "\n", encoding="utf-8")
@@ -33,19 +43,34 @@ def BuildSign(Root, Name, Heading, Detail):
     SaveMesh(Root, Mesh)
 
 
+def BuildExteriorNotice(Root):
+    Canvas = Image.new("RGB", (1024, 320), (215, 220, 205))
+    Draw = ImageDraw.Draw(Canvas)
+    Font = "C:/Windows/Fonts/bahnschrift.ttf"
+    Draw.rectangle((10, 10, 1013, 309), outline=(27, 42, 39), width=10)
+    Draw.rectangle((22, 22, 1001, 113), fill=(214, 166, 52))
+    Draw.text((512, 69), "EMERGENCY EXIT", anchor="mm", font=ImageFont.truetype(Font, 78), fill=(24, 35, 31))
+    Draw.text((512, 174), "KEEP CLEAR", anchor="mm", font=ImageFont.truetype(Font, 79), fill=(28, 43, 38))
+    Draw.text((512, 268), "NO RE-ENTRY / AUTHORIZED ACCESS ONLY", anchor="mm", font=ImageFont.truetype(Font, 33), fill=(53, 65, 57))
+    Canvas.save(Root / "Assets/Textures/EscapeRoute/ExteriorNotice.png")
+
+
 def BuildMeshes(Root):
     (Root / "Assets/Models/EscapeRoute").mkdir(parents=True, exist_ok=True)
     (Root / "Assets/Textures/EscapeRoute").mkdir(parents=True, exist_ok=True)
     Materials = []
-    for Name, Color in [("EscapeGreen", (0.06, 0.4, 0.27)), ("Dark", (0.035, 0.055, 0.05)), ("Rim", (0.62, 0.68, 0.65)), ("White", (0.86, 0.94, 0.85)), ("Glass", (0.15, 0.32, 0.34)), ("Screen", (0.22, 0.94, 0.45))]:
+    for Name, Color in [("EscapeGreen", (0.06, 0.4, 0.27)), ("DoorPaint", (1.0, 1.0, 1.0)), ("FrameSteel", (0.24, 0.31, 0.29)), ("Dark", (0.035, 0.055, 0.05)), ("Rim", (0.62, 0.68, 0.65)), ("White", (0.86, 0.94, 0.85)), ("Glass", (0.15, 0.32, 0.34)), ("Screen", (0.22, 0.94, 0.45))]:
         Materials.extend(["newmtl " + Name, "Kd " + " ".join(map(str, Color)), "Ks 0.1 0.1 0.1", "Ns 24", "d 1.0"])
-    for Name in ["ExitSign", "RouteSign"]:
+        if Name == "DoorPaint":
+            Materials.append("map_Kd ../../Textures/EscapeRoute/EmergencyDoorPaint_BaseColor.png")
+    for Name in ["ExitSign", "RouteSign", "ExteriorNotice"]:
         Materials.extend(["newmtl " + Name, "Kd 1 1 1", "d 1.0", "map_Kd ../../Textures/EscapeRoute/" + Name + ".png"])
     (Root / "Assets/Models/EscapeRoute/EscapeRoute.mtl").write_text("\n".join(Materials) + "\n", encoding="utf-8")
     BuildSign(Root, "ExitSign", "EXIT", "EMERGENCY EXIT  /  CARD ACCESS")
     BuildSign(Root, "RouteSign", "EXIT  24m", "FOLLOW THE GREEN LINE")
+    BuildExteriorNotice(Root)
     Mesh = NewMesh("EmergencyExitDoor")
-    Campus.AddBox(Mesh, (0, 0, 0), (0.12, 1.8, 2.96), "EscapeGreen")
+    AddDoorPaintPanel(Mesh, (0, 0, 0), (0.12, 1.8, 2.96))
     for Y in [-0.87, 0.87]:
         Campus.AddBox(Mesh, (-0.067, Y, 0), (0.025, 0.05, 2.9), "Rim")
     Campus.AddBox(Mesh, (-0.075, 0, -1.17), (0.035, 1.7, 0.44), "Rim")
@@ -63,15 +88,40 @@ def BuildMeshes(Root):
         Campus.AddRod(Mesh, (0, -0.92, Z - 0.1), (0, -0.92, Z + 0.1), 0.055, "Rim", 10)
     Campus.AddBox(Mesh, (-0.13, -0.42, 1.29), (0.12, 0.65, 0.19), "Rim")
     Campus.AddRod(Mesh, (-0.2, -0.42, 1.36), (-0.3, 0.2, 1.44), 0.025, "Dark", 8)
+    AddDoorPaintPanel(Mesh, (0.078, 0, 0), (0.024, 1.64, 2.76))
+    for Y in [-0.78, 0.78]:
+        Campus.AddBox(Mesh, (0.115, Y, 0), (0.034, 0.07, 2.72), "Rim")
+        for Z in [-1.25, -0.7, 0.25, 1.25]:
+            Campus.AddRod(Mesh, (0.137, Y, Z), (0.155, Y, Z), 0.022, "Dark", 6)
+    for Z in [-0.91, 1.3]:
+        Campus.AddBox(Mesh, (0.115, 0, Z), (0.034, 1.49, 0.08), "Rim")
+    Campus.AddBox(Mesh, (0.12, 0, -1.2), (0.035, 1.48, 0.4), "FrameSteel")
+    for Y in [-0.62, 0.62]:
+        Campus.AddRod(Mesh, (0.142, Y, -1.2), (0.16, Y, -1.2), 0.022, "Rim", 6)
+    Campus.AddBox(Mesh, (0.122, 0, 0.73), (0.04, 0.57, 1.0), "Rim")
+    Campus.AddBox(Mesh, (0.152, 0, 0.73), (0.018, 0.43, 0.86), "Glass")
+    for Z in [0.43, 0.73, 1.03]:
+        Campus.AddBox(Mesh, (0.18, 0, Z), (0.026, 0.43, 0.026), "Dark")
+    Campus.AddBox(Mesh, (0.12, 0.61, -0.2), (0.04, 0.16, 0.6), "FrameSteel")
+    for Z in [-0.42, 0.02]:
+        Campus.AddRod(Mesh, (0.15, 0.61, Z), (0.27, 0.61, Z), 0.025, "Rim", 10)
+    Campus.AddRod(Mesh, (0.27, 0.61, -0.42), (0.27, 0.61, 0.02), 0.035, "Rim", 12)
+    Campus.AddBox(Mesh, (0.15, 0, -0.68), (0.035, 1.25, 0.39), "Dark")
+    Campus.AddFace(Mesh, [(0.174, -0.59, -0.85), (0.174, 0.59, -0.85), (0.174, 0.59, -0.51), (0.174, -0.59, -0.51)], (1, 0, 0), "ExteriorNotice", [(1, 1), (0, 1), (0, 0), (1, 0)])
     SaveMesh(Root, Mesh)
     Mesh = NewMesh("EmergencyExitFrame")
     for Y in [-1.46, 1.46]:
-        Campus.AddBox(Mesh, (0, Y, 1.5), (0.3, 1.08, 3), "EscapeGreen")
-        Campus.AddBox(Mesh, (-0.17, Y, 1.5), (0.04, 1.0, 2.92), "Dark")
-    for Y in [-0.96, 0.96]:
-        Campus.AddBox(Mesh, (-0.12, Y, 1.5), (0.12, 0.08, 3.08), "Rim")
-    Campus.AddBox(Mesh, (0, 0, 3.5), (0.3, 4, 1), "EscapeGreen")
-    Campus.AddBox(Mesh, (-0.18, 0, 3.03), (0.08, 1.92, 0.08), "Rim")
+        Campus.AddBox(Mesh, (0, Y, 1.5), (0.3, 1.08, 3), "FrameSteel")
+    Campus.AddBox(Mesh, (0, 0, 3.5), (0.3, 4, 1), "FrameSteel")
+    for Facing in [-1, 1]:
+        for Y in [-0.97, 0.97]:
+            Campus.AddBox(Mesh, (Facing * 0.20, Y, 1.5), (0.06, 0.10, 3.0), "Rim")
+            for Z in [0.35, 1.5, 2.65]:
+                Campus.AddRod(Mesh, (Facing * 0.237, Y, Z), (Facing * 0.255, Y, Z), 0.02, "Dark", 6)
+        Campus.AddBox(Mesh, (Facing * 0.20, 0, 3.05), (0.06, 2.04, 0.1), "Rim")
+        for Y in [-2.0, 2.0]:
+            Campus.AddBox(Mesh, (Facing * 0.29, Y, 1.97), (0.10, 0.14, 3.94), "Dark")
+        Campus.AddBox(Mesh, (Facing * 0.29, 0, 4.01), (0.10, 4.14, 0.14), "Dark")
     Campus.AddBox(Mesh, (-0.22, 1.25, 1.3), (0.16, 0.22, 0.4), "Dark")
     Campus.AddBox(Mesh, (-0.309, 1.25, 1.4), (0.02, 0.14, 0.1), "Screen")
     Campus.AddBox(Mesh, (-0.309, 1.25, 1.21), (0.02, 0.14, 0.035), "Rim")
@@ -91,7 +141,6 @@ def BuildMeshes(Root):
         for Index in range(1, len(Points) - 1):
             Campus.AddFace(Mesh, [Points[0], Points[Index], Points[Index + 1]], (0, 0, Direction), "White", [(0, 0), (1, 0), (1, 1)])
     SaveMesh(Root, Mesh)
-
 
     from BuildDoorExterior import BuildMeshes as BuildExteriorMeshes
     BuildExteriorMeshes(Root)
@@ -122,13 +171,25 @@ def ReplaceActors(Actors, Removed):
     Actors[:] = Retained
 
 
+def InstallDoorPaintMaterial(Component):
+    Root = Path(__file__).resolve().parents[1]
+    MaterialNames = ["Default"] + [Line.split(maxsplit=1)[1] for Line in (Root / "Assets/Models/EscapeRoute/EscapeRoute.mtl").read_text(encoding="utf-8").splitlines() if Line.startswith("newmtl ")]
+    Slot = MaterialNames.index("DoorPaint")
+    Overrides = Component.setdefault("OverrideMaterials", [])
+    while len(Overrides) <= Slot:
+        Overrides.append({})
+    Material = Campus.Material((1, 1, 1), "Assets/Textures/EscapeRoute/EmergencyDoorPaint_BaseColor.png", Tile=0)
+    Material["Instance"]["Shininess"] = 32
+    Overrides[Slot] = Material
+
+
 def InstallDoor(Actor, Location):
     Campus.RootComponent(Actor)["Properties"]["Transform"] = Campus.Transform(Location)
     for Component in Actor["Components"]:
         if Component["Class"] == "UStaticMeshComponent":
             Component["Properties"]["StaticMesh"] = "Models/EscapeRoute/EmergencyExitDoor.obj"
             Component["Properties"]["Transform"] = Campus.Transform((0, 0.92, 0))
-            Component["OverrideMaterials"] = []
+            InstallDoorPaintMaterial(Component)
 
 
 def InstallFrame(Actor, Location):

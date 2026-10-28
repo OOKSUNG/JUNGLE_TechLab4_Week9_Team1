@@ -274,7 +274,29 @@ void FScene::RemoveFogInfo(uint32 Id)
 void FScene::RemoveAllFogInfo()
 {
 	FogInfos.Reset();
+	ResetFogOverride();
 
+}
+
+void FScene::SetFogOverride(const FFogInfo& FogInfo) {
+	mFogOverride = FogInfo;
+	mHasFogOverride = true;
+}
+
+void FScene::ResetFogOverride() {
+	mFogOverride = {};
+	mHasFogOverride = false;
+}
+
+bool FScene::HasFogOverride() const {
+	return mHasFogOverride;
+}
+
+const FFogInfo* FScene::GetFogInfo() const {
+	if (mHasFogOverride) {
+		return &mFogOverride;
+	}
+	return FogInfos.IsEmpty() ? nullptr : &FogInfos[0].FogInfo;
 }
 
 void FScene::UpdateFogInfo(uint32 Id, const FFogInfo& FogInfo)

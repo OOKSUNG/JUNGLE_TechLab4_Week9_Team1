@@ -58,11 +58,14 @@ def BuildMeshes(Root):
     Mesh = NewMesh("ExitFacade")
     for Side in [-1, 1]:
         for Index in range(4):
-            Y = Side * (2.4 + Index * 2.7)
-            Campus.AddBox(Mesh, (0, Y, 2.7), (0.42, 2.7, 5.4), "Concrete")
-            Campus.AddBox(Mesh, (0.26, Y, 0.28), (0.12, 2.64, 0.56), "Dark")
-            Campus.AddBox(Mesh, (0.25, Y, 3.95), (0.09, 2.64, 0.14), "Steel")
-            Campus.AddBox(Mesh, (0.27, Y + Side * 1.28, 2.65), (0.16, 0.13, 5.3), "Steel")
+            InnerY = 2.02 if Index == 0 else 1.05 + Index * 2.7
+            OuterY = 3.75 + Index * 2.7
+            Width = OuterY - InnerY
+            Y = Side * (InnerY + OuterY) * 0.5
+            Campus.AddBox(Mesh, (0, Y, 2.7), (0.42, Width, 5.4), "Concrete")
+            Campus.AddBox(Mesh, (0.26, Y, 0.28), (0.12, Width - 0.06, 0.56), "Dark")
+            Campus.AddBox(Mesh, (0.25, Y, 3.95), (0.09, Width - 0.06, 0.14), "Steel")
+            Campus.AddBox(Mesh, (0.27, Side * (OuterY - 0.07), 2.65), (0.16, 0.13, 5.3), "Steel")
         for Y in [Side * 3.1, Side * 8.5]:
             Campus.AddBox(Mesh, (0.3, Y, 2.05), (0.3, 1.5, 1.25), "Dark")
             for Index in range(9):

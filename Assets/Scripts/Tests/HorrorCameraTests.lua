@@ -1,6 +1,6 @@
 package.path = "Assets/Scripts/GameLogic/?.lua;" .. package.path
 
-local Runtime = { mPassed = 0, mSources = {}, mNextHandle = 0, mEnemyDistance = 5.0, mPlaying = true }
+local Runtime = { mPassed = 0, mSources = {}, mNextHandle = 0, mEnemyDistance = 5.0, mPlaying = true, mBreathingPlayAttempts = 0, mFailBreathingSound = false }
 local Manager = { mShakes = {}, mValid = true, mCamera = {} }
 local Actor = {}
 local Enemy = {}
@@ -46,6 +46,12 @@ end
 package.loaded.GameManager = GameManager
 
 function PlaySound(Path, Loop, Volume)
+    if Path == "Assets/Sounds/RecoveryBreathing.wav" then
+        Runtime.mBreathingPlayAttempts = Runtime.mBreathingPlayAttempts + 1
+        if Runtime.mFailBreathingSound then
+            return 0
+        end
+    end
     Runtime.mNextHandle = Runtime.mNextHandle + 1
     Runtime.mSources[Runtime.mNextHandle] = { mPath = Path, mLoop = Loop, mVolume = Volume, mPlaying = true }
     return Runtime.mNextHandle
@@ -132,6 +138,8 @@ local function Fresh(Distance)
     Runtime.mSources = {}
     Runtime.mEnemyDistance = Distance or 5.0
     Runtime.mPlaying = true
+    Runtime.mBreathingPlayAttempts = 0
+    Runtime.mFailBreathingSound = false
     Manager.mShakes = {}
     Manager.mValid = true
     Manager.mPlayerCamera = {}
@@ -146,6 +154,15 @@ local function GetBreathingShake()
     for _, Instance in ipairs(Manager.mShakes) do
         if Instance.mValid and Instance.mPattern.Duration == 0.0 then
             return Instance
+        end
+    end
+    return nil
+end
+
+local function GetBreathingSound()
+    for _, Source in pairs(Runtime.mSources) do
+        if Source.mPlaying and Source.mPath == HorrorCamera.Config.BreathingSound then
+            return Source
         end
     end
     return nil
@@ -205,46 +222,65 @@ Fresh(40.0)
 Sprint(0.0, 2.0)
 Recover(0.5)
 Check(GetBreathingShake() == nil, "sprinting into a wall does not accumulate breathing")
+Check(GetBreathingSound() == nil, "sprinting into a wall stays silent")
 for Index = 1, 120 do
     Step(0.1, 1.0 / 60.0, false)
 end
 Check(GetBreathingShake() == nil, "walking does not accumulate sprint breathing")
+Check(GetBreathingSound() == nil, "walking does not start recovery audio")
 
 Sprint(10.0, 2.0)
 Check(GetBreathingShake() == nil, "recovery breathing starts after running ends")
+Check(GetBreathingSound() == nil, "recovery audio waits until running ends")
 Recover(0.25)
 local ShortScale = GetBreathingShake().mScale
 Check(ShortScale > 0.0, "running creates recovery breathing")
+local ShortSound = GetBreathingSound()
+local ShortVolume = ShortSound.mVolume
+Check(ShortSound.mLoop and Near(ShortVolume, ShortScale * HorrorCamera.Config.BreathingMaxVolume), "looped breathing volume follows the camera's recovery strength")
+Check(Runtime.mBreathingPlayAttempts == 1, "recovery updates reuse one sound handle")
+Recover(0.5)
+Check(GetBreathingSound() == ShortSound and ShortSound.mVolume < ShortVolume, "recovering smoothly lowers the existing sound's volume")
 Recover(3.0)
 Check(GetBreathingShake() == nil, "short run breathing settles and releases its modifier")
+Check(GetBreathingSound() == nil and not ShortSound.mPlaying, "completed recovery stops and releases its sound")
 
 Fresh(40.0)
 Sprint(20.0, 2.0)
 Recover(0.25)
 local LongScale = GetBreathingShake().mScale
 Check(LongScale > ShortScale * 1.8, "longer distance produces stronger breathing at equal running time")
+Check(GetBreathingSound().mVolume > ShortVolume * 1.8 and Near(GetBreathingSound().mVolume, LongScale * HorrorCamera.Config.BreathingMaxVolume), "longer runs produce proportionally louder breathing")
 Recover(2.0)
 Check(GetBreathingShake() ~= nil, "longer distance also produces longer recovery")
+Check(GetBreathingSound() ~= nil, "longer runs keep recovery audio playing longer")
 Recover(3.0)
 Check(GetBreathingShake() == nil, "long run breathing eventually settles")
+Check(GetBreathingSound() == nil, "long run audio eventually becomes silent")
 
 Fresh(40.0)
 Sprint(10.0, 4.0)
 Recover(0.25)
 Check(Near(GetBreathingShake().mScale, ShortScale), "equal distance has equal breathing despite different run duration")
+Check(Near(GetBreathingSound().mVolume, ShortVolume), "equal running distance gives equal recovery volume")
 Sprint(30.0, 6.0)
 Recover(0.25)
 Check(GetBreathingShake().mScale > LongScale, "resuming a run adds to the remaining recovery distance")
+Check(GetBreathingSound().mVolume <= HorrorCamera.Config.BreathingMaxVolume, "accumulated running cannot exceed the configured volume cap")
 Recover(7.0)
 Check(GetBreathingShake() == nil, "maximum accumulated breathing has a bounded recovery")
+Check(GetBreathingSound() == nil, "maximum accumulated audio stops after recovery")
 
 Fresh()
 Sprint(10.0, 2.0)
 Step(0.0, 0.1, false)
+local CameraSwitchSound = GetBreathingSound()
+local ForeignSoundHandle = PlaySound("Unrelated.wav", true, 0.3)
 local ForeignShake = Manager:AddCameraModifier("UCameraModifier_CameraShake", { Pattern = { Duration = 0.0 }, Scale = 1.0, PlaySpace = ECameraShakePlaySpace.CameraLocal })
 Manager.mCamera = {}
 Step(0.0, 0.1, false)
 Check(GetBreathingShake() == ForeignShake, "camera changes clear only owned effects")
+Check(not CameraSwitchSound.mPlaying and GetBreathingSound() == nil and IsSoundPlaying(ForeignSoundHandle), "camera switches stop recovery audio and preserve unrelated sounds")
 Manager.mCamera = Manager.mPlayerCamera
 Step(0.0, 0.1, false)
 HorrorCamera.Stop("Player")
@@ -259,13 +295,42 @@ Check(OwnedValid == 0 and ForeignShake:IsValid(), "stopping leaves unrelated cam
 Fresh(40.0)
 Sprint(10.0, 2.0)
 Recover(0.25)
+local InactiveSound = GetBreathingSound()
 Step(0.0, 0.1, false, false)
 Check(GetBreathingShake() == nil, "inactive gameplay clears breathing immediately")
+Check(not InactiveSound.mPlaying and GetBreathingSound() == nil, "pauses and cutscenes stop recovery audio immediately")
 Recover(0.5)
 Check(GetBreathingShake() == nil, "inactive gameplay resets accumulated running distance")
+Check(GetBreathingSound() == nil, "returning from inactive gameplay does not replay stale breathing")
 Sprint(10.0, 2.0)
 Recover(0.25)
 Check(GetBreathingShake() ~= nil, "camera effects resume when gameplay returns after an intro or pause")
+Check(GetBreathingSound() ~= nil, "recovery audio resumes after a new run")
+
+local InterruptedSound = GetBreathingSound()
+InterruptedSound.mPlaying = false
+Recover(0.1)
+Check(GetBreathingSound() ~= nil and GetBreathingSound() ~= InterruptedSound, "externally stopped recovery audio restarts while breathing is active")
+local ReloadSound = GetBreathingSound()
+HorrorCamera.Start("Player", Actor)
+Check(not ReloadSound.mPlaying and GetBreathingSound() == nil, "script reload stops the previous recovery loop")
+Sprint(10.0, 2.0)
+Recover(0.25)
+local StoppedSound = GetBreathingSound()
+HorrorCamera.Stop("Player")
+HorrorCamera.Stop("Player")
+Check(not StoppedSound.mPlaying and GetBreathingSound() == nil, "repeated player cleanup safely stops recovery audio")
+
+Fresh(40.0)
+Runtime.mFailBreathingSound = true
+Sprint(10.0, 2.0)
+Recover(0.5)
+Check(GetBreathingSound() == nil and Runtime.mBreathingPlayAttempts == 1 and GetBreathingShake() ~= nil, "failed audio loads are not retried every frame and preserve camera breathing")
+Runtime.mFailBreathingSound = false
+HorrorCamera.Start("Player", Actor)
+Sprint(10.0, 2.0)
+Recover(0.25)
+Check(GetBreathingSound() ~= nil, "reinitializing the player allows a failed sound to load again")
 
 Fresh()
 HorrorCamera.Start("Player", Actor)

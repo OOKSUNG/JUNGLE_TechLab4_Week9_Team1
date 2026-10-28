@@ -7,6 +7,11 @@ EndingCutscene.Config = {
     Door = { Scene = "Assets/Scenes/Ending_Door.scene", Duration = 11.0, Title = "비상문 탈출", Subtitle = "잠금이 풀렸다. 문틈 너머로 새벽 공기가 흘러들었다.", Epilogue = "문이 닫히자, 뒤쫓던 소리도 마침내 끊어졌다." },
 }
 
+EndingCutscene.Fog = {
+    Car = { Density = 0.18, HeightFalloff = 0.015, StartDistance = 8.0, MaxOpacity = 1.0, Color = { X = 0.32, Y = 0.39, Z = 0.44 } },
+    Door = { Density = 0.20, HeightFalloff = 0.015, StartDistance = 4.0, MaxOpacity = 1.0, Color = { X = 0.32, Y = 0.39, Z = 0.44 } },
+}
+
 local function Smooth(Value)
     local Progress = math.max(0.0, math.min(1.0, Value))
     return Progress * Progress * (3.0 - 2.0 * Progress)
@@ -46,8 +51,13 @@ local function UpdateCar(State)
         local Progress = Smooth(Time / 2.2)
         SetView(State, Blend(-3.8, -4.3, Progress), State.mSide * 3.4, Blend(2.2, 2.6, Progress), 0.0, 0.0, 1.55, Blend(52.0, 55.0, Progress))
     else
-        local Progress = Smooth(DrivingTime / 7.0)
-        SetView(State, Distance - 4.3, State.mSide * Blend(3.4, 2.2, Smooth(DrivingTime / 4.0)), Blend(2.6, 3.6, Progress), Distance + 0.5, 0.0, 1.55, Blend(55.0, 62.0, Progress))
+        local FollowTime = math.min(DrivingTime, 8.0)
+        local ReleaseTime = math.max(0.0, FollowTime - 6.0)
+        local CameraTime = FollowTime - ReleaseTime * ReleaseTime * 0.25
+        local CameraDistance = CameraTime * CameraTime * 0.72
+        local Progress = Smooth(CameraTime / 7.0)
+        local TargetDistance = CameraDistance + Blend(0.5, 30.0, Smooth(ReleaseTime / 2.0))
+        SetView(State, CameraDistance - 4.3, State.mSide * Blend(3.4, 2.2, Smooth(CameraTime / 4.0)), Blend(2.6, 3.6, Progress), TargetDistance, 0.0, 1.55, Blend(55.0, 62.0, Progress))
     end
 end
 
@@ -268,6 +278,8 @@ function EndingCutscene.Start(View, Scene)
             State.mViewModel:SetRelativeLocation(FVector.new(0.0, 0.0, -10.0))
         end
     end
+    local Fog = EndingCutscene.Fog[Route]
+    View:SetFogOverride(Fog.Density, Fog.HeightFalloff, Fog.StartDistance, Fog.MaxOpacity, FVector.new(Fog.Color.X, Fog.Color.Y, Fog.Color.Z), Origin.Z)
     Runtime.mPendingResult = nil
     SetCursorMode(CursorMode.Free)
     return true
@@ -342,6 +354,7 @@ function EndingCutscene.Stop()
         return
     end
     Runtime.mState = nil
+    State.mView:ResetFogOverride()
     StopSounds(State)
     if State.mFadeSequence ~= nil then
         State.mFadeSequence:StopSequence()

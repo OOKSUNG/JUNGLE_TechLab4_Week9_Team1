@@ -210,15 +210,15 @@
                             "Parent": "EndingAtmosphere",
                             "Properties": {
                                 "FogColor": {
-                                    "X": 0.4,
-                                    "Y": 0.5,
-                                    "Z": 0.6,
+                                    "X": 0.32,
+                                    "Y": 0.39,
+                                    "Z": 0.44,
                                     "W": 1.0
                                 },
-                                "FogDensity": 0.014,
-                                "FogHeightFalloff": 0.03,
-                                "FogMaxOpacity": 0.8,
-                                "StartDistance": 15.0,
+                                "FogDensity": 0.18,
+                                "FogHeightFalloff": 0.015,
+                                "FogMaxOpacity": 1.0,
+                                "StartDistance": 8.0,
                                 "FogCutoffDistance": 0.0,
                                 "Transform": {
                                     "Location": {
@@ -254,7 +254,7 @@
                                 "StaticMesh": "Cube",
                                 "Transform": {
                                     "Location": {
-                                        "X": 45,
+                                        "X": 135,
                                         "Y": 0,
                                         "Z": -0.35
                                     },
@@ -264,7 +264,7 @@
                                         "Yaw": 0.0
                                     },
                                     "Scale": {
-                                        "X": 220,
+                                        "X": 400,
                                         "Y": 110,
                                         "Z": 0.6
                                     }
@@ -313,7 +313,7 @@
                                 "StaticMesh": "Cube",
                                 "Transform": {
                                     "Location": {
-                                        "X": 45,
+                                        "X": 135,
                                         "Y": 0,
                                         "Z": -0.025
                                     },
@@ -323,7 +323,7 @@
                                         "Yaw": 0.0
                                     },
                                     "Scale": {
-                                        "X": 180,
+                                        "X": 360,
                                         "Y": 9,
                                         "Z": 0.05
                                     }
@@ -372,7 +372,7 @@
                                 "StaticMesh": "Cube",
                                 "Transform": {
                                     "Location": {
-                                        "X": 40,
+                                        "X": 130,
                                         "Y": -4.7,
                                         "Z": 0.1
                                     },
@@ -382,7 +382,7 @@
                                         "Yaw": 0.0
                                     },
                                     "Scale": {
-                                        "X": 160,
+                                        "X": 340,
                                         "Y": 0.35,
                                         "Z": 0.2
                                     }
@@ -431,7 +431,7 @@
                                 "StaticMesh": "Cube",
                                 "Transform": {
                                     "Location": {
-                                        "X": 40,
+                                        "X": 130,
                                         "Y": 4.7,
                                         "Z": 0.1
                                     },
@@ -441,7 +441,7 @@
                                         "Yaw": 0.0
                                     },
                                     "Scale": {
-                                        "X": 160,
+                                        "X": 340,
                                         "Y": 0.35,
                                         "Z": 0.2
                                     }

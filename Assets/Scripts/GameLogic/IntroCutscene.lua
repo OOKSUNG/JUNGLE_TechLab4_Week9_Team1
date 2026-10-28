@@ -36,9 +36,9 @@ local function PlayCue(State, Name, Path, Time, Volume)
     end
 end
 
-local function SetPlayerLocation(Player, X)
+local function SetPlayerLocation(Player, X, Yaw)
     Player:SetActorLocation(FVector.new(X, Config.Spawn.Y, Config.Spawn.Z))
-    Player:SetActorRotation(FRotator.new(0.0, Config.Yaw, 0.0))
+    Player:SetActorRotation(FRotator.new(0.0, Yaw or Config.Yaw, 0.0))
 end
 
 local function Start(Player)
@@ -57,6 +57,8 @@ local function Start(Player)
     local State = { mPlayer = Player, mManager = Manager, mCamera = Camera, mCameraLocation = Camera:GetRelativeLocation(), mViewModel = ViewModel, mViewModelLocation = ViewModel ~= nil and ViewModel:GetRelativeLocation() or nil, mElapsed = 0.0, mBlending = false, mFinished = false, mSounds = {}, mPlayedCues = {} }
     Runtime.mState = State
     SetPlayerLocation(Player, Config.Spawn.X)
+    Runtime.mView:SetActorLocation(FVector.new(Config.CameraStart.X, Config.CameraStart.Y, Config.CameraStart.Z))
+    Runtime.mView:SetActorRotation(FRotator.new(Config.CameraStart.Pitch, Config.CameraStart.Yaw, 0.0))
     SetDoor(0.0)
     if ViewModel ~= nil then
         ViewModel:SetRelativeLocation(FVector.new(0.0, 0.0, -10.0))
@@ -133,7 +135,8 @@ function IntroCutscene.Update(DeltaTime, Player)
     end
     local Approach = Smooth((Time - Config.WalkStart) / (Config.ApproachEnd - Config.WalkStart))
     local Entry = Smooth((Time - Config.ApproachEnd) / (Config.WalkEnd - Config.ApproachEnd))
-    SetPlayerLocation(Player, Time < Config.ApproachEnd and Blend(Config.Spawn.X, 3.5, Approach) or Blend(3.5, Config.Destination.X, Entry))
+    local LookBack = Smooth((Time - Config.LookBackStart) / Config.LookBackDuration) * (1.0 - Smooth((Time - Config.LookForwardStart) / Config.LookForwardDuration))
+    SetPlayerLocation(State.mPlayer, Time < Config.ApproachEnd and Blend(Config.Spawn.X, Config.ApproachX, Approach) or Blend(Config.ApproachX, Config.Destination.X, Entry), Config.Yaw + 180.0 * LookBack)
     local Bob = Time > Config.WalkStart and Time < Config.WalkEnd and math.sin((Time - Config.WalkStart) * math.pi * 4.0) * 0.012 * math.sin(math.pi * (Time - Config.WalkStart) / (Config.WalkEnd - Config.WalkStart)) or 0.0
     State.mCamera:SetRelativeLocation(FVector.new(State.mCameraLocation.X, State.mCameraLocation.Y, State.mCameraLocation.Z + Bob))
     local Opening = Smooth((Time - Config.DoorOpenStart) / Config.DoorOpenDuration)
@@ -141,8 +144,8 @@ function IntroCutscene.Update(DeltaTime, Player)
     SetDoor(Opening * (1.0 - Closing))
     if not State.mBlending then
         local Dolly = Smooth(Time / Config.BlendStart)
-        Runtime.mView:SetActorLocation(FVector.new(Blend(10.0, 7.8, Dolly), Blend(16.8, 15.6, Dolly), Blend(2.65, 2.15, Dolly)))
-        Runtime.mView:SetActorRotation(FRotator.new(Blend(6.0, 2.0, Dolly), Blend(194.0, 187.0, Dolly), 0.0))
+        Runtime.mView:SetActorLocation(FVector.new(Blend(Config.CameraStart.X, Config.CameraEnd.X, Dolly), Blend(Config.CameraStart.Y, Config.CameraEnd.Y, Dolly), Blend(Config.CameraStart.Z, Config.CameraEnd.Z, Dolly)))
+        Runtime.mView:SetActorRotation(FRotator.new(Blend(Config.CameraStart.Pitch, Config.CameraEnd.Pitch, Dolly), Blend(Config.CameraStart.Yaw, Config.CameraEnd.Yaw, Dolly), 0.0))
         if Time >= Config.BlendStart then
             State.mManager:SetViewTargetCamera(State.mCamera, Config.BlendDuration)
             State.mBlending = true
@@ -150,8 +153,9 @@ function IntroCutscene.Update(DeltaTime, Player)
     end
     PlayCue(State, "Open", "Assets/Sounds/DoorOpen.wav", Config.DoorOpenStart, 0.8)
     PlayCue(State, "Close", "Assets/Sounds/DoorClose.wav", Config.DoorCloseStart, 0.85)
-    for Index = 1, 12 do
-        PlayCue(State, "Step" .. Index, Index % 2 == 1 and "Assets/Sounds/FootstepLeft.wav" or "Assets/Sounds/FootstepRight.wav", Config.WalkStart + 0.35 + (Index - 1) * 0.5, 0.35)
+    local StepCount = math.ceil((Config.WalkEnd - Config.WalkStart - Config.FirstStepDelay) / Config.StepInterval)
+    for Index = 1, StepCount do
+        PlayCue(State, "Step" .. Index, Index % 2 == 1 and "Assets/Sounds/FootstepLeft.wav" or "Assets/Sounds/FootstepRight.wav", Config.WalkStart + Config.FirstStepDelay + (Index - 1) * Config.StepInterval, 0.35)
     end
     return false
 end

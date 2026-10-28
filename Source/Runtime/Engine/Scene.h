@@ -37,6 +37,11 @@ public:
 	void RemoveFogInfo(uint32 Id);
 	void RemoveAllFogInfo();
 	void UpdateFogInfo(uint32 Id, const FFogInfo& FogInfo);
+	void SetFogOverride(const FFogInfo& FogInfo);
+	void ResetFogOverride();
+	bool HasFogOverride() const;
+	const FFogInfo* GetFogInfo() const;
+
 	void UpdateAllTransforms();
 
 	void BuildBVH();
@@ -66,4 +71,8 @@ public:
 	TArray<FLightRenderParameters>        LocalLightParameters;   // GPU 업로드용, 같은 순서
 	TArray<FDirectionalLightSceneProxy*>  DirectionalLightProxies;
 	TArray<USkyLightComponent*>           SkyLights;               // 프록시 없음
+
+private:
+	FFogInfo mFogOverride{};
+	bool mHasFogOverride{};
 };

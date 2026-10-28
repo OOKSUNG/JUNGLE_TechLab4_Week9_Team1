@@ -40,7 +40,7 @@ local function Encode(Value)
 end
 io.write(Encode(require("MapData")))
 '''
-    Result = Subprocess.run([str(Lua), "-e", Export], cwd=Root, capture_output=True, text=True, check=True)
+    Result = Subprocess.run([str(Lua), "-e", Export], cwd=Root, capture_output=True, text=True, encoding="utf-8", check=True)
     return Json.loads(Result.stdout)
 
 
@@ -476,6 +476,9 @@ def BuildScene(Root, Data):
                 RootData["Location"]["X"] = -20.5 - RootData["Location"]["X"]
                 RootData["Location"]["Y"] += 35.0
                 RootData["Location"]["Z"] += 0.065
+            if Name in ["EndingEscapeRoad", "EndingRoadCurbLeft", "EndingRoadCurbRight"]:
+                RootData["Location"]["X"] = -140.5
+                RootData["Scale"]["X"] = 241.0
         if Name == "FacilityAtmosphere":
             for Component in Actor["Components"]:
                 if Component["Class"] == "USkyLightComponent":
@@ -551,7 +554,7 @@ def BuildScene(Root, Data):
             Progress = (Index + 0.5) / Count
             Location = (First[0] + (Last[0] - First[0]) * Progress, First[1] + (Last[1] - First[1]) * Progress, 0)
             Actors.append(MeshActor(f"Fence{Label}{Index}", "Models/Campus/FencePanel.obj", Location, Scale=(1, Segment / 4, 1), Yaw=Yaw, Extent=(0.08, Segment * 0.5, 1.4), Center=(0, 0, 1.4)))
-    Actors.append(CubeActor("SouthExteriorGround", (-92.5, 50.5, -0.36), (70, 36, 0.6), Material((0.21, 0.24, 0.22), "Assets/Textures/StoneGround/StoneGround_BaseColor.png", "Assets/Textures/StoneGround/StoneGround_Normal.png", 5)))
+    Actors.append(CubeActor("SouthExteriorGround", (-162.5, 50.5, -0.36), (210, 36, 0.6), Material((0.21, 0.24, 0.22), "Assets/Textures/StoneGround/StoneGround_BaseColor.png", "Assets/Textures/StoneGround/StoneGround_Normal.png", 5)))
     SunTransform = Transform((-35, 50, 20), Yaw=-30)
     SunTransform["Rotation"]["Pitch"] = 55
     Actors.append({"Class": "AActor", "RootComponent": "Campus_ExteriorSun", "Properties": {}, "Components": [{"Class": "UDirectionalLightComponent", "Name": "Campus_ExteriorSun", "Parent": "", "Properties": {"Transform": SunTransform, "Intensity": 0.4, "LightColor": 4294960860, "ShadowDistance": 90, "ShadowMapResolution": 1024, "ShadowBias": 0.001, "ShadowPCFKernelSize": 2, "SourceAngle": 3.0, "bUseCSM": False, "bCastShadows": True, "bVisible": True}}]})

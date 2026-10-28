@@ -605,6 +605,38 @@ namespace
 		ActorType.set_function("IsSequenceFinished", &IsActorSequenceFinished);
 	}
 
+	bool SetActorFogOverride(const AActor& Actor, float Density, float HeightFalloff, float StartDistance, float MaxOpacity, const FVector& Color, float Height) {
+		UWorld* World{ Actor.GetWorld() };
+		if (!World) {
+			return false;
+		}
+		FFogInfo FogInfo{};
+		FogInfo.FogDensity = std::max(0.0f, Density);
+		FogInfo.FogHeightFalloff = std::max(0.0f, HeightFalloff);
+		FogInfo.StartDistance = std::max(0.0f, StartDistance);
+		FogInfo.FogCutoffDistance = 0.0f;
+		FogInfo.FogMaxOpacity = std::clamp(MaxOpacity, 0.0f, 1.0f);
+		FogInfo.FogColor = FVector4{ Color, 1.0f };
+		FogInfo.fogHeight = Height;
+		World->GetScene().SetFogOverride(FogInfo);
+		return true;
+	}
+
+	bool ResetActorFogOverride(const AActor& Actor) {
+		UWorld* World{ Actor.GetWorld() };
+		if (!World) {
+			return false;
+		}
+		World->GetScene().ResetFogOverride();
+		return true;
+	}
+
+	void BindFogAPI(sol::state& LuaState) {
+		sol::usertype<AActor> ActorType{ LuaState.get<sol::usertype<AActor>>("AActor") };
+		ActorType.set_function("SetFogOverride", &SetActorFogOverride);
+		ActorType.set_function("ResetFogOverride", &ResetActorFogOverride);
+	}
+
 	void BindActorAPI(sol::state& LuaState)
 	{
 		LuaState.new_usertype<AActor>(
@@ -845,6 +877,7 @@ void FLuaVM::BindEngineAPI()
 	BindCameraAPI(*State);
 	BindActorAPI(*State);
 	BindSequenceAPI(*State);
+	BindFogAPI(*State);
 	BindPlayerCameraManagerAPI(*State);
 	BindAudioAPI(*State);
 }

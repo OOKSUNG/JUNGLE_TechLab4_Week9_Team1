@@ -12,6 +12,8 @@ HorrorCamera.Config = {
     FullBreathingRunDistance = 30.0,
     RecoveryDistancePerSecond = 5.0,
     BreathingBlendSpeed = 6.0,
+    BreathingSound = "Assets/Sounds/RecoveryBreathing.wav",
+    BreathingMaxVolume = 0.65,
     BreathingPattern = { Type = "Wave", Duration = 0.0, BlendInTime = 0.2, BlendOutTime = 0.4, Z = { Amplitude = 0.06, Frequency = 0.65 }, Pitch = { Amplitude = 2.4, Frequency = 0.65 }, Roll = { Amplitude = 0.25, Frequency = 0.325 } },
 }
 
@@ -21,7 +23,35 @@ local function RemoveShake(State, Shake)
     end
 end
 
+local function StopBreathingSound(State)
+    if State.mBreathingSoundHandle ~= 0 then
+        StopSound(State.mBreathingSoundHandle)
+        State.mBreathingSoundHandle = 0
+    end
+end
+
+local function UpdateBreathingSound(State)
+    local Config = HorrorCamera.Config
+    local Volume = math.max(0.0, math.min(1.0, Config.BreathingMaxVolume)) * math.max(0.0, math.min(1.0, State.mBreathingStrength))
+    if State.mBreathingStrength < 0.001 or Volume <= 0.0 then
+        StopBreathingSound(State)
+        return
+    end
+    if State.mBreathingSoundHandle ~= 0 and not IsSoundPlaying(State.mBreathingSoundHandle) then
+        StopBreathingSound(State)
+    end
+    if State.mBreathingSoundHandle == 0 and not State.mBreathingSoundFailed then
+        State.mBreathingSoundHandle = PlaySound(Config.BreathingSound, true, Volume)
+        State.mBreathingSoundFailed = State.mBreathingSoundHandle == 0
+    end
+    if State.mBreathingSoundHandle ~= 0 then
+        SetSoundVolume(State.mBreathingSoundHandle, Volume)
+    end
+end
+
 local function ResetEffects(State)
+    StopBreathingSound(State)
+    State.mBreathingSoundFailed = false
     for _, Shake in ipairs(State.mHeartbeatShakes) do
         RemoveShake(State, Shake)
     end
@@ -112,6 +142,7 @@ local function UpdateBreathing(State, Distance, DeltaTime, IsRunning)
         RemoveShake(State, State.mBreathingShake)
         State.mBreathingShake = nil
         State.mBreathingStrength = 0.0
+        StopBreathingSound(State)
         return
     end
     if State.mBreathingShake == nil and State.mBreathingStrength >= 0.001 then
@@ -120,13 +151,14 @@ local function UpdateBreathing(State, Distance, DeltaTime, IsRunning)
     if State.mBreathingShake ~= nil then
         State.mBreathingShake:SetShakeScale(State.mBreathingStrength)
     end
+    UpdateBreathingSound(State)
 end
 
 function HorrorCamera.Start(StateKey, Actor)
     HorrorCamera.Stop(StateKey)
     SetZeroOffsets(HorrorCamera.Config.HeartbeatPattern)
     SetZeroOffsets(HorrorCamera.Config.BreathingPattern)
-    Runtime.mStates[StateKey] = { mActor = Actor, mManager = nil, mHeartbeatPhase = nil, mHeartbeatShakes = {}, mBreathingShake = nil, mRunDistance = 0.0, mBreathingStrength = 0.0 }
+    Runtime.mStates[StateKey] = { mActor = Actor, mManager = nil, mHeartbeatPhase = nil, mHeartbeatShakes = {}, mBreathingShake = nil, mRunDistance = 0.0, mBreathingStrength = 0.0, mBreathingSoundHandle = 0, mBreathingSoundFailed = false }
 end
 
 function HorrorCamera.Stop(StateKey)

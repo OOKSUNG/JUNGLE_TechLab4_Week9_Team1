@@ -996,10 +996,11 @@ void UEditorEngine::RenderFogPass(const int32 ViewIndex, UWorld& ViewWorld, cons
 {
 	FRenderingInfo HDRInfo = ViewRenderingInfo;
 	HDRInfo.ColorRenderTargets[0].Texture = GetHDRTargetForView(ViewIndex);
-	const TArray<FExponentialHeightFogSceneInfo>& SceneFogInfos = ViewWorld.GetScene().FogInfos;
+	const FFogInfo* FogInfo{ ViewWorld.GetScene().GetFogInfo() };
 
-	if (SceneFogInfos.Num() == 0)
+	if (!FogInfo) {
 		return;
+	}
 
 	FRenderingInfo PassInfo = HDRInfo;
 
@@ -1010,7 +1011,7 @@ void UEditorEngine::RenderFogPass(const int32 ViewIndex, UWorld& ViewWorld, cons
 	PassInfo.DepthStencil.Texture = nullptr;
 	RenderCommand::BeginRenderPass(PassInfo);
 
-	FogRenderer->OnRender(HDRInfo.DepthStencil.Texture, ViewProjection, ViewCameraLocation, SceneFogInfos[0].FogInfo);
+	FogRenderer->OnRender(HDRInfo.DepthStencil.Texture, ViewProjection, ViewCameraLocation, *FogInfo);
 
 	//Fog는 여러개있더라도 1개의 Fog만 인식해서 그리도록 해야한다.
 
@@ -1448,9 +1449,10 @@ void UEditorEngine::RenderFrame(const int32 ViewIndex, UWorld& ViewWorld, const 
 	else
 	{
 		//직교인 경우 안개 Pass를 그리지 않는다.
-		if (!MultipleViewportsAdapter.IsOrthographic(ViewIndex) && ShowFlags.IsEnabled(EEngineShowFlag::Fog))
+		if (!MultipleViewportsAdapter.IsOrthographic(ViewIndex) && (ShowFlags.IsEnabled(EEngineShowFlag::Fog) || ViewWorld.GetScene().HasFogOverride())) {
 			// 2. 안개 Pass
 			RenderFogPass(ViewIndex, ViewWorld, ViewRenderingInfo, ViewCameraLocation, ViewProjection, RenderQueue);
+		}
 
 		// 3. ToneMap(HDR) Pass
 		RenderToneMapPass(ViewIndex, ViewWorld, ViewRenderingInfo);

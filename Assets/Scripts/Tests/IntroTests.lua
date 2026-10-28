@@ -149,7 +149,7 @@ end)
 Test("arrival stays on clear map cells, crosses the open door, closes it and hands off once", function()
     GameManager.StartGame(true)
     local Crossed = false
-    for Index = 1, 100 do
+    for Index = 1, math.ceil(Config.Duration / 0.1) do
         GameManager.Tick(0.1)
         assert(Map:IsWalkable(Map:WorldToCell(Player.mLocation)), "intro player is inside a navigation obstacle")
         if Player.mLocation.X > 0.5 and Player.mLocation.X < 1.5 then
@@ -169,7 +169,7 @@ Test("arrival stays on clear map cells, crosses the open door, closes it and han
 end)
 
 Test("skip from black, camera blend and doorway restores the same playable state", function()
-    for _, Time in ipairs({ 0.0, 3.5, 6.0, 8.5 }) do
+    for _, Time in ipairs({ 0.0, Config.BlendStart + 0.5, Config.ApproachEnd + 1.5, Config.LookBackStart + 0.5 }) do
         GameManager.StartGame(true)
         GameManager.Tick(Time)
         Intro.Finish()
