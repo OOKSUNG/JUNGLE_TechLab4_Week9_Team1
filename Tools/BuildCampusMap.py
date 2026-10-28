@@ -275,7 +275,7 @@ def InstallYardEntrances(Actors):
 
 
 def UpdateYardEntrances(Root):
-    ScenePath = Root / "Assets/Scenes/MapTest.scene"
+    ScenePath = Root / "Assets/Scenes/Demo/06_Game.scene"
     Scene = Json.loads(ScenePath.read_text(encoding="utf-8-sig"))
     Actors = Scene["World"]["PersistentLevel"]["Actors"]
     BuildYardEntranceMeshes(Root)
@@ -443,7 +443,7 @@ def BuildMeshes(Root):
 
 
 def BuildScene(Root, Data):
-    ScenePath = Root / "Assets/Scenes/MapTest.scene"
+    ScenePath = Root / "Assets/Scenes/Demo/06_Game.scene"
     Scene = Json.loads(ScenePath.read_text(encoding="utf-8-sig"))
     Original = Scene["World"]["PersistentLevel"]["Actors"]
     Actors = []
@@ -568,7 +568,7 @@ def BuildScene(Root, Data):
     InstallIntroEntrance(Actors, Data)
     Scene["World"]["PersistentLevel"]["Actors"] = Actors
     ScenePath.write_text(Json.dumps(Scene, ensure_ascii=False, indent=4) + "\n", encoding="utf-8")
-    print(f"Built MapTest.scene: {len(Actors)} actors, {len(Visited)} wall cells, 2 roofs, open service yard and garage vehicle exit")
+    print(f"Built Demo/06_Game.scene: {len(Actors)} actors, {len(Visited)} wall cells, 2 roofs, open service yard and garage vehicle exit")
 
 
 def Main():

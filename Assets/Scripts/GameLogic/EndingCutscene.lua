@@ -1,10 +1,10 @@
 local Transition = require("Transition")
 local EndingCutscene = {}
-local Runtime = { mPendingResult = nil, mState = nil, mSubject = nil, mSubjects = {}, mFadeSequences = {}, mView = nil, mGate = nil, mGateOpeningOffset = nil, mGameScene = "Assets/Scenes/MapTest.scene" }
+local Runtime = { mPendingResult = nil, mState = nil, mSubject = nil, mSubjects = {}, mFadeSequences = {}, mView = nil, mGate = nil, mGateOpeningOffset = nil, mGameScene = "Assets/Scenes/Demo/06_Game.scene" }
 
 EndingCutscene.Config = {
-    Car = { Scene = "Assets/Scenes/Ending_Car.scene", Duration = 12.0, Title = "차량 탈출", Subtitle = "엔진 소리가 어둠 속의 발소리를 지워 버렸다.", Epilogue = "백미러 속 시설이 멀어졌다. 이제 돌아갈 이유는 없다." },
-    Door = { Scene = "Assets/Scenes/Ending_Door.scene", Duration = 11.0, Title = "비상문 탈출", Subtitle = "잠금이 풀렸다. 문틈 너머로 새벽 공기가 흘러들었다.", Epilogue = "문이 닫히자, 뒤쫓던 소리도 마침내 끊어졌다." },
+    Car = { Duration = 12.0, Title = "차량 탈출", Subtitle = "엔진 소리가 어둠 속의 발소리를 지워 버렸다.", Epilogue = "백미러 속 시설이 멀어졌다. 이제 돌아갈 이유는 없다." },
+    Door = { Duration = 11.0, Title = "비상문 탈출", Subtitle = "잠금이 풀렸다. 문틈 너머로 새벽 공기가 흘러들었다.", Epilogue = "문이 닫히자, 뒤쫓던 소리도 마침내 끊어졌다." },
 }
 
 EndingCutscene.Fog = {
@@ -130,11 +130,6 @@ function EndingCutscene.Prepare(Route, Result)
     return true
 end
 
-function EndingCutscene.GetPendingScene()
-    local Result = Runtime.mPendingResult
-    return Result ~= nil and EndingCutscene.Config[Result.Route].Scene or nil
-end
-
 function EndingCutscene.RegisterSubject(Actor, Route)
     if Route ~= nil then
         Runtime.mSubjects[Route] = Actor
@@ -256,7 +251,7 @@ function EndingCutscene.Start(View, Scene)
         mFadeSequence = nil,
         mSounds = {},
         mPlayedCues = {},
-        mResult = Result ~= nil and Result.Route == Route and Result or { Route = Route, ElapsedTime = 0.0, BatteriesUsed = 0, GameScene = InPlace and Runtime.mGameScene or "Assets/Scenes/MapTest.scene" },
+        mResult = Result ~= nil and Result.Route == Route and Result or { Route = Route, ElapsedTime = 0.0, BatteriesUsed = 0, GameScene = InPlace and Runtime.mGameScene or "Assets/Scenes/Demo/06_Game.scene" },
     }
     Runtime.mState = State
     if Route == "Car" then

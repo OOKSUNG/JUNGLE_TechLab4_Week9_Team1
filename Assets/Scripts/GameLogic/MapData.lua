@@ -120,8 +120,8 @@ return {
         DoorExit = { Location = { X = 23.5, Y = 5.58, Z = 1.5 }, Yaw = 0.0 },
         CarExit = { Location = { X = -11.0, Y = 50.5, Z = 0.0 }, Yaw = 0.0 },
         GarageGate = { Location = { X = -60.3, Y = 50.5, Z = 0.0 }, Yaw = 0.0 },
-        FuelCan = { Location = { X = -31.0, Y = 46.5, Z = 0.0 }, Yaw = 0.0 },
-        CardKey = { Location = { X = -12.0, Y = 32.0, Z = 0.0 }, Yaw = 0.0 },
+        FuelCan = { Location = { X = -30.0, Y = 6.0, Z = 0.0 }, Yaw = 0.0 },
+        CardKey = { Location = { X = -55.0, Y = 57.0, Z = 0.0 }, Yaw = 0.0 },
     },
 
     Links = {},

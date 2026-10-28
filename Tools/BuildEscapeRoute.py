@@ -205,7 +205,7 @@ def InstallFrame(Actor, Location):
 
 
 def InstallScene(Root, Data):
-    Target = Root / "Assets/Scenes/MapTest.scene"
+    Target = Root / "Assets/Scenes/Demo/06_Game.scene"
     Scene = Json.loads(Target.read_text(encoding="utf-8-sig"))
     Actors = Scene["World"]["PersistentLevel"]["Actors"]
     ReplaceActors(Actors, lambda Actor: Actor["RootComponent"].startswith("Campus_Escape") or Actor["RootComponent"].startswith("Campus_Wall_") and Campus.RootComponent(Actor)["Properties"]["Transform"]["Location"]["X"] > 0)
@@ -253,27 +253,10 @@ def InstallScene(Root, Data):
     Target.write_text(Json.dumps(Scene, ensure_ascii=False, indent=4) + "\n", encoding="utf-8")
 
 
-def InstallEnding(Root):
-    Target = Root / "Assets/Scenes/Ending_Door.scene"
-    Scene = Json.loads(Target.read_text(encoding="utf-8-sig"))
-    Actors = Scene["World"]["PersistentLevel"]["Actors"]
-    ReplaceActors(Actors, lambda Actor: Actor["RootComponent"].startswith("Campus_Escape"))
-    for Actor in Actors:
-        if Actor["RootComponent"] == "EscapeDoorHinge":
-            InstallDoor(Actor, (0, -0.92, 1.5))
-        elif Actor["RootComponent"] == "ExitDoorFrame":
-            InstallFrame(Actor, (0, 0, 0))
-    Actors.append(MeshActor("ExitSign", "ExitSign", (-0.24, 0, 3.5)))
-    from BuildDoorExterior import InstallExterior
-    InstallExterior(Actors, (0, 0, 0))
-    Target.write_text(Json.dumps(Scene, ensure_ascii=False, indent=4) + "\n", encoding="utf-8")
-
-
 def UpdateEscapeRoute(Root):
     Data = Campus.LoadMap(Root)
     BuildMeshes(Root)
     InstallScene(Root, Data)
-    InstallEnding(Root)
     print("Updated escape route: 24m enclosed corridor, green emergency door, push bar, card reader and EXIT signs")
 
 

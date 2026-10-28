@@ -5,10 +5,10 @@ local Runtime = { mDanger = 0.0, mPulsePhase = 0.0 }
 local DANGER_VIGNETTE = {
     NearDistance = 3.5,
     FarDistance = 16.0,
-    MaxIntensity = 0.6,
-    SafeRadius = 0.85,
-    DangerRadius = 0.65,
-    Softness = 0.2,
+    MaxIntensity = 0.175,
+    SafeRadius = 1.13,
+    DangerRadius = 1.03,
+    Softness = 0.1,
     InterpSpeed = 5.0,
     Color = FVector.new(0.3, 0, 0),
 }
@@ -78,7 +78,7 @@ local function UpdateVignette(DeltaTime)
 
     local Wave = math.sin(Runtime.mPulsePhase) * 0.5 + 0.5
     local Pulse = Wave ^ 8
-    local Radius = BaseRadius - Pulse * 0.18 * Runtime.mDanger
+    local Radius = BaseRadius - Pulse * 0.09 * Runtime.mDanger
 
     SetVignette(
         DANGER_VIGNETTE.MaxIntensity * Runtime.mDanger,
@@ -90,8 +90,9 @@ end
 function BeginPlay()
     Runtime.mDanger = 0.0
     ResetVignette()
-    EndingCutscene.SetGameScene("Assets/Scenes/" .. sceneName .. ".scene")
-    GameManager.StartGame(sceneName == "MapTest")
+    -- sceneName은 폴더 없는 파일 이름이라 시연용 게임 씬은 Demo 경로를 직접 지정한다.
+    EndingCutscene.SetGameScene(sceneName == "06_Game" and "Assets/Scenes/Demo/06_Game.scene" or "Assets/Scenes/" .. sceneName .. ".scene")
+    GameManager.StartGame(sceneName == "06_Game")
 end
 
 function Tick(DeltaTime)

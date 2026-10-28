@@ -127,7 +127,6 @@ Test("each escape freezes gameplay and preserves results across game teardown", 
         GameManager.AddBatteryUsed()
         GameManager.Escape(Route)
         assert(not GameManager.IsPlaying() and GameManager.Phase == GameManager.EPhase.Ending)
-        assert(Ending.GetPendingScene() == "Assets/Scenes/Ending_" .. Route .. ".scene")
         GameManager.GameOver("LateCapture")
         GameManager.Escape(Route == "Car" and "Door" or "Car")
         GameManager.Tick(50.0)
@@ -137,7 +136,6 @@ Test("each escape freezes gameplay and preserves results across game teardown", 
         Near(State.mResult.ElapsedTime, 123.25)
         assert(State.mRoute == Route and State.mResult.BatteriesUsed == 1)
         assert(State.mResult.GameScene == "Assets/Scenes/main.scene")
-        assert(Ending.GetPendingScene() == nil)
         Ending.Stop()
     end
 end)
@@ -235,7 +233,9 @@ end)
 Test("standalone scene preview and new games discard previous results", function()
     GameManager.Escape("Car")
     GameManager.StartGame()
-    assert(Ending.GetPendingScene() == nil)
+    Ending.RegisterView(View)
+    Ending.RegisterSubject(Subject, "Car")
+    assert(not Ending.StartPending())
     Ending.Start(View, "Ending_Door")
     assert(Ending.GetState().mRoute == "Door")
     Near(Ending.GetState().mResult.ElapsedTime, 0.0)
@@ -243,8 +243,15 @@ Test("standalone scene preview and new games discard previous results", function
 end)
 
 Test("skip inputs cannot activate the result menu before credits finish", function()
-    local Environment = { self = View, sceneName = "Ending_Car" }
+    Subject.mLocation = FVector.new(-11.0, 50.5, 0.0)
+    Subject.mRotation = FRotator.new(0.0, 0.0, 0.0)
+    Ending.SetGameScene("Assets/Scenes/Demo/06_Game.scene")
+    Ending.RegisterSubject(Subject, "Car")
+    GameManager.Escape("Car")
+    local Environment = { self = View }
     setmetatable(Environment, { __index = _G })
+    function Environment.ResetTimeEffects()
+    end
     function Environment.GetViewportSize()
         return FVector2.new(1280, 720)
     end
@@ -264,7 +271,7 @@ Test("skip inputs cannot activate the result menu before credits finish", functi
     setfenv(Script, Environment)
     Script()
     Environment.BeginPlay()
-    Environment.Tick(1.0)
+    Environment.Tick(require("Transition").Config.Duration + 1.0)
     Runtime.mPressed = Key.Enter
     Environment.Tick(0.016)
     assert(Ending.GetState().mFinished and #Runtime.mLoads == 0)
@@ -282,7 +289,7 @@ Test("skip inputs cannot activate the result menu before credits finish", functi
     Environment.Tick(0.016)
     Runtime.mPressed = Key.R
     Environment.Tick(0.016)
-    assert(#Runtime.mLoads == 1 and Runtime.mLoads[1] == "Assets/Scenes/MapTest.scene")
+    assert(#Runtime.mLoads == 1 and Runtime.mLoads[1] == "Assets/Scenes/Demo/06_Game.scene")
     Environment.Tick(0.016)
     assert(#Runtime.mLoads == 1)
     Environment.EndPlay()

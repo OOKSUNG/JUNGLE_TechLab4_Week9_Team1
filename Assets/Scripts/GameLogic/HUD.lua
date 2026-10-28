@@ -144,7 +144,7 @@ local function DrawResult()
         if RestartClicked then
             RestartScene()
         else
-            LoadScene("Assets/Scenes/Title.scene")
+            LoadScene("Assets/Scenes/Demo/05_TheBasement.scene")
         end
     end
 end

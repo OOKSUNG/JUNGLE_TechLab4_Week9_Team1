@@ -15,7 +15,7 @@ def ReadActors(Project, Scene):
 
 
 def VerifyScene(Project, Data):
-    Actors = ReadActors(Project, "MapTest.scene")
+    Actors = ReadActors(Project, "Demo/06_Game.scene")
     Named = {Actor["RootComponent"]: Actor for Actor in Actors}
     Door = Named["DoorExit"]
     Location = Campus.RootComponent(Door)["Properties"]["Transform"]["Location"]
@@ -42,15 +42,11 @@ def VerifyScene(Project, Data):
     for Actor in Actors:
         if "AttachParent" in Actor:
             assert 0 <= Actor["AttachParent"]["Actor"] < len(Actors)
-    for Scene in ["MapTest.scene", "Ending_Door.scene"]:
-        for Actor in ReadActors(Project, Scene):
-            for Component in Actor["Components"]:
-                Mesh = Component["Properties"].get("StaticMesh", "")
-                if Mesh.startswith("Models/"):
-                    assert (Root / "Assets" / Mesh).is_file(), Mesh
-    Ending = ReadActors(Project, "Ending_Door.scene")
-    EndingDoor = next(Actor for Actor in Ending if Actor["RootComponent"] == "EscapeDoorHinge")
-    assert any(Component["Properties"].get("StaticMesh") == "Models/EscapeRoute/EmergencyExitDoor.obj" for Component in EndingDoor["Components"])
+    for Actor in Actors:
+        for Component in Actor["Components"]:
+            Mesh = Component["Properties"].get("StaticMesh", "")
+            if Mesh.startswith("Models/"):
+                assert (Root / "Assets" / Mesh).is_file(), Mesh
 
 
 def Main():
@@ -60,18 +56,15 @@ def Main():
     with Tempfile.TemporaryDirectory(prefix="HitoriEscapeRoute") as Folder:
         Project = Path(Folder)
         Scenes = Project / "Assets/Scenes"
-        Scenes.mkdir(parents=True)
-        for Name in ["MapTest.scene", "Ending_Door.scene"]:
-            (Scenes / Name).write_bytes((Root / "Assets/Scenes" / Name).read_bytes())
+        (Scenes / "Demo").mkdir(parents=True)
+        (Scenes / "Demo/06_Game.scene").write_bytes((Root / "Assets/Scenes/Demo/06_Game.scene").read_bytes())
         Campus.BuildScene(Project, Data)
         EscapeRoute.InstallScene(Project, Data)
-        EscapeRoute.InstallEnding(Project)
         VerifyScene(Project, Data)
         print("PASS complete campus regeneration preserves the escape corridor and emergency door")
-        Before = {Name: (Scenes / Name).read_bytes() for Name in ["MapTest.scene", "Ending_Door.scene"]}
+        Before = (Scenes / "Demo/06_Game.scene").read_bytes()
         EscapeRoute.InstallScene(Project, Data)
-        EscapeRoute.InstallEnding(Project)
-        assert all((Scenes / Name).read_bytes() == Content for Name, Content in Before.items())
+        assert (Scenes / "Demo/06_Game.scene").read_bytes() == Before
         print("PASS repeated route generation leaves scenes and attachment indices unchanged")
 
 

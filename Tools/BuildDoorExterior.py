@@ -207,7 +207,7 @@ def InstallExterior(Actors, Origin, Yaw=0.0):
 
 def UpdateExterior(Root):
     BuildMeshes(Root)
-    for Name, DoorName in [("MapTest.scene", "DoorExit"), ("Ending_Door.scene", "EscapeDoorHinge")]:
+    for Name, DoorName in [("Demo/06_Game.scene", "DoorExit")]:
         Target = Root / "Assets/Scenes" / Name
         Scene = Json.loads(Target.read_text(encoding="utf-8-sig"))
         Actors = Scene["World"]["PersistentLevel"]["Actors"]
@@ -218,7 +218,7 @@ def UpdateExterior(Root):
         Origin = (Location["X"] - 0.92 * Math.sin(Math.radians(Yaw)), Location["Y"] + 0.92 * Math.cos(Math.radians(Yaw)), Location["Z"] - 1.5)
         InstallExterior(Actors, Origin, Yaw)
         Target.write_text(Json.dumps(Scene, ensure_ascii=False, indent=4) + "\n", encoding="utf-8")
-    print("Updated emergency exit exterior in gameplay and standalone ending scenes")
+    print("Updated emergency exit exterior in the gameplay scene")
 
 
 def Main():

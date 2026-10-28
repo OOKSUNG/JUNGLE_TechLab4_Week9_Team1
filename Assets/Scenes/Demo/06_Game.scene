@@ -256,11 +256,11 @@
                             "Name": "USpotLightComponent_0",
                             "Parent": "FlashlightMesh",
                             "Properties": {
-                                "AttenuationRadius": 18.600000381469727,
+                                "AttenuationRadius": 28.0,
                                 "InnerConeAngle": 20.600000381469727,
                                 "Intensity": 1.0,
                                 "LightColor": 4294967295,
-                                "LightFalloffExponent": 3.700000047683716,
+                                "LightFalloffExponent": 2.5,
                                 "OuterConeAngle": 32.29999923706055,
                                 "ShadowBias": 0.0010000000474974513,
                                 "ShadowMapResolution": 1024,
@@ -555,8 +555,8 @@
                             "Properties": {
                                 "Transform": {
                                     "Location": {
-                                        "X": -12.0,
-                                        "Y": 32.0,
+                                        "X": -55.0,
+                                        "Y": 57.0,
                                         "Z": 0.0
                                     },
                                     "Rotation": {
@@ -697,8 +697,8 @@
                             "Properties": {
                                 "Transform": {
                                     "Location": {
-                                        "X": -31.0,
-                                        "Y": 46.5,
+                                        "X": -30.0,
+                                        "Y": 6.0,
                                         "Z": 0.0
                                     },
                                     "Rotation": {
@@ -1204,7 +1204,7 @@
                             "Parent": "TorchRoot01",
                             "Properties": {
                                 "AttenuationRadius": 10.0,
-                                "Intensity": 0.36,
+                                "Intensity": 0.18,
                                 "LightColor": 4293251991,
                                 "LightFalloffExponent": 2.0,
                                 "ShadowBias": 0.0010000000474974513,
@@ -1387,7 +1387,7 @@
                             "Parent": "TorchRoot02",
                             "Properties": {
                                 "AttenuationRadius": 10.0,
-                                "Intensity": 0.576,
+                                "Intensity": 0.288,
                                 "LightColor": 4279972351,
                                 "LightFalloffExponent": 2.0,
                                 "ShadowBias": 0.0010000000474974513,
@@ -1570,7 +1570,7 @@
                             "Parent": "TorchRoot04",
                             "Properties": {
                                 "AttenuationRadius": 10.0,
-                                "Intensity": 0.36,
+                                "Intensity": 0.18,
                                 "LightColor": 4293251991,
                                 "LightFalloffExponent": 2.0,
                                 "ShadowBias": 0.0010000000474974513,
@@ -1753,7 +1753,7 @@
                             "Parent": "TorchRoot08",
                             "Properties": {
                                 "AttenuationRadius": 10.0,
-                                "Intensity": 0.576,
+                                "Intensity": 0.288,
                                 "LightColor": 4279972351,
                                 "LightFalloffExponent": 2.0,
                                 "ShadowBias": 0.0010000000474974513,
@@ -1936,7 +1936,7 @@
                             "Parent": "TorchRoot16",
                             "Properties": {
                                 "AttenuationRadius": 10.0,
-                                "Intensity": 0.576,
+                                "Intensity": 0.288,
                                 "LightColor": 4279972351,
                                 "LightFalloffExponent": 2.0,
                                 "ShadowBias": 0.0010000000474974513,
@@ -2119,7 +2119,7 @@
                             "Parent": "TorchRoot18",
                             "Properties": {
                                 "AttenuationRadius": 10.0,
-                                "Intensity": 0.36,
+                                "Intensity": 0.18,
                                 "LightColor": 4293251991,
                                 "LightFalloffExponent": 2.0,
                                 "ShadowBias": 0.0010000000474974513,
@@ -2302,7 +2302,7 @@
                             "Parent": "TorchRoot20",
                             "Properties": {
                                 "AttenuationRadius": 10.0,
-                                "Intensity": 0.576,
+                                "Intensity": 0.288,
                                 "LightColor": 4279972351,
                                 "LightFalloffExponent": 2.0,
                                 "ShadowBias": 0.0010000000474974513,
@@ -2485,7 +2485,7 @@
                             "Parent": "TorchRoot25",
                             "Properties": {
                                 "AttenuationRadius": 10.0,
-                                "Intensity": 0.576,
+                                "Intensity": 0.288,
                                 "LightColor": 4279972351,
                                 "LightFalloffExponent": 2.0,
                                 "ShadowBias": 0.0010000000474974513,
@@ -2668,7 +2668,7 @@
                             "Parent": "TorchRoot32",
                             "Properties": {
                                 "AttenuationRadius": 10.0,
-                                "Intensity": 0.576,
+                                "Intensity": 0.288,
                                 "LightColor": 4279972351,
                                 "LightFalloffExponent": 2.0,
                                 "ShadowBias": 0.0010000000474974513,
@@ -2892,7 +2892,7 @@
                             "Name": "FacilityAmbientLight",
                             "Parent": "FacilityAtmosphere",
                             "Properties": {
-                                "Intensity": 0.06,
+                                "Intensity": 0.03,
                                 "LightColor": 4290224005,
                                 "ShadowBias": 0.0010000000474974513,
                                 "ShadowMapResolution": 1024,
@@ -3366,7 +3366,7 @@
                             "Parent": "FacilityCeilingLight01_1",
                             "Properties": {
                                 "AttenuationRadius": 12.0,
-                                "Intensity": 0.256,
+                                "Intensity": 0.128,
                                 "LightColor": 4292661155,
                                 "LightFalloffExponent": 2.0,
                                 "ShadowBias": 0.0010000000474974513,
@@ -3494,7 +3494,7 @@
                             "Parent": "FacilityCeilingLight01_2",
                             "Properties": {
                                 "AttenuationRadius": 12.0,
-                                "Intensity": 0.256,
+                                "Intensity": 0.128,
                                 "LightColor": 4292661155,
                                 "LightFalloffExponent": 2.0,
                                 "ShadowBias": 0.0010000000474974513,
@@ -3935,7 +3935,7 @@
                             "Parent": "FacilityCeilingLight02_1",
                             "Properties": {
                                 "AttenuationRadius": 12.0,
-                                "Intensity": 0.256,
+                                "Intensity": 0.128,
                                 "LightColor": 4292661155,
                                 "LightFalloffExponent": 2.0,
                                 "ShadowBias": 0.0010000000474974513,
@@ -4063,7 +4063,7 @@
                             "Parent": "FacilityCeilingLight02_2",
                             "Properties": {
                                 "AttenuationRadius": 12.0,
-                                "Intensity": 0.256,
+                                "Intensity": 0.128,
                                 "LightColor": 4292661155,
                                 "LightFalloffExponent": 2.0,
                                 "ShadowBias": 0.0010000000474974513,
@@ -4504,7 +4504,7 @@
                             "Parent": "FacilityCeilingLight04_1",
                             "Properties": {
                                 "AttenuationRadius": 12.0,
-                                "Intensity": 0.256,
+                                "Intensity": 0.128,
                                 "LightColor": 4292661155,
                                 "LightFalloffExponent": 2.0,
                                 "ShadowBias": 0.0010000000474974513,
@@ -4632,7 +4632,7 @@
                             "Parent": "FacilityCeilingLight04_2",
                             "Properties": {
                                 "AttenuationRadius": 12.0,
-                                "Intensity": 0.208,
+                                "Intensity": 0.104,
                                 "LightColor": 4280967167,
                                 "LightFalloffExponent": 2.0,
                                 "ShadowBias": 0.0010000000474974513,
@@ -5073,7 +5073,7 @@
                             "Parent": "FacilityCeilingLight05_1",
                             "Properties": {
                                 "AttenuationRadius": 12.0,
-                                "Intensity": 0.256,
+                                "Intensity": 0.128,
                                 "LightColor": 4292661155,
                                 "LightFalloffExponent": 2.0,
                                 "ShadowBias": 0.0010000000474974513,
@@ -5201,7 +5201,7 @@
                             "Parent": "FacilityCeilingLight05_2",
                             "Properties": {
                                 "AttenuationRadius": 12.0,
-                                "Intensity": 0.256,
+                                "Intensity": 0.128,
                                 "LightColor": 4292661155,
                                 "LightFalloffExponent": 2.0,
                                 "ShadowBias": 0.0010000000474974513,
@@ -5642,7 +5642,7 @@
                             "Parent": "FacilityCeilingLight07_1",
                             "Properties": {
                                 "AttenuationRadius": 12.0,
-                                "Intensity": 0.256,
+                                "Intensity": 0.128,
                                 "LightColor": 4292661155,
                                 "LightFalloffExponent": 2.0,
                                 "ShadowBias": 0.0010000000474974513,
@@ -5770,7 +5770,7 @@
                             "Parent": "FacilityCeilingLight07_2",
                             "Properties": {
                                 "AttenuationRadius": 12.0,
-                                "Intensity": 0.208,
+                                "Intensity": 0.104,
                                 "LightColor": 4280967167,
                                 "LightFalloffExponent": 2.0,
                                 "ShadowBias": 0.0010000000474974513,
@@ -6211,7 +6211,7 @@
                             "Parent": "FacilityCeilingLight08_1",
                             "Properties": {
                                 "AttenuationRadius": 12.0,
-                                "Intensity": 0.256,
+                                "Intensity": 0.128,
                                 "LightColor": 4292661155,
                                 "LightFalloffExponent": 2.0,
                                 "ShadowBias": 0.0010000000474974513,
@@ -6339,7 +6339,7 @@
                             "Parent": "FacilityCeilingLight08_2",
                             "Properties": {
                                 "AttenuationRadius": 12.0,
-                                "Intensity": 0.256,
+                                "Intensity": 0.128,
                                 "LightColor": 4292661155,
                                 "LightFalloffExponent": 2.0,
                                 "ShadowBias": 0.0010000000474974513,
@@ -22975,7 +22975,7 @@
                                 "CascadeCount": 4,
                                 "CascadeDistributionExponent": 3.0,
                                 "CascadeTransitionFraction": 0.10000000149011612,
-                                "Intensity": 0.32,
+                                "Intensity": 0.16,
                                 "LightColor": 4294960860,
                                 "ShadowBias": 0.0010000000474974513,
                                 "ShadowDistance": 90.0,
@@ -23074,7 +23074,7 @@
                             "Parent": "Campus_GarageWarm",
                             "Properties": {
                                 "AttenuationRadius": 15.0,
-                                "Intensity": 2.24,
+                                "Intensity": 1.12,
                                 "LightColor": 4291880959,
                                 "LightFalloffExponent": 2.0,
                                 "ShadowBias": 0.0010000000474974513,
@@ -23172,7 +23172,7 @@
                             "Parent": "Campus_GarageService",
                             "Properties": {
                                 "AttenuationRadius": 10.0,
-                                "Intensity": 1.44,
+                                "Intensity": 0.72,
                                 "LightColor": 4291559423,
                                 "LightFalloffExponent": 2.0,
                                 "ShadowBias": 0.0010000000474974513,
@@ -23239,7 +23239,7 @@
                             "Parent": "Campus_YardNorth",
                             "Properties": {
                                 "AttenuationRadius": 21.0,
-                                "Intensity": 1.76,
+                                "Intensity": 0.88,
                                 "LightColor": 4294960860,
                                 "LightFalloffExponent": 2.0,
                                 "ShadowBias": 0.0010000000474974513,
@@ -23306,7 +23306,7 @@
                             "Parent": "Campus_YardSouth",
                             "Properties": {
                                 "AttenuationRadius": 23.0,
-                                "Intensity": 1.6,
+                                "Intensity": 0.8,
                                 "LightColor": 4294960860,
                                 "LightFalloffExponent": 2.0,
                                 "ShadowBias": 0.0010000000474974513,
@@ -23373,7 +23373,7 @@
                             "Parent": "Campus_FuelWarm",
                             "Properties": {
                                 "AttenuationRadius": 9.0,
-                                "Intensity": 0.88,
+                                "Intensity": 0.44,
                                 "LightColor": 4285772287,
                                 "LightFalloffExponent": 2.0,
                                 "ShadowBias": 0.0010000000474974513,
@@ -25158,7 +25158,7 @@
                             "Parent": "Campus_EscapeCorridorLamp0",
                             "Properties": {
                                 "AttenuationRadius": 7.0,
-                                "Intensity": 1.44,
+                                "Intensity": 0.72,
                                 "LightColor": 4291624908,
                                 "LightFalloffExponent": 2.0,
                                 "ShadowBias": 0.0010000000474974513,
@@ -25319,7 +25319,7 @@
                             "Parent": "Campus_EscapeCorridorLamp1",
                             "Properties": {
                                 "AttenuationRadius": 7.0,
-                                "Intensity": 1.44,
+                                "Intensity": 0.72,
                                 "LightColor": 4291624908,
                                 "LightFalloffExponent": 2.0,
                                 "ShadowBias": 0.0010000000474974513,
@@ -25480,7 +25480,7 @@
                             "Parent": "Campus_EscapeCorridorLamp2",
                             "Properties": {
                                 "AttenuationRadius": 7.0,
-                                "Intensity": 1.44,
+                                "Intensity": 0.72,
                                 "LightColor": 4291624908,
                                 "LightFalloffExponent": 2.0,
                                 "ShadowBias": 0.0010000000474974513,
@@ -25641,7 +25641,7 @@
                             "Parent": "Campus_EscapeCorridorLamp3",
                             "Properties": {
                                 "AttenuationRadius": 7.0,
-                                "Intensity": 1.44,
+                                "Intensity": 0.72,
                                 "LightColor": 4291624908,
                                 "LightFalloffExponent": 2.0,
                                 "ShadowBias": 0.0010000000474974513,
@@ -26117,7 +26117,7 @@
                             "Parent": "Campus_EscapeExitSign",
                             "Properties": {
                                 "AttenuationRadius": 5.0,
-                                "Intensity": 0.96,
+                                "Intensity": 0.48,
                                 "LightColor": 4286095242,
                                 "LightFalloffExponent": 2.0,
                                 "ShadowBias": 0.0010000000474974513,
@@ -30667,7 +30667,7 @@
                             "Parent": "Campus_DoorExterior_DoorLamp-1",
                             "Properties": {
                                 "AttenuationRadius": 9.0,
-                                "Intensity": 1.92,
+                                "Intensity": 0.96,
                                 "LightColor": 4290569983,
                                 "LightFalloffExponent": 2.0,
                                 "ShadowBias": 0.0010000000474974513,
@@ -30765,7 +30765,7 @@
                             "Parent": "Campus_DoorExterior_DoorLamp1",
                             "Properties": {
                                 "AttenuationRadius": 9.0,
-                                "Intensity": 1.92,
+                                "Intensity": 0.96,
                                 "LightColor": 4290569983,
                                 "LightFalloffExponent": 2.0,
                                 "ShadowBias": 0.0010000000474974513,
@@ -30863,7 +30863,7 @@
                             "Parent": "Campus_DoorExterior_CourtLight",
                             "Properties": {
                                 "AttenuationRadius": 20.0,
-                                "Intensity": 3.2,
+                                "Intensity": 1.6,
                                 "LightColor": 4294958008,
                                 "LightFalloffExponent": 2.0,
                                 "ShadowBias": 0.0010000000474974513,
@@ -30961,7 +30961,7 @@
                             "Parent": "Campus_DoorExterior_GateLight",
                             "Properties": {
                                 "AttenuationRadius": 20.0,
-                                "Intensity": 2.8,
+                                "Intensity": 1.4,
                                 "LightColor": 4294958008,
                                 "LightFalloffExponent": 2.0,
                                 "ShadowBias": 0.0010000000474974513,
@@ -31059,7 +31059,7 @@
                             "Parent": "Campus_DoorExterior_AssemblyStation",
                             "Properties": {
                                 "AttenuationRadius": 5.0,
-                                "Intensity": 0.88,
+                                "Intensity": 0.44,
                                 "LightColor": 4292211921,
                                 "LightFalloffExponent": 2.0,
                                 "ShadowBias": 0.0010000000474974513,
@@ -35784,7 +35784,7 @@
                             "Parent": "Campus_Intro_EntryLight",
                             "Properties": {
                                 "AttenuationRadius": 9.0,
-                                "Intensity": 1.76,
+                                "Intensity": 0.88,
                                 "LightColor": 4294960860,
                                 "LightFalloffExponent": 2.0,
                                 "ShadowBias": 0.0010000000474974513,
@@ -35882,7 +35882,7 @@
                             "Parent": "Campus_Intro_DoorLight",
                             "Properties": {
                                 "AttenuationRadius": 9.0,
-                                "Intensity": 1.44,
+                                "Intensity": 0.72,
                                 "LightColor": 4285772287,
                                 "LightFalloffExponent": 2.0,
                                 "ShadowBias": 0.0010000000474974513,

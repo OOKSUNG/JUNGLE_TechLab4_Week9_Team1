@@ -45,7 +45,7 @@ def Verify(Actors, Data):
 
 def Main():
     Data = Campus.LoadMap(Root)
-    Target = Root / "Assets/Scenes/MapTest.scene"
+    Target = Root / "Assets/Scenes/Demo/06_Game.scene"
     Actors = Json.loads(Target.read_text(encoding="utf-8-sig"))["World"]["PersistentLevel"]["Actors"]
     Verify(Actors, Data)
     print("PASS spawn, fade endpoints, camera input, room collision and component/actor attachments")
@@ -57,10 +57,10 @@ def Main():
     with Tempfile.TemporaryDirectory(prefix="HitoriIntro") as Folder:
         Project = Path(Folder)
         Scenes = Project / "Assets/Scenes"
-        Scenes.mkdir(parents=True)
-        (Scenes / "MapTest.scene").write_bytes(Target.read_bytes())
+        (Scenes / "Demo").mkdir(parents=True)
+        (Scenes / "Demo/06_Game.scene").write_bytes(Target.read_bytes())
         Campus.BuildScene(Project, Data)
-        Rebuilt = Json.loads((Scenes / "MapTest.scene").read_text())["World"]["PersistentLevel"]["Actors"]
+        Rebuilt = Json.loads((Scenes / "Demo/06_Game.scene").read_text())["World"]["PersistentLevel"]["Actors"]
         Verify(Rebuilt, Data)
     print("PASS full campus regeneration preserves the arrival room and open entry passage")
 

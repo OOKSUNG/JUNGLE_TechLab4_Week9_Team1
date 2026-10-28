@@ -24,7 +24,7 @@
 #include <utility>
 
 namespace {
-	constexpr const char* MainScenePath{ "Assets/Scenes/Title.scene" };
+	constexpr const char* MainScenePath{ "Assets/Scenes/Demo/05_TheBasement.scene" };
 	constexpr uint32 MainViewId{ 1 };
 }
 

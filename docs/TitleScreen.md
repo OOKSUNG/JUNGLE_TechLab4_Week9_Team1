@@ -6,13 +6,13 @@
 - 버튼은 낡고 습기 먹은 무광 회벽·석재 질감의 CellarButton.png입니다.
 - 마우스를 올리면 밝은 CellarButtonHover.png로 바뀝니다.
 - 버튼 글자는 이미지에 포함하지 않고 기존 기본 폰트로 따로 그립니다.
-- 게임 시작: 기존 LoadScene으로 Assets/Scenes/MapTest.scene을 엽니다.
+- 게임 시작: 기존 LoadScene으로 Assets/Scenes/Demo/06_Game.scene을 엽니다.
 - 종료: 실행용 게임은 종료하고 에디터에서는 PIE 세션만 종료합니다.
-- 에디터에서는 Assets/Scenes/Title.scene을 열고 Play를 누릅니다.
-- 실행용 게임은 Title.scene부터 시작합니다.
+- 에디터에서는 Assets/Scenes/Demo/05_TheBasement.scene을 열고 Play를 누릅니다.
+- 실행용 게임은 Demo/05_TheBasement.scene부터 시작합니다.
 - 기존 타이틀 입력 바인딩이 포함된 엔진 빌드가 필요합니다.
   이번 배경·버튼·제목 변경 자체는 Lua와 이미지 자산 변경입니다.
-- Title.scene, TitleScreen.lua, Assets/UI/Title, MapTest.scene을 함께 배포합니다.
+- Demo/05_TheBasement.scene, TitleScreen.lua, Assets/UI/Title, Demo/06_Game.scene을 함께 배포합니다.
 
 ## 버튼 이미지
 

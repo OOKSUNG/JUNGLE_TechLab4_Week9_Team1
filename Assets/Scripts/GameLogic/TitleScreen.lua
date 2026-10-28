@@ -1,4 +1,4 @@
-local GAME_SCENE = "Assets/Scenes/MapTest.scene"
+local GAME_SCENE = "Assets/Scenes/Demo/06_Game.scene"
 local BACKGROUND = "Assets/UI/Title/Background.png"
 local BACKGROUND_WIDTH, BACKGROUND_HEIGHT = 1620, 864
 local TITLE_IMAGE = "Assets/UI/Title/TitleWordmark-v2.png"

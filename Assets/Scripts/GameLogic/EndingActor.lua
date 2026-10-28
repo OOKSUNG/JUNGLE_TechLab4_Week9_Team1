@@ -54,7 +54,7 @@ local function DrawResult(State, Config, Viewport, Scale)
     local Title = DrawButton("[Enter] 타이틀로", X, Y + Height + 16 * Scale, Width, Height, Viewport)
     if not Runtime.mActionRequested and (Restart or Title or IsKeyPressed(Key.R) or IsKeyPressed(Key.Enter)) then
         Runtime.mActionRequested = true
-        LoadScene((Restart or IsKeyPressed(Key.R)) and State.mResult.GameScene or "Assets/Scenes/Title.scene")
+        LoadScene((Restart or IsKeyPressed(Key.R)) and State.mResult.GameScene or "Assets/Scenes/Demo/05_TheBasement.scene")
     end
 end
 
@@ -108,9 +108,7 @@ end
 function Tick(DeltaTime)
     local State = EndingCutscene.GetState()
     if State == nil then
-        if sceneName == "Ending_Car" or sceneName == "Ending_Door" then
-            EndingCutscene.Start(self, sceneName)
-        elseif GameManager.Phase == GameManager.EPhase.Ending then
+        if GameManager.Phase == GameManager.EPhase.Ending then
             ResetTimeEffects()
             EndingCutscene.StartPending()
         end

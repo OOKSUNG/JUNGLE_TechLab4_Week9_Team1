@@ -93,7 +93,7 @@ def InstallIntroEntrance(Actors, Data):
 
 
 def UpdateIntroEntrance(Root):
-    Target = Root / "Assets/Scenes/MapTest.scene"
+    Target = Root / "Assets/Scenes/Demo/06_Game.scene"
     Scene = Json.loads(Target.read_text(encoding="utf-8-sig"))
     InstallIntroEntrance(Scene["World"]["PersistentLevel"]["Actors"], Campus.LoadMap(Root))
     Target.write_text(Json.dumps(Scene, ensure_ascii=False, indent=4) + "\n", encoding="utf-8")

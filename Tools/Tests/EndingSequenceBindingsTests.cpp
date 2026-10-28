@@ -99,8 +99,6 @@ int main() {
 	std::cerr << "Initializing ending sequence tests\n";
 	FLuaVM VM{};
 	Check(VM.Initialize(), "Lua VM initializes sequence bindings");
-	TestScene(VM, "Assets/Scenes/MapTest.scene", 2);
-	TestScene(VM, "Assets/Scenes/Ending_Car.scene", 1);
-	TestScene(VM, "Assets/Scenes/Ending_Door.scene", 1);
+	TestScene(VM, "Assets/Scenes/Demo/06_Game.scene", 2);
 	std::cout << "PASS: " << Checks << " ending sequence binding checks\n";
 }
