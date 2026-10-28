@@ -1,4 +1,5 @@
 local GameManager = require("GameManager")
+local Transition = require("Transition")
 
 local BGM_SOUND = "Assets/Sounds/공포브금검은집.mp3"
 local BGM_VOLUME = 0.35
@@ -10,7 +11,7 @@ local bFadingOut = false
 
 local function IsGameFinished()
     local phase = GameManager.Phase
-    return GameManager.IsJumpScaring() or phase == GameManager.EPhase.GameOver or phase == GameManager.EPhase.Escaped
+    return GameManager.IsJumpScaring() or phase == GameManager.EPhase.GameOver or phase == GameManager.EPhase.Escaped or phase == GameManager.EPhase.Ending
 end
 
 function BeginPlay()
@@ -26,7 +27,8 @@ end
 function Tick(dt)
     if handle ~= 0 and not bFadingOut and IsGameFinished() then
         bFadingOut = true
-        FadeSound(handle, 0.0, FADE_OUT_SECONDS)
+        local Duration = GameManager.Phase == GameManager.EPhase.Ending and Transition.Config.Duration or FADE_OUT_SECONDS
+        FadeSound(handle, 0.0, Duration)
     end
 end
 

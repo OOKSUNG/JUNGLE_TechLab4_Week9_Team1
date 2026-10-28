@@ -1,94 +1,86 @@
 local GameManager = require("GameManager")
 local Inventory = require("Inventory")
+local EndingCutscene = require("EndingCutscene")
 
-local EXIT_ROUTE = "Door"
-local INTERACTION_KEY = Key.E
-local INTERACTION_RADIUS = 2.0
-local MESSAGE_DURATION = 2.5
-local MESSAGE_SIZE = 40
-local MESSAGE_OFFSET = FVector2.new(0, -180)
+local ExitRoute = "Door"
+local InteractionKey = Key.E
+local InteractionRadius = 2.0
+local InteractionHeight = 2.0
+local MessageDuration = 2.5
+local MessageSize = 40
+local MessageOffset = FVector2.new(0, -180)
 
-local REQUIRED_ITEMS = {
+local RequiredItems = {
     { Id = "CardKey", Name = "카드키" },
 }
 
-local feedbackMessage = nil
-local feedbackTimeRemaining = 0.0
+local FeedbackMessage = nil
+local FeedbackTimeRemaining = 0.0
 
 local function GetMissingItemNames()
-    local missingItems = {}
+    local MissingItems = {}
 
-    for _, item in ipairs(REQUIRED_ITEMS) do
-        if not Inventory.Has(item.Id) then
-            table.insert(missingItems, item.Name)
+    for _, Item in ipairs(RequiredItems) do
+        if not Inventory.Has(Item.Id) then
+            table.insert(MissingItems, Item.Name)
         end
     end
 
-    return missingItems
+    return MissingItems
 end
 
 local function IsPlayerInRange()
-    local playerLocation = GameManager.GetPlayerLocation()
-    if not playerLocation then
+    local PlayerLocation = GameManager.GetPlayerLocation()
+    if not PlayerLocation then
         return false
     end
 
-    local exitLocation = self:GetActorLocation()
-    local dx = exitLocation.X - playerLocation.X
-    local dy = exitLocation.Y - playerLocation.Y
-    return dx * dx + dy * dy <= INTERACTION_RADIUS * INTERACTION_RADIUS
+    local ExitLocation = self:GetActorLocation()
+    local DeltaX = ExitLocation.X - PlayerLocation.X
+    local DeltaY = ExitLocation.Y - PlayerLocation.Y
+    return math.abs(ExitLocation.Z - PlayerLocation.Z) <= InteractionHeight and DeltaX * DeltaX + DeltaY * DeltaY <= InteractionRadius * InteractionRadius
 end
 
 local function TryEscape()
-    local missingItems = GetMissingItemNames()
-    if #missingItems > 0 then
-        feedbackMessage = "아직은 탈출할 수 없습니다, 필요한 아이템 : " .. table.concat(missingItems, ", ")
-        feedbackTimeRemaining = MESSAGE_DURATION
+    local MissingItems = GetMissingItemNames()
+    if #MissingItems > 0 then
+        FeedbackMessage = "아직은 탈출할 수 없습니다, 필요한 아이템 : " .. table.concat(MissingItems, ", ")
+        FeedbackTimeRemaining = MessageDuration
         return false
     end
 
-    GameManager.Escape(EXIT_ROUTE)
+    GameManager.Escape(ExitRoute)
     return true
 end
 
 function BeginPlay()
-    feedbackMessage = nil
-    feedbackTimeRemaining = 0.0
+    EndingCutscene.RegisterSubject(self, ExitRoute)
+    FeedbackMessage = nil
+    FeedbackTimeRemaining = 0.0
 end
 
-function Tick(dt)
+function Tick(DeltaTime)
     if not GameManager.IsPlaying() then
         return
     end
 
-    local bInRange = IsPlayerInRange()
-    if bInRange and IsKeyPressed(INTERACTION_KEY) then
+    local InRange = IsPlayerInRange()
+    if InRange and IsKeyPressed(InteractionKey) then
         if TryEscape() then
             return
         end
     end
 
-    if feedbackTimeRemaining > 0.0 then
-        feedbackTimeRemaining = math.max(0.0, feedbackTimeRemaining - dt)
-        AddUIText(
-            feedbackMessage,
-            MESSAGE_SIZE,
-            FVector2.new(0.5, 1),
-            FVector2.new(0.5, 1),
-            MESSAGE_OFFSET
-        )
-    elseif bInRange then
-        AddUIText(
-            "[E] Escape",
-            MESSAGE_SIZE,
-            FVector2.new(0.5, 1),
-            FVector2.new(0.5, 1),
-            MESSAGE_OFFSET
-        )
+    if FeedbackTimeRemaining > 0.0 then
+        FeedbackTimeRemaining = math.max(0.0, FeedbackTimeRemaining - DeltaTime)
+        AddUIText(FeedbackMessage, MessageSize, FVector2.new(0.5, 1), FVector2.new(0.5, 1), MessageOffset)
+    elseif InRange then
+        AddUIText("[E] 비상문으로 탈출", MessageSize, FVector2.new(0.5, 1), FVector2.new(0.5, 1), MessageOffset)
     end
 end
 
 function EndPlay()
-    feedbackMessage = nil
-    feedbackTimeRemaining = 0.0
+    EndingCutscene.UnregisterSubject(self)
+    FeedbackMessage = nil
+    FeedbackTimeRemaining = 0.0
 end

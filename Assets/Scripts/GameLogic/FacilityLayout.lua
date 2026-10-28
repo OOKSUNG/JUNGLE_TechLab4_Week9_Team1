@@ -13,7 +13,7 @@ return {
     },
     Props = {
         { Name = "FacilityProp01_01", Type = "CargoStack", Floor = 1, Location = { X = -4.5, Y = 3.5, Z = 0 }, Yaw = 0 },
-        { Name = "FacilityProp01_02", Type = "DrumPallet", Floor = 1, Location = { X = -3.0, Y = 15.5, Z = 0 }, Yaw = 90 },
+        { Name = "FacilityProp01_02", Type = "DrumPallet", Floor = 1, Location = { X = -3.0, Y = 18.5, Z = 0 }, Yaw = 90 },
         { Name = "FacilityProp01_03", Type = "ToolCart", Floor = 1, Location = { X = -15.0, Y = 3.5, Z = 0 }, Yaw = 0 },
         { Name = "FacilityProp01_04", Type = "StorageRack", Floor = 1, Location = { X = -7.0, Y = 4.0, Z = 0 }, Yaw = 0 },
         { Name = "FacilityProp01_05", Type = "PumpSkid", Floor = 1, Location = { X = -14.5, Y = 15.0, Z = 0 }, Yaw = 90 },
