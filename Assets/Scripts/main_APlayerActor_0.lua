@@ -23,7 +23,7 @@ function BeginPlay()
     print("BeginPlay!\n")
     Stamina.Reset()
     Initialize()
-    Log("[PlayerCamera] F6: head bob on/off, F7/F8: lower/higher strength, [: narrower view, ]: wider view")
+    Log("[PlayerCamera] F6: head bob on/off, F7/F8: lower/higher strength, [: escape items, ]: narrower view")
     Log("[PlayerCamera] F9: flashlight motion on/off, F10/F11: lower/higher strength, B or F12: light motion on/off")
 end
 
@@ -58,7 +58,7 @@ function Tick(DeltaTime)
     if DeltaTime <= 0.0 then
         return
     end
-    if GameManager.IsJumpScaring() or GameManager.Phase == GameManager.EPhase.GameOver then
+    if GameManager.IsJumpScaring() or GameManager.Phase == GameManager.EPhase.GameOver or GameManager.Phase == GameManager.EPhase.Ending or GameManager.Phase == GameManager.EPhase.Escaped then
         return
     end
 
@@ -103,11 +103,8 @@ function Tick(DeltaTime)
     end
 
     local FieldOfViewDelta = 0.0
-    if IsKeyPressed(Key.LeftBracket) then
-        FieldOfViewDelta = FieldOfViewDelta - 2.0
-    end
     if IsKeyPressed(Key.RightBracket) then
-        FieldOfViewDelta = FieldOfViewDelta + 2.0
+        FieldOfViewDelta = FieldOfViewDelta - 2.0
     end
     if FieldOfViewDelta ~= 0.0 then
         local FieldOfView = WalkingCamera.AdjustFieldOfView(WalkingStateKey, FieldOfViewDelta)
