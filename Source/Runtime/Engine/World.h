@@ -49,6 +49,15 @@ struct FOverlapInfo
 	}
 };
 
+// Lua가 변경하고 각 View의 ToneMap pass가 읽는 월드 단위 후처리 설정이다.
+struct FVignetteSettings
+{
+	float Intensity = 0.0f;
+	float Radius = 0.65f;
+	float Softness = 0.25f;
+	FVector Color = FVector::ZeroVector;
+};
+
 class UWorld : public UObject
 {
 	DECLARE_CLASS(UWorld, UObject)
@@ -73,6 +82,9 @@ public:
 	float GetTimeScale() const { return TimeScale; }
 
 	void ResetTimeEffects();
+	void SetVignette(float Intensity, float Radius, float Softness, const FVector& Color);
+	void ResetVignette() { VignetteSettings = FVignetteSettings{}; }
+	const FVignetteSettings& GetVignetteSettings() const { return VignetteSettings; }
 
 	const FGameTime& GetGameTime() const { return GameTime; }
 	float GetDeltaSeconds() const { return GameTime.GetDeltaWorldTimeSeconds(); }
@@ -195,6 +207,7 @@ private:
 
 	FGameTime GameTime;
 	float TimeScale = 1.0f;
+	FVignetteSettings VignetteSettings;
 
 	struct alignas(64) FGatherChunk
 	{

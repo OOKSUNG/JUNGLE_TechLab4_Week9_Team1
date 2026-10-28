@@ -251,6 +251,12 @@ void UExecutableEngine::RenderPostProcess(const FMinimalViewInfo& Camera) {
 	ColorDesc.LoadOp = ERenderTargetLoadOp::DontCare;
 	ToneMapPass.ColorRenderTargets.Add(ColorDesc);
 	RenderCommand::BeginRenderPass(ToneMapPass);
+	const FVignetteSettings& Vignette = mWorld->GetVignetteSettings();
+	mToneMapRenderer.SetVignette(
+		Vignette.Intensity,
+		Vignette.Radius,
+		Vignette.Softness,
+		Vignette.Color);
 	mToneMapRenderer.OnRender(mHDRTarget.get(), EToneMapMode::ACES);
 	RenderCommand::EndRenderPass(ToneMapPass);
 	RenderCommand::UnbindShaderResource(0, EShaderBindFlagBits::Pixel);

@@ -366,21 +366,10 @@ void UScriptComponent::BindScriptContext(sol::environment& TargetEnvironment)
     TargetEnvironment.set_function("GetViewportSize", [GetViewportInfo]() { return GetViewportInfo().Size; });
     TargetEnvironment.set_function("GetMousePosition", [GetViewportInfo]() { return GetViewportInfo().MousePosition; });
     TargetEnvironment.set_function("IsMouseOverGameViewport", [GetViewportInfo]() { return GetViewportInfo().bAcceptsMouseInput; });
-	TargetEnvironment.set_function("SetTimeScale", [GetOwnerWorld](float Scale)
-	{
-		if (UWorld* World = GetOwnerWorld())
-			World->SetTimeScale(Scale);
-	});
 	TargetEnvironment.set_function("SetGlobalTimeDilation", [GetOwnerWorld](float TimeDilation)
 	{
 		if (UWorld* World = GetOwnerWorld())
 			World->SetTimeScale(TimeDilation);
-	});
-	TargetEnvironment.set_function("GetTimeScale", [GetOwnerWorld]()
-	{
-		if (UWorld* World = GetOwnerWorld())
-			return World->GetTimeScale();
-		return 1.0f;
 	});
 	TargetEnvironment.set_function("GetGlobalTimeDilation", [GetOwnerWorld]()
 	{
@@ -422,6 +411,17 @@ void UScriptComponent::BindScriptContext(sol::environment& TargetEnvironment)
 	{
 		if (UWorld* World = GetOwnerWorld())
 			World->ResetTimeEffects();
+	});
+	TargetEnvironment.set_function("SetVignette",
+		[GetOwnerWorld](float Intensity, float Radius, float Softness, const FVector& Color)
+		{
+			if (UWorld* World = GetOwnerWorld())
+				World->SetVignette(Intensity, Radius, Softness, Color);
+		});
+	TargetEnvironment.set_function("ResetVignette", [GetOwnerWorld]()
+	{
+		if (UWorld* World = GetOwnerWorld())
+			World->ResetVignette();
 	});
 	TargetEnvironment.set_function("IsExecutableGame", [this]() {
 #if defined(EXECUTABLE)

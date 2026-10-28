@@ -1,4 +1,5 @@
 #pragma once
+#include "Math/Vector.h"
 #include "Render/PipelineState.h"
 #include "Render/Buffer.h"
 
@@ -17,9 +18,13 @@ struct alignas(16) FToneMapConstants
 {
 	float Exposure = 1.0f;
 	uint32 Mode = static_cast<uint32>(EToneMapMode::ACES);
-	float Padding[2]{};
+	float VignetteIntensity = 0.0f;
+	float VignetteRadius = 0.65f;
+
+	float VignetteSoftness = 0.25f;
+	float VignetteColor[3] = { 0.0f, 0.0f, 0.0f };
 };
-static_assert(sizeof(FToneMapConstants) == 16);
+static_assert(sizeof(FToneMapConstants) == 32);
 
 class FToneMapRenderer
 {
@@ -32,6 +37,7 @@ public:
 
 	void SetExposure(float InExposure) { Exposure = InExposure; }
 	float GetExposure() const { return Exposure; }
+	void SetVignette(float InIntensity, float InRadius, float InSoftness, const FVector& InColor);
 
 	FToneMapRenderer(const FToneMapRenderer&) = delete;
 	FToneMapRenderer& operator=(const FToneMapRenderer&) = delete;
@@ -42,4 +48,8 @@ private:
 	FPipelineState PipelineState;
 	TUniquePtr<FConstantBuffer> ConstantBuffer;
 	float Exposure = 1.0f;
+	float VignetteIntensity = 0.0f;
+	float VignetteRadius = 0.65f;
+	float VignetteSoftness = 0.25f;
+	FVector VignetteColor = FVector::ZeroVector;
 };
