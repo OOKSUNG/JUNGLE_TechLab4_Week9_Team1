@@ -39,6 +39,7 @@ void FSequencePlayer::SetPlaybackFrame(float InFrame)
 		return;
 	PlaybackFrame = FMath::Clamp(InFrame, static_cast<float>(SequenceData.StartFrame),
 		static_cast<float>(SequenceData.GetEndFrame()));
+	bFinished = false;
 	Pause();
 }
 
@@ -47,11 +48,15 @@ void FSequencePlayer::Play()
 	if (PlaybackFrame >= SequenceData.GetEndFrame())
 		PlaybackFrame = static_cast<float>(SequenceData.StartFrame);
 	bIsPlaying = true;
+	bPlaybackStarted = true;
+	bFinished = false;
 }
 
 void FSequencePlayer::Stop()
 {
 	Pause();
+	bPlaybackStarted = false;
+	bFinished = false;
 	PlaybackFrame = static_cast<float>(SequenceData.StartFrame);
 }
 
@@ -63,7 +68,10 @@ void FSequencePlayer::Tick(float DeltaTime)
 	const int32 EndFrame = SequenceData.GetEndFrame();
 	PlaybackFrame = static_cast<float>(FMath::Min(NextFrame, static_cast<double>(EndFrame)));
 	if (NextFrame >= EndFrame)
+	{
 		Pause();
+		bFinished = true;
+	}
 }
 
 bool FSequencePlayer::GetCurrentCameraKey(CameraKey& OutCamera) const

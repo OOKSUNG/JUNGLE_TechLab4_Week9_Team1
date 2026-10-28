@@ -3,6 +3,8 @@
 #include "GameFramework/Actor.h"
 #include "SequencePlayer.h"
 
+class UCameraComponent;
+
 class ASequenceActor : public AActor
 {
 	DECLARE_CLASS(ASequenceActor, AActor)
@@ -20,12 +22,21 @@ public:
 
 	FSequencePlayer& GetSequencePlayer() { return SequencePlayer; }
 	const FSequencePlayer& GetSequencePlayer() const { return SequencePlayer; }
-	void Play() { SequencePlayer.Play(); }
+	void Play();
 	void Pause() { SequencePlayer.Pause(); }
-	void Stop() { SequencePlayer.Stop(); }
+	void Stop();
 
 	bool bAutoPlay = false;
 
 private:
+	void ApplyCameraView();
+	void AcquireCamera(UCameraComponent* Camera);
+	void ReleaseCameraView();
+
 	FSequencePlayer SequencePlayer;
+	bool bCameraPlaybackActive = false;
+	uint32 ControlledCameraUUID = 0;
+	// 카메라 부모가 있는 경우에도 원래 배치를 복원할 수 있도록 상대 좌표로 보관한다.
+	CameraKey SavedCameraRelativeState{};
+	bool bSavedCameraTickEnabled = false;
 };
