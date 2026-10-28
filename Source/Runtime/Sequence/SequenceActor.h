@@ -25,6 +25,8 @@ public:
 	void Play();
 	void Pause() { SequencePlayer.Pause(); }
 	void Stop();
+	// 해당 게임 월드에서 재생을 시작한 Sequence의 현재 Fade 값. Stop 시에는 제외한다.
+	static float GetWorldFadeAlpha(UWorld* World);
 
 	bool bAutoPlay = false;
 

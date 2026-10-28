@@ -6,6 +6,7 @@
 #include "Asset/LOD/StaticMeshLODSelector.h"
 #include "Camera/CameraComponent.h"
 #include "Camera/PlayerCameraManager.h"
+#include "Sequence/SequenceActor.h"
 #include "Components/DirectionalLightComponent.h"
 #include "Components/TextRenderComponent.h"
 #include "Core/ResourcePaths.h"
@@ -257,7 +258,7 @@ void UExecutableEngine::RenderPostProcess(const FMinimalViewInfo& Camera) {
 		Vignette.Radius,
 		Vignette.Softness,
 		Vignette.Color);
-	mToneMapRenderer.OnRender(mHDRTarget.get(), EToneMapMode::ACES);
+	mToneMapRenderer.OnRender(mHDRTarget.get(), EToneMapMode::ACES, ASequenceActor::GetWorldFadeAlpha(mWorld));
 	RenderCommand::EndRenderPass(ToneMapPass);
 	RenderCommand::UnbindShaderResource(0, EShaderBindFlagBits::Pixel);
 

@@ -23,8 +23,10 @@ struct alignas(16) FToneMapConstants
 
 	float VignetteSoftness = 0.25f;
 	float VignetteColor[3] = { 0.0f, 0.0f, 0.0f };
+	float FadeAlpha = 0.0f;
+	float FadePadding[3] = {};
 };
-static_assert(sizeof(FToneMapConstants) == 32);
+static_assert(sizeof(FToneMapConstants) == 48);
 
 class FToneMapRenderer
 {
@@ -33,7 +35,7 @@ public:
 	~FToneMapRenderer() = default;
 
 	bool Init();
-	void OnRender(FTexture2D* InputTexture, EToneMapMode Mode);
+	void OnRender(FTexture2D* InputTexture, EToneMapMode Mode, float FadeAlpha = 0.0f);
 
 	void SetExposure(float InExposure) { Exposure = InExposure; }
 	float GetExposure() const { return Exposure; }

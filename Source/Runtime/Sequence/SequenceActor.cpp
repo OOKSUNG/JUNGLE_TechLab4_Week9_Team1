@@ -14,6 +14,23 @@ ASequenceActor::ASequenceActor()
 	PrimaryActorTick.TickGroup = ETickingGroup::PostUpdateWork;
 }
 
+float ASequenceActor::GetWorldFadeAlpha(UWorld* World)
+{
+	if (!World || (World->GetWorldType() != EWorldType::Game && World->GetWorldType() != EWorldType::PIE))
+		return 0.0f;
+	float FadeAlpha = 0.0f;
+	for (AActor* Actor : World->GetPersistentLevel()->GetActors())
+	{
+		auto* Sequence = Cast<ASequenceActor>(Actor);
+		if (!Sequence || Sequence->IsActorBeingDestroyed() || Sequence->SequencePlayer.IsStopped()) continue;
+		float CurrentAlpha = 0.0f;
+		if (Sequence->SequencePlayer.GetCurrentFadeAlpha(CurrentAlpha))
+			// 동시 재생 중인 Fade가 여러 개면 더 어두운 값을 사용한다. Pause 시에는 현재 값을 유지한다.
+			FadeAlpha = FMath::Max(FadeAlpha, CurrentAlpha);
+	}
+	return FadeAlpha;
+}
+
 void ASequenceActor::BeginPlay()	// bAutoPlay true 시 시작할때 Sequence가 시작됨
 {
 	Super::BeginPlay();
