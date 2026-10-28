@@ -66,12 +66,14 @@ end
 function GameManager.Reset()
     SetCursorMode(CursorMode.Free)
     JumpScare.Stop()
+    EndingCutscene.Stop()
     ResetProgress()
     ClearReferences()
 end
 
 function GameManager.StartGame()
     JumpScare.Stop()
+    EndingCutscene.Stop()
     EndingCutscene.ClearPending()
     ResetProgress()
     GameManager.Phase = GameManager.EPhase.Playing

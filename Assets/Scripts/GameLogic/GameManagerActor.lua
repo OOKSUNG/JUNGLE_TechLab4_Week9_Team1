@@ -1,6 +1,6 @@
 local GameManager = require("GameManager")
 local EndingCutscene = require("EndingCutscene")
-local Runtime = { mEndingRequested = false, mDanger = 0.0, mPulsePhase = 0.0 }
+local Runtime = { mDanger = 0.0, mPulsePhase = 0.0 }
 
 local DANGER_VIGNETTE = {
     NearDistance = 3.5,
@@ -88,7 +88,6 @@ local function UpdateVignette(DeltaTime)
 end
 
 function BeginPlay()
-    Runtime.mEndingRequested = false
     Runtime.mDanger = 0.0
     ResetVignette()
     EndingCutscene.SetGameScene("Assets/Scenes/" .. sceneName .. ".scene")
@@ -99,10 +98,7 @@ function Tick(DeltaTime)
     
     local Phase = GameManager.Phase
     if Phase == GameManager.EPhase.Ending then
-        if not Runtime.mEndingRequested then
-            Runtime.mEndingRequested = true
-            LoadScene(EndingCutscene.GetPendingScene())
-        end
+        ResetVignette()
         return
     end
     if (Phase == GameManager.EPhase.GameOver or Phase == GameManager.EPhase.Escaped) and IsKeyPressed(Key.R) then

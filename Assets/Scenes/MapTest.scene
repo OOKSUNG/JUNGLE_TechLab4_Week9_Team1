@@ -868,19 +868,19 @@
                             "Properties": {
                                 "Transform": {
                                     "Location": {
-                                        "X": 0.0,
-                                        "Y": 30.5,
-                                        "Z": 2.0
+                                        "X": 0,
+                                        "Y": 2.5,
+                                        "Z": 2
                                     },
                                     "Rotation": {
-                                        "Pitch": -0.0,
-                                        "Roll": 0.0,
-                                        "Yaw": 0.0
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
                                     },
                                     "Scale": {
-                                        "X": 1.0,
-                                        "Y": 62.0,
-                                        "Z": 4.0
+                                        "X": 1,
+                                        "Y": 6,
+                                        "Z": 4
                                     }
                                 }
                             }
@@ -893,24 +893,24 @@
                                     "Base": "DefaultMaterial",
                                     "Instance": {
                                         "BaseColor": {
-                                            "W": 1.0,
-                                            "X": 1.0,
-                                            "Y": 1.0,
-                                            "Z": 1.0
+                                            "W": 1,
+                                            "X": 1,
+                                            "Y": 1,
+                                            "Z": 1
                                         },
                                         "BlendState": "Opaque",
                                         "Properties": {},
                                         "SamplerState": "LinearWrap",
-                                        "Shininess": 28.0,
+                                        "Shininess": 28,
                                         "Textures": [
                                             "Assets/Textures/Facility/RustedSteel_BaseColor.png",
                                             "Assets/Textures/Facility/RustedSteel_Normal.png"
                                         ],
                                         "UVScrollSpeed": [
-                                            0.0,
-                                            0.0
+                                            0,
+                                            0
                                         ],
-                                        "WorldUVTileSize": 4.0
+                                        "WorldUVTileSize": 4
                                     }
                                 }
                             ],
@@ -919,19 +919,19 @@
                                 "StaticMesh": "Cube",
                                 "Transform": {
                                     "Location": {
-                                        "X": 0.0,
-                                        "Y": 0.0,
-                                        "Z": 0.0
+                                        "X": 0,
+                                        "Y": 0,
+                                        "Z": 0
                                     },
                                     "Rotation": {
-                                        "Pitch": 0.0,
-                                        "Roll": 0.0,
-                                        "Yaw": 0.0
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
                                     },
                                     "Scale": {
-                                        "X": 1.0,
-                                        "Y": 1.0,
-                                        "Z": 1.0
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
                                     }
                                 },
                                 "bBlockComponent": false,
@@ -954,19 +954,19 @@
                                 "ShapeColor": 4288517599,
                                 "Transform": {
                                     "Location": {
-                                        "X": 0.0,
-                                        "Y": 0.0,
-                                        "Z": 0.0
+                                        "X": 0,
+                                        "Y": 0,
+                                        "Z": 0
                                     },
                                     "Rotation": {
-                                        "Pitch": 0.0,
-                                        "Roll": 0.0,
-                                        "Yaw": 0.0
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
                                     },
                                     "Scale": {
-                                        "X": 1.0,
-                                        "Y": 1.0,
-                                        "Z": 1.0
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
                                     }
                                 },
                                 "bBlockComponent": true,
@@ -995,19 +995,19 @@
                             "Properties": {
                                 "Transform": {
                                     "Location": {
-                                        "X": -1.0,
-                                        "Y": 30.5,
-                                        "Z": 2.0
+                                        "X": 0,
+                                        "Y": 10,
+                                        "Z": 2
                                     },
                                     "Rotation": {
-                                        "Pitch": -0.0,
-                                        "Roll": 0.0,
-                                        "Yaw": 0.0
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
                                     },
                                     "Scale": {
-                                        "X": 1.0,
-                                        "Y": 62.0,
-                                        "Z": 4.0
+                                        "X": 1,
+                                        "Y": 5,
+                                        "Z": 4
                                     }
                                 }
                             }
@@ -1020,24 +1020,24 @@
                                     "Base": "DefaultMaterial",
                                     "Instance": {
                                         "BaseColor": {
-                                            "W": 1.0,
-                                            "X": 1.0,
-                                            "Y": 1.0,
-                                            "Z": 1.0
+                                            "W": 1,
+                                            "X": 1,
+                                            "Y": 1,
+                                            "Z": 1
                                         },
                                         "BlendState": "Opaque",
                                         "Properties": {},
                                         "SamplerState": "LinearWrap",
-                                        "Shininess": 28.0,
+                                        "Shininess": 28,
                                         "Textures": [
                                             "Assets/Textures/Facility/RustedSteel_BaseColor.png",
                                             "Assets/Textures/Facility/RustedSteel_Normal.png"
                                         ],
                                         "UVScrollSpeed": [
-                                            0.0,
-                                            0.0
+                                            0,
+                                            0
                                         ],
-                                        "WorldUVTileSize": 4.0
+                                        "WorldUVTileSize": 4
                                     }
                                 }
                             ],
@@ -1046,19 +1046,19 @@
                                 "StaticMesh": "Cube",
                                 "Transform": {
                                     "Location": {
-                                        "X": 0.0,
-                                        "Y": 0.0,
-                                        "Z": 0.0
+                                        "X": 0,
+                                        "Y": 0,
+                                        "Z": 0
                                     },
                                     "Rotation": {
-                                        "Pitch": 0.0,
-                                        "Roll": 0.0,
-                                        "Yaw": 0.0
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
                                     },
                                     "Scale": {
-                                        "X": 1.0,
-                                        "Y": 1.0,
-                                        "Z": 1.0
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
                                     }
                                 },
                                 "bBlockComponent": false,
@@ -1081,19 +1081,527 @@
                                 "ShapeColor": 4288517599,
                                 "Transform": {
                                     "Location": {
-                                        "X": 0.0,
-                                        "Y": 0.0,
-                                        "Z": 0.0
+                                        "X": 0,
+                                        "Y": 0,
+                                        "Z": 0
                                     },
                                     "Rotation": {
-                                        "Pitch": 0.0,
-                                        "Roll": 0.0,
-                                        "Yaw": 0.0
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
                                     },
                                     "Scale": {
-                                        "X": 1.0,
-                                        "Y": 1.0,
-                                        "Z": 1.0
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "DefaultSceneRoot"
+                },
+                {
+                    "AttachParent": {
+                        "Actor": 1,
+                        "Component": "DefaultSceneRoot"
+                    },
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "USceneComponent",
+                            "Name": "DefaultSceneRoot",
+                            "Parent": "",
+                            "Properties": {
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0,
+                                        "Y": 40,
+                                        "Z": 2
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 1,
+                                        "Y": 43,
+                                        "Z": 4
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "MapGen_WallMesh",
+                            "OverrideMaterials": [
+                                {
+                                    "Base": "DefaultMaterial",
+                                    "Instance": {
+                                        "BaseColor": {
+                                            "W": 1,
+                                            "X": 1,
+                                            "Y": 1,
+                                            "Z": 1
+                                        },
+                                        "BlendState": "Opaque",
+                                        "Properties": {},
+                                        "SamplerState": "LinearWrap",
+                                        "Shininess": 28,
+                                        "Textures": [
+                                            "Assets/Textures/Facility/RustedSteel_BaseColor.png",
+                                            "Assets/Textures/Facility/RustedSteel_Normal.png"
+                                        ],
+                                        "UVScrollSpeed": [
+                                            0,
+                                            0
+                                        ],
+                                        "WorldUVTileSize": 4
+                                    }
+                                }
+                            ],
+                            "Parent": "DefaultSceneRoot",
+                            "Properties": {
+                                "StaticMesh": "Cube",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0,
+                                        "Y": 0,
+                                        "Z": 0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "MapGen_WallBox",
+                            "Parent": "DefaultSceneRoot",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 0.5,
+                                    "Y": 0.5,
+                                    "Z": 0.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0,
+                                        "Y": 0,
+                                        "Z": 0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "DefaultSceneRoot"
+                },
+                {
+                    "AttachParent": {
+                        "Actor": 1,
+                        "Component": "DefaultSceneRoot"
+                    },
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "USceneComponent",
+                            "Name": "DefaultSceneRoot",
+                            "Parent": "",
+                            "Properties": {
+                                "Transform": {
+                                    "Location": {
+                                        "X": -1,
+                                        "Y": 2.5,
+                                        "Z": 2
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 1,
+                                        "Y": 6,
+                                        "Z": 4
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "MapGen_WallMesh",
+                            "OverrideMaterials": [
+                                {
+                                    "Base": "DefaultMaterial",
+                                    "Instance": {
+                                        "BaseColor": {
+                                            "W": 1,
+                                            "X": 1,
+                                            "Y": 1,
+                                            "Z": 1
+                                        },
+                                        "BlendState": "Opaque",
+                                        "Properties": {},
+                                        "SamplerState": "LinearWrap",
+                                        "Shininess": 28,
+                                        "Textures": [
+                                            "Assets/Textures/Facility/RustedSteel_BaseColor.png",
+                                            "Assets/Textures/Facility/RustedSteel_Normal.png"
+                                        ],
+                                        "UVScrollSpeed": [
+                                            0,
+                                            0
+                                        ],
+                                        "WorldUVTileSize": 4
+                                    }
+                                }
+                            ],
+                            "Parent": "DefaultSceneRoot",
+                            "Properties": {
+                                "StaticMesh": "Cube",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0,
+                                        "Y": 0,
+                                        "Z": 0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "MapGen_WallBox",
+                            "Parent": "DefaultSceneRoot",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 0.5,
+                                    "Y": 0.5,
+                                    "Z": 0.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0,
+                                        "Y": 0,
+                                        "Z": 0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "DefaultSceneRoot"
+                },
+                {
+                    "AttachParent": {
+                        "Actor": 1,
+                        "Component": "DefaultSceneRoot"
+                    },
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "USceneComponent",
+                            "Name": "DefaultSceneRoot",
+                            "Parent": "",
+                            "Properties": {
+                                "Transform": {
+                                    "Location": {
+                                        "X": -1,
+                                        "Y": 10,
+                                        "Z": 2
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 1,
+                                        "Y": 5,
+                                        "Z": 4
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "MapGen_WallMesh",
+                            "OverrideMaterials": [
+                                {
+                                    "Base": "DefaultMaterial",
+                                    "Instance": {
+                                        "BaseColor": {
+                                            "W": 1,
+                                            "X": 1,
+                                            "Y": 1,
+                                            "Z": 1
+                                        },
+                                        "BlendState": "Opaque",
+                                        "Properties": {},
+                                        "SamplerState": "LinearWrap",
+                                        "Shininess": 28,
+                                        "Textures": [
+                                            "Assets/Textures/Facility/RustedSteel_BaseColor.png",
+                                            "Assets/Textures/Facility/RustedSteel_Normal.png"
+                                        ],
+                                        "UVScrollSpeed": [
+                                            0,
+                                            0
+                                        ],
+                                        "WorldUVTileSize": 4
+                                    }
+                                }
+                            ],
+                            "Parent": "DefaultSceneRoot",
+                            "Properties": {
+                                "StaticMesh": "Cube",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0,
+                                        "Y": 0,
+                                        "Z": 0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "MapGen_WallBox",
+                            "Parent": "DefaultSceneRoot",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 0.5,
+                                    "Y": 0.5,
+                                    "Z": 0.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0,
+                                        "Y": 0,
+                                        "Z": 0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": true,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "DefaultSceneRoot"
+                },
+                {
+                    "AttachParent": {
+                        "Actor": 1,
+                        "Component": "DefaultSceneRoot"
+                    },
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "USceneComponent",
+                            "Name": "DefaultSceneRoot",
+                            "Parent": "",
+                            "Properties": {
+                                "Transform": {
+                                    "Location": {
+                                        "X": -1,
+                                        "Y": 40,
+                                        "Z": 2
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 1,
+                                        "Y": 43,
+                                        "Z": 4
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "MapGen_WallMesh",
+                            "OverrideMaterials": [
+                                {
+                                    "Base": "DefaultMaterial",
+                                    "Instance": {
+                                        "BaseColor": {
+                                            "W": 1,
+                                            "X": 1,
+                                            "Y": 1,
+                                            "Z": 1
+                                        },
+                                        "BlendState": "Opaque",
+                                        "Properties": {},
+                                        "SamplerState": "LinearWrap",
+                                        "Shininess": 28,
+                                        "Textures": [
+                                            "Assets/Textures/Facility/RustedSteel_BaseColor.png",
+                                            "Assets/Textures/Facility/RustedSteel_Normal.png"
+                                        ],
+                                        "UVScrollSpeed": [
+                                            0,
+                                            0
+                                        ],
+                                        "WorldUVTileSize": 4
+                                    }
+                                }
+                            ],
+                            "Parent": "DefaultSceneRoot",
+                            "Properties": {
+                                "StaticMesh": "Cube",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0,
+                                        "Y": 0,
+                                        "Z": 0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "MapGen_WallBox",
+                            "Parent": "DefaultSceneRoot",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 0.5,
+                                    "Y": 0.5,
+                                    "Z": 0.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0,
+                                        "Y": 0,
+                                        "Z": 0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
                                     }
                                 },
                                 "bBlockComponent": true,
@@ -33298,27 +33806,50 @@
                     "Class": "AActor",
                     "Components": [
                         {
-                            "Class": "UStaticMeshComponent",
-                            "Name": "UStaticMeshComponent_0",
-                            "OverrideMaterials": [],
-                            "Parent": "UBoxComponent_2",
+                            "Class": "USceneComponent",
+                            "Name": "DoorExit",
+                            "Parent": "",
                             "Properties": {
-                                "StaticMesh": "Models/Door_old/Door_Metal.obj",
                                 "Transform": {
                                     "Location": {
-                                        "X": -2.700000047683716,
-                                        "Y": -0.11999999731779099,
-                                        "Z": -0.4848485291004181
+                                        "X": -0.5,
+                                        "Y": 5.58,
+                                        "Z": 1.5
                                     },
                                     "Rotation": {
-                                        "Pitch": -0.0,
-                                        "Roll": 0.0,
-                                        "Yaw": -24.1299991607666
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
                                     },
                                     "Scale": {
-                                        "X": 0.6365236043930054,
-                                        "Y": 0.8688141107559204,
-                                        "Z": 0.3030303418636322
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "DoorExitPanel",
+                            "Parent": "DoorExit",
+                            "Properties": {
+                                "StaticMesh": "Models/Facility/SteelDoor.obj",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0,
+                                        "Y": 0.92,
+                                        "Z": 0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
                                     }
                                 },
                                 "bBlockComponent": false,
@@ -33326,47 +33857,48 @@
                                 "bGenerateOverlapEvents": false,
                                 "bReceiveShadow": true,
                                 "bVisible": true
-                            }
+                            },
+                            "OverrideMaterials": []
                         },
                         {
                             "Class": "UBoxComponent",
-                            "Name": "UBoxComponent_2",
-                            "Parent": "",
+                            "Name": "DoorExitCollision",
+                            "Parent": "DoorExit",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 0.5,
-                                    "Y": 0.5,
-                                    "Z": 0.5
+                                    "X": 0.12,
+                                    "Y": 0.92,
+                                    "Z": 1.48
                                 },
                                 "ShapeColor": 4288517599,
                                 "Transform": {
                                     "Location": {
-                                        "X": -2.030507802963257,
-                                        "Y": 6.277556896209717,
-                                        "Z": 1.0351016521453857
+                                        "X": 0,
+                                        "Y": 0.92,
+                                        "Z": 0
                                     },
                                     "Rotation": {
-                                        "Pitch": 0.0,
-                                        "Roll": 1.4999998807907104,
-                                        "Yaw": -3.1000001430511475
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
                                     },
                                     "Scale": {
-                                        "X": 0.9999999403953552,
-                                        "Y": 2.0999999046325684,
-                                        "Z": 4.0
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
                                     }
                                 },
-                                "bBlockComponent": false,
-                                "bCastShadow": true,
-                                "bDrawOnlyIfSelected": false,
+                                "bBlockComponent": true,
+                                "bCastShadow": false,
+                                "bDrawOnlyIfSelected": true,
                                 "bGenerateOverlapEvents": false,
-                                "bReceiveShadow": true,
+                                "bReceiveShadow": false,
                                 "bVisible": true
                             }
                         },
                         {
                             "Class": "UScriptComponent",
-                            "Name": "UScriptComponent_0",
+                            "Name": "DoorExitScript",
                             "Parent": "",
                             "Properties": {
                                 "ScriptPath": "Assets/Scripts/GameLogic/Exit_Door.lua"
@@ -33374,41 +33906,56 @@
                         }
                     ],
                     "Properties": {},
-                    "RootComponent": "UBoxComponent_2"
+                    "RootComponent": "DoorExit"
                 },
                 {
                     "Class": "AActor",
                     "Components": [
                         {
-                            "Class": "UScriptComponent",
-                            "Name": "UScriptComponent_1",
+                            "Class": "USceneComponent",
+                            "Name": "CarExit",
                             "Parent": "",
                             "Properties": {
-                                "ScriptPath": "Assets/Scripts/GameLogic/Exit_Car.lua"
+                                "Transform": {
+                                    "Location": {
+                                        "X": -6.5,
+                                        "Y": 15.5,
+                                        "Z": 0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 180
+                                    },
+                                    "Scale": {
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
+                                    }
+                                }
                             }
                         },
                         {
                             "Class": "UStaticMeshComponent",
-                            "Name": "UStaticMeshComponent_1",
-                            "OverrideMaterials": [],
-                            "Parent": "",
+                            "Name": "CarExitMesh",
+                            "Parent": "CarExit",
                             "Properties": {
                                 "StaticMesh": "Models/Post_Apocalyptic_UAZ/Post_Apocalyptic_UAZ.obj",
                                 "Transform": {
                                     "Location": {
-                                        "X": -6.499024391174316,
-                                        "Y": 15.856966972351074,
-                                        "Z": 0.0
+                                        "X": -1.64,
+                                        "Y": -0.11,
+                                        "Z": 0
                                     },
                                     "Rotation": {
-                                        "Pitch": -0.0,
-                                        "Roll": 0.0,
-                                        "Yaw": 0.0
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
                                     },
                                     "Scale": {
-                                        "X": 1.0,
-                                        "Y": 1.0,
-                                        "Z": 1.0
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
                                     }
                                 },
                                 "bBlockComponent": false,
@@ -33416,47 +33963,56 @@
                                 "bGenerateOverlapEvents": false,
                                 "bReceiveShadow": true,
                                 "bVisible": true
-                            }
+                            },
+                            "OverrideMaterials": []
                         },
                         {
                             "Class": "UBoxComponent",
-                            "Name": "UBoxComponent_3",
-                            "Parent": "UStaticMeshComponent_1",
+                            "Name": "CarExitCollision",
+                            "Parent": "CarExit",
                             "Properties": {
                                 "BoxExtent": {
-                                    "X": 0.5,
-                                    "Y": 0.5,
-                                    "Z": 0.5
+                                    "X": 2.5,
+                                    "Y": 1.35,
+                                    "Z": 1.55
                                 },
                                 "ShapeColor": 4288517599,
                                 "Transform": {
                                     "Location": {
-                                        "X": 1.9359631538391113,
-                                        "Y": 0.0,
-                                        "Z": 0.8278636932373047
+                                        "X": 0,
+                                        "Y": 0,
+                                        "Z": 1.55
                                     },
                                     "Rotation": {
-                                        "Pitch": 0.0,
-                                        "Roll": 0.0,
-                                        "Yaw": 0.0
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
                                     },
                                     "Scale": {
-                                        "X": 6.0,
-                                        "Y": 3.9600000381469727,
-                                        "Z": 1.0
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
                                     }
                                 },
-                                "bBlockComponent": false,
-                                "bCastShadow": true,
-                                "bDrawOnlyIfSelected": false,
+                                "bBlockComponent": true,
+                                "bCastShadow": false,
+                                "bDrawOnlyIfSelected": true,
                                 "bGenerateOverlapEvents": false,
-                                "bReceiveShadow": true,
+                                "bReceiveShadow": false,
                                 "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UScriptComponent",
+                            "Name": "CarExitScript",
+                            "Parent": "",
+                            "Properties": {
+                                "ScriptPath": "Assets/Scripts/GameLogic/Exit_Car.lua"
                             }
                         }
                     ],
                     "Properties": {},
-                    "RootComponent": "UStaticMeshComponent_1"
+                    "RootComponent": "CarExit"
                 },
                 {
                     "AttachParent": {
@@ -42469,19 +43025,19 @@
                             "Properties": {
                                 "Transform": {
                                     "Location": {
-                                        "X": -3.0000007152557373,
-                                        "Y": 13.679145812988281,
-                                        "Z": 0.0
+                                        "X": -3,
+                                        "Y": 18.5,
+                                        "Z": 0
                                     },
                                     "Rotation": {
-                                        "Pitch": 0.0,
-                                        "Roll": 0.0,
-                                        "Yaw": 90.0
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 90
                                     },
                                     "Scale": {
-                                        "X": 1.0,
-                                        "Y": 1.0,
-                                        "Z": 1.0
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
                                     }
                                 }
                             }
@@ -42495,7 +43051,7 @@
                                     "Base": "DefaultMaterial",
                                     "Instance": {
                                         "BaseColor": {
-                                            "W": 1.0,
+                                            "W": 1,
                                             "X": 0.75,
                                             "Y": 0.8199999928474426,
                                             "Z": 0.7900000214576721
@@ -42503,14 +43059,14 @@
                                         "BlendState": "Opaque",
                                         "Properties": {},
                                         "SamplerState": "LinearWrap",
-                                        "Shininess": 28.0,
+                                        "Shininess": 28,
                                         "Textures": [
                                             "Assets/Textures/Facility/RustedSteel_BaseColor.png",
                                             "Assets/Textures/Facility/RustedSteel_Normal.png"
                                         ],
                                         "UVScrollSpeed": [
-                                            0.0,
-                                            0.0
+                                            0,
+                                            0
                                         ],
                                         "WorldUVTileSize": 1.600000023841858
                                     }
@@ -42519,7 +43075,7 @@
                                     "Base": "DefaultMaterial",
                                     "Instance": {
                                         "BaseColor": {
-                                            "W": 1.0,
+                                            "W": 1,
                                             "X": 0.9399999976158142,
                                             "Y": 0.5,
                                             "Z": 0.25
@@ -42527,14 +43083,14 @@
                                         "BlendState": "Opaque",
                                         "Properties": {},
                                         "SamplerState": "LinearWrap",
-                                        "Shininess": 28.0,
+                                        "Shininess": 28,
                                         "Textures": [
                                             "Assets/Textures/Facility/RustedSteel_BaseColor.png",
                                             "Assets/Textures/Facility/RustedSteel_Normal.png"
                                         ],
                                         "UVScrollSpeed": [
-                                            0.0,
-                                            0.0
+                                            0,
+                                            0
                                         ],
                                         "WorldUVTileSize": 1.600000023841858
                                     }
@@ -42546,7 +43102,7 @@
                                     "Base": "EditorArrowMaterial",
                                     "Instance": {
                                         "BaseColor": {
-                                            "W": 1.0,
+                                            "W": 1,
                                             "X": 0.10000000149011612,
                                             "Y": 1.2999999523162842,
                                             "Z": 0.6499999761581421
@@ -42554,14 +43110,14 @@
                                         "BlendState": "Opaque",
                                         "Properties": {},
                                         "SamplerState": "LinearWrap",
-                                        "Shininess": 28.0,
+                                        "Shininess": 28,
                                         "Textures": [
                                             "WhiteTexture",
                                             "FlatNormalTexture"
                                         ],
                                         "UVScrollSpeed": [
-                                            0.0,
-                                            0.0
+                                            0,
+                                            0
                                         ]
                                     }
                                 }
@@ -42571,19 +43127,19 @@
                                 "StaticMesh": "Models/FacilityProps/DrumPallet.obj",
                                 "Transform": {
                                     "Location": {
-                                        "X": 0.0,
-                                        "Y": 0.0,
-                                        "Z": 0.0
+                                        "X": 0,
+                                        "Y": 0,
+                                        "Z": 0
                                     },
                                     "Rotation": {
-                                        "Pitch": 0.0,
-                                        "Roll": 0.0,
-                                        "Yaw": 0.0
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
                                     },
                                     "Scale": {
-                                        "X": 1.0,
-                                        "Y": 1.0,
-                                        "Z": 1.0
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
                                     }
                                 },
                                 "bBlockComponent": false,
@@ -42606,19 +43162,19 @@
                                 "ShapeColor": 4288517599,
                                 "Transform": {
                                     "Location": {
-                                        "X": 0.0,
-                                        "Y": 0.0,
+                                        "X": 0,
+                                        "Y": 0,
                                         "Z": 0.7149999737739563
                                     },
                                     "Rotation": {
-                                        "Pitch": 0.0,
-                                        "Roll": 0.0,
-                                        "Yaw": 0.0
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
                                     },
                                     "Scale": {
-                                        "X": 1.0,
-                                        "Y": 1.0,
-                                        "Z": 1.0
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
                                     }
                                 },
                                 "bBlockComponent": true,
@@ -56262,6 +56818,2106 @@
                     ],
                     "Properties": {},
                     "RootComponent": "FacilityDoor11Frame"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "USceneComponent",
+                            "Name": "DoorExitFrame",
+                            "Parent": "",
+                            "Properties": {
+                                "Transform": {
+                                    "Location": {
+                                        "X": -0.5,
+                                        "Y": 6.5,
+                                        "Z": 0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "DoorExitFrameMesh",
+                            "Parent": "DoorExitFrame",
+                            "Properties": {
+                                "StaticMesh": "Models/Facility/SteelDoorFrame.obj",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0,
+                                        "Y": 0,
+                                        "Z": 0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            },
+                            "OverrideMaterials": []
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "DoorExitFrameLeft",
+                            "Parent": "DoorExitFrame",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 0.8,
+                                    "Y": 0.15,
+                                    "Z": 1.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0,
+                                        "Y": -1.05,
+                                        "Z": 1.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": false,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": false,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "DoorExitFrameRight",
+                            "Parent": "DoorExitFrame",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 0.8,
+                                    "Y": 0.15,
+                                    "Z": 1.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0,
+                                        "Y": 1.05,
+                                        "Z": 1.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": false,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": false,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "DoorExitFrameHeader",
+                            "Parent": "DoorExitFrame",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 0.8,
+                                    "Y": 1.2,
+                                    "Z": 0.5
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0,
+                                        "Y": 0,
+                                        "Z": 3.5
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": false,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": false,
+                                "bVisible": true
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "DoorExitFrame"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "USceneComponent",
+                            "Name": "EndingGarageGate",
+                            "Parent": "",
+                            "Properties": {
+                                "Transform": {
+                                    "Location": {
+                                        "X": -0.5,
+                                        "Y": 15.5,
+                                        "Z": 2
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "EndingGarageGateMesh",
+                            "Parent": "EndingGarageGate",
+                            "Properties": {
+                                "StaticMesh": "Cube",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0,
+                                        "Y": 0,
+                                        "Z": 0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 0.3,
+                                        "Y": 6,
+                                        "Z": 4
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            },
+                            "OverrideMaterials": [
+                                {
+                                    "Base": "DefaultMaterial",
+                                    "Instance": {
+                                        "BaseColor": {
+                                            "W": 1,
+                                            "X": 1,
+                                            "Y": 1,
+                                            "Z": 1
+                                        },
+                                        "BlendState": "Opaque",
+                                        "Properties": {},
+                                        "SamplerState": "LinearWrap",
+                                        "Shininess": 28,
+                                        "Textures": [
+                                            "Assets/Textures/Facility/RustedSteel_BaseColor.png",
+                                            "Assets/Textures/Facility/RustedSteel_Normal.png"
+                                        ],
+                                        "UVScrollSpeed": [
+                                            0,
+                                            0
+                                        ],
+                                        "WorldUVTileSize": 4
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "Class": "UBoxComponent",
+                            "Name": "EndingGarageGateCollision",
+                            "Parent": "EndingGarageGate",
+                            "Properties": {
+                                "BoxExtent": {
+                                    "X": 0.15,
+                                    "Y": 3,
+                                    "Z": 2
+                                },
+                                "ShapeColor": 4288517599,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 0,
+                                        "Y": 0,
+                                        "Z": 0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
+                                    }
+                                },
+                                "bBlockComponent": true,
+                                "bCastShadow": false,
+                                "bDrawOnlyIfSelected": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": false,
+                                "bVisible": true
+                            }
+                        },
+                        {
+                            "Class": "UScriptComponent",
+                            "Name": "EndingGarageGateScript",
+                            "Parent": "",
+                            "Properties": {
+                                "ScriptPath": "Assets/Scripts/GameLogic/EndingGate.lua"
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "EndingGarageGate"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "EndingExteriorGround",
+                            "Parent": "",
+                            "Properties": {
+                                "StaticMesh": "Cube",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 38,
+                                        "Y": 12,
+                                        "Z": -0.35
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 110,
+                                        "Y": 40,
+                                        "Z": 0.6
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            },
+                            "OverrideMaterials": [
+                                {
+                                    "Base": "DefaultMaterial",
+                                    "Instance": {
+                                        "BaseColor": {
+                                            "X": 0.33,
+                                            "Y": 0.31,
+                                            "Z": 0.26,
+                                            "W": 1
+                                        },
+                                        "BlendState": "Opaque",
+                                        "Properties": {},
+                                        "SamplerState": "LinearWrap",
+                                        "Shininess": 192,
+                                        "Textures": [],
+                                        "UVScrollSpeed": [
+                                            0,
+                                            0
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "EndingExteriorGround"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "EndingEscapeRoad",
+                            "Parent": "",
+                            "Properties": {
+                                "StaticMesh": "Cube",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 40,
+                                        "Y": 15.5,
+                                        "Z": -0.04
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 81,
+                                        "Y": 5.8,
+                                        "Z": 0.08
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            },
+                            "OverrideMaterials": [
+                                {
+                                    "Base": "DefaultMaterial",
+                                    "Instance": {
+                                        "BaseColor": {
+                                            "X": 0.12,
+                                            "Y": 0.15,
+                                            "Z": 0.17,
+                                            "W": 1
+                                        },
+                                        "BlendState": "Opaque",
+                                        "Properties": {},
+                                        "SamplerState": "LinearWrap",
+                                        "Shininess": 192,
+                                        "Textures": [],
+                                        "UVScrollSpeed": [
+                                            0,
+                                            0
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "EndingEscapeRoad"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "EndingWalkway",
+                            "Parent": "",
+                            "Properties": {
+                                "StaticMesh": "Cube",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 16,
+                                        "Y": 6.5,
+                                        "Z": -0.02
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 33,
+                                        "Y": 3,
+                                        "Z": 0.04
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            },
+                            "OverrideMaterials": [
+                                {
+                                    "Base": "DefaultMaterial",
+                                    "Instance": {
+                                        "BaseColor": {
+                                            "X": 0.4,
+                                            "Y": 0.41,
+                                            "Z": 0.4,
+                                            "W": 1
+                                        },
+                                        "BlendState": "Opaque",
+                                        "Properties": {},
+                                        "SamplerState": "LinearWrap",
+                                        "Shininess": 192,
+                                        "Textures": [],
+                                        "UVScrollSpeed": [
+                                            0,
+                                            0
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "EndingWalkway"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "EndingRoadCurbLeft",
+                            "Parent": "",
+                            "Properties": {
+                                "StaticMesh": "Cube",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 40,
+                                        "Y": 12.35,
+                                        "Z": 0.08
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 81,
+                                        "Y": 0.18,
+                                        "Z": 0.16
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            },
+                            "OverrideMaterials": [
+                                {
+                                    "Base": "DefaultMaterial",
+                                    "Instance": {
+                                        "BaseColor": {
+                                            "X": 0.48,
+                                            "Y": 0.48,
+                                            "Z": 0.43,
+                                            "W": 1
+                                        },
+                                        "BlendState": "Opaque",
+                                        "Properties": {},
+                                        "SamplerState": "LinearWrap",
+                                        "Shininess": 192,
+                                        "Textures": [],
+                                        "UVScrollSpeed": [
+                                            0,
+                                            0
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "EndingRoadCurbLeft"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "EndingWalkwayCurbLeft",
+                            "Parent": "",
+                            "Properties": {
+                                "StaticMesh": "Cube",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 16,
+                                        "Y": 4.8,
+                                        "Z": 0.08
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 33,
+                                        "Y": 0.18,
+                                        "Z": 0.16
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            },
+                            "OverrideMaterials": [
+                                {
+                                    "Base": "DefaultMaterial",
+                                    "Instance": {
+                                        "BaseColor": {
+                                            "X": 0.55,
+                                            "Y": 0.54,
+                                            "Z": 0.47,
+                                            "W": 1
+                                        },
+                                        "BlendState": "Opaque",
+                                        "Properties": {},
+                                        "SamplerState": "LinearWrap",
+                                        "Shininess": 192,
+                                        "Textures": [],
+                                        "UVScrollSpeed": [
+                                            0,
+                                            0
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "EndingWalkwayCurbLeft"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "EndingRoadCurbRight",
+                            "Parent": "",
+                            "Properties": {
+                                "StaticMesh": "Cube",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 40,
+                                        "Y": 18.65,
+                                        "Z": 0.08
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 81,
+                                        "Y": 0.18,
+                                        "Z": 0.16
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            },
+                            "OverrideMaterials": [
+                                {
+                                    "Base": "DefaultMaterial",
+                                    "Instance": {
+                                        "BaseColor": {
+                                            "X": 0.48,
+                                            "Y": 0.48,
+                                            "Z": 0.43,
+                                            "W": 1
+                                        },
+                                        "BlendState": "Opaque",
+                                        "Properties": {},
+                                        "SamplerState": "LinearWrap",
+                                        "Shininess": 192,
+                                        "Textures": [],
+                                        "UVScrollSpeed": [
+                                            0,
+                                            0
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "EndingRoadCurbRight"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "EndingWalkwayCurbRight",
+                            "Parent": "",
+                            "Properties": {
+                                "StaticMesh": "Cube",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 16,
+                                        "Y": 8.2,
+                                        "Z": 0.08
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 33,
+                                        "Y": 0.18,
+                                        "Z": 0.16
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            },
+                            "OverrideMaterials": [
+                                {
+                                    "Base": "DefaultMaterial",
+                                    "Instance": {
+                                        "BaseColor": {
+                                            "X": 0.55,
+                                            "Y": 0.54,
+                                            "Z": 0.47,
+                                            "W": 1
+                                        },
+                                        "BlendState": "Opaque",
+                                        "Properties": {},
+                                        "SamplerState": "LinearWrap",
+                                        "Shininess": 192,
+                                        "Textures": [],
+                                        "UVScrollSpeed": [
+                                            0,
+                                            0
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "EndingWalkwayCurbRight"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "EndingRoadMark0",
+                            "Parent": "",
+                            "Properties": {
+                                "StaticMesh": "Cube",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 4,
+                                        "Y": 15.5,
+                                        "Z": 0.015
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 2.8,
+                                        "Y": 0.12,
+                                        "Z": 0.012
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            },
+                            "OverrideMaterials": [
+                                {
+                                    "Base": "DefaultMaterial",
+                                    "Instance": {
+                                        "BaseColor": {
+                                            "X": 0.84,
+                                            "Y": 0.72,
+                                            "Z": 0.36,
+                                            "W": 1
+                                        },
+                                        "BlendState": "Opaque",
+                                        "Properties": {},
+                                        "SamplerState": "LinearWrap",
+                                        "Shininess": 192,
+                                        "Textures": [],
+                                        "UVScrollSpeed": [
+                                            0,
+                                            0
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "EndingRoadMark0"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "EndingRoadMark1",
+                            "Parent": "",
+                            "Properties": {
+                                "StaticMesh": "Cube",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 11,
+                                        "Y": 15.5,
+                                        "Z": 0.015
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 2.8,
+                                        "Y": 0.12,
+                                        "Z": 0.012
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            },
+                            "OverrideMaterials": [
+                                {
+                                    "Base": "DefaultMaterial",
+                                    "Instance": {
+                                        "BaseColor": {
+                                            "X": 0.84,
+                                            "Y": 0.72,
+                                            "Z": 0.36,
+                                            "W": 1
+                                        },
+                                        "BlendState": "Opaque",
+                                        "Properties": {},
+                                        "SamplerState": "LinearWrap",
+                                        "Shininess": 192,
+                                        "Textures": [],
+                                        "UVScrollSpeed": [
+                                            0,
+                                            0
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "EndingRoadMark1"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "EndingRoadMark2",
+                            "Parent": "",
+                            "Properties": {
+                                "StaticMesh": "Cube",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 18,
+                                        "Y": 15.5,
+                                        "Z": 0.015
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 2.8,
+                                        "Y": 0.12,
+                                        "Z": 0.012
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            },
+                            "OverrideMaterials": [
+                                {
+                                    "Base": "DefaultMaterial",
+                                    "Instance": {
+                                        "BaseColor": {
+                                            "X": 0.84,
+                                            "Y": 0.72,
+                                            "Z": 0.36,
+                                            "W": 1
+                                        },
+                                        "BlendState": "Opaque",
+                                        "Properties": {},
+                                        "SamplerState": "LinearWrap",
+                                        "Shininess": 192,
+                                        "Textures": [],
+                                        "UVScrollSpeed": [
+                                            0,
+                                            0
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "EndingRoadMark2"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "EndingRoadMark3",
+                            "Parent": "",
+                            "Properties": {
+                                "StaticMesh": "Cube",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 25,
+                                        "Y": 15.5,
+                                        "Z": 0.015
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 2.8,
+                                        "Y": 0.12,
+                                        "Z": 0.012
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            },
+                            "OverrideMaterials": [
+                                {
+                                    "Base": "DefaultMaterial",
+                                    "Instance": {
+                                        "BaseColor": {
+                                            "X": 0.84,
+                                            "Y": 0.72,
+                                            "Z": 0.36,
+                                            "W": 1
+                                        },
+                                        "BlendState": "Opaque",
+                                        "Properties": {},
+                                        "SamplerState": "LinearWrap",
+                                        "Shininess": 192,
+                                        "Textures": [],
+                                        "UVScrollSpeed": [
+                                            0,
+                                            0
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "EndingRoadMark3"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "EndingRoadMark4",
+                            "Parent": "",
+                            "Properties": {
+                                "StaticMesh": "Cube",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 32,
+                                        "Y": 15.5,
+                                        "Z": 0.015
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 2.8,
+                                        "Y": 0.12,
+                                        "Z": 0.012
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            },
+                            "OverrideMaterials": [
+                                {
+                                    "Base": "DefaultMaterial",
+                                    "Instance": {
+                                        "BaseColor": {
+                                            "X": 0.84,
+                                            "Y": 0.72,
+                                            "Z": 0.36,
+                                            "W": 1
+                                        },
+                                        "BlendState": "Opaque",
+                                        "Properties": {},
+                                        "SamplerState": "LinearWrap",
+                                        "Shininess": 192,
+                                        "Textures": [],
+                                        "UVScrollSpeed": [
+                                            0,
+                                            0
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "EndingRoadMark4"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "EndingRoadMark5",
+                            "Parent": "",
+                            "Properties": {
+                                "StaticMesh": "Cube",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 39,
+                                        "Y": 15.5,
+                                        "Z": 0.015
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 2.8,
+                                        "Y": 0.12,
+                                        "Z": 0.012
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            },
+                            "OverrideMaterials": [
+                                {
+                                    "Base": "DefaultMaterial",
+                                    "Instance": {
+                                        "BaseColor": {
+                                            "X": 0.84,
+                                            "Y": 0.72,
+                                            "Z": 0.36,
+                                            "W": 1
+                                        },
+                                        "BlendState": "Opaque",
+                                        "Properties": {},
+                                        "SamplerState": "LinearWrap",
+                                        "Shininess": 192,
+                                        "Textures": [],
+                                        "UVScrollSpeed": [
+                                            0,
+                                            0
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "EndingRoadMark5"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "EndingRoadMark6",
+                            "Parent": "",
+                            "Properties": {
+                                "StaticMesh": "Cube",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 46,
+                                        "Y": 15.5,
+                                        "Z": 0.015
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 2.8,
+                                        "Y": 0.12,
+                                        "Z": 0.012
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            },
+                            "OverrideMaterials": [
+                                {
+                                    "Base": "DefaultMaterial",
+                                    "Instance": {
+                                        "BaseColor": {
+                                            "X": 0.84,
+                                            "Y": 0.72,
+                                            "Z": 0.36,
+                                            "W": 1
+                                        },
+                                        "BlendState": "Opaque",
+                                        "Properties": {},
+                                        "SamplerState": "LinearWrap",
+                                        "Shininess": 192,
+                                        "Textures": [],
+                                        "UVScrollSpeed": [
+                                            0,
+                                            0
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "EndingRoadMark6"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "EndingRoadMark7",
+                            "Parent": "",
+                            "Properties": {
+                                "StaticMesh": "Cube",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 53,
+                                        "Y": 15.5,
+                                        "Z": 0.015
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 2.8,
+                                        "Y": 0.12,
+                                        "Z": 0.012
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            },
+                            "OverrideMaterials": [
+                                {
+                                    "Base": "DefaultMaterial",
+                                    "Instance": {
+                                        "BaseColor": {
+                                            "X": 0.84,
+                                            "Y": 0.72,
+                                            "Z": 0.36,
+                                            "W": 1
+                                        },
+                                        "BlendState": "Opaque",
+                                        "Properties": {},
+                                        "SamplerState": "LinearWrap",
+                                        "Shininess": 192,
+                                        "Textures": [],
+                                        "UVScrollSpeed": [
+                                            0,
+                                            0
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "EndingRoadMark7"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "EndingRoadMark8",
+                            "Parent": "",
+                            "Properties": {
+                                "StaticMesh": "Cube",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 60,
+                                        "Y": 15.5,
+                                        "Z": 0.015
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 2.8,
+                                        "Y": 0.12,
+                                        "Z": 0.012
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            },
+                            "OverrideMaterials": [
+                                {
+                                    "Base": "DefaultMaterial",
+                                    "Instance": {
+                                        "BaseColor": {
+                                            "X": 0.84,
+                                            "Y": 0.72,
+                                            "Z": 0.36,
+                                            "W": 1
+                                        },
+                                        "BlendState": "Opaque",
+                                        "Properties": {},
+                                        "SamplerState": "LinearWrap",
+                                        "Shininess": 192,
+                                        "Textures": [],
+                                        "UVScrollSpeed": [
+                                            0,
+                                            0
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "EndingRoadMark8"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "EndingRoadMark9",
+                            "Parent": "",
+                            "Properties": {
+                                "StaticMesh": "Cube",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 67,
+                                        "Y": 15.5,
+                                        "Z": 0.015
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 2.8,
+                                        "Y": 0.12,
+                                        "Z": 0.012
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            },
+                            "OverrideMaterials": [
+                                {
+                                    "Base": "DefaultMaterial",
+                                    "Instance": {
+                                        "BaseColor": {
+                                            "X": 0.84,
+                                            "Y": 0.72,
+                                            "Z": 0.36,
+                                            "W": 1
+                                        },
+                                        "BlendState": "Opaque",
+                                        "Properties": {},
+                                        "SamplerState": "LinearWrap",
+                                        "Shininess": 192,
+                                        "Textures": [],
+                                        "UVScrollSpeed": [
+                                            0,
+                                            0
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "EndingRoadMark9"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "EndingRoadMark10",
+                            "Parent": "",
+                            "Properties": {
+                                "StaticMesh": "Cube",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 74,
+                                        "Y": 15.5,
+                                        "Z": 0.015
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 2.8,
+                                        "Y": 0.12,
+                                        "Z": 0.012
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            },
+                            "OverrideMaterials": [
+                                {
+                                    "Base": "DefaultMaterial",
+                                    "Instance": {
+                                        "BaseColor": {
+                                            "X": 0.84,
+                                            "Y": 0.72,
+                                            "Z": 0.36,
+                                            "W": 1
+                                        },
+                                        "BlendState": "Opaque",
+                                        "Properties": {},
+                                        "SamplerState": "LinearWrap",
+                                        "Shininess": 192,
+                                        "Textures": [],
+                                        "UVScrollSpeed": [
+                                            0,
+                                            0
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "EndingRoadMark10"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "EndingRoadMark11",
+                            "Parent": "",
+                            "Properties": {
+                                "StaticMesh": "Cube",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 81,
+                                        "Y": 15.5,
+                                        "Z": 0.015
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 2.8,
+                                        "Y": 0.12,
+                                        "Z": 0.012
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            },
+                            "OverrideMaterials": [
+                                {
+                                    "Base": "DefaultMaterial",
+                                    "Instance": {
+                                        "BaseColor": {
+                                            "X": 0.84,
+                                            "Y": 0.72,
+                                            "Z": 0.36,
+                                            "W": 1
+                                        },
+                                        "BlendState": "Opaque",
+                                        "Properties": {},
+                                        "SamplerState": "LinearWrap",
+                                        "Shininess": 192,
+                                        "Textures": [],
+                                        "UVScrollSpeed": [
+                                            0,
+                                            0
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "EndingRoadMark11"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "EndingRoadBarrierLeft0",
+                            "Parent": "",
+                            "Properties": {
+                                "StaticMesh": "Models/FacilityProps/SafetyBarrier.obj",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 5,
+                                        "Y": 10,
+                                        "Z": 0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            },
+                            "OverrideMaterials": []
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "EndingRoadBarrierLeft0"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "EndingRoadBarrierRight0",
+                            "Parent": "",
+                            "Properties": {
+                                "StaticMesh": "Models/FacilityProps/SafetyBarrier.obj",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 5,
+                                        "Y": 21,
+                                        "Z": 0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            },
+                            "OverrideMaterials": []
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "EndingRoadBarrierRight0"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "EndingRoadBarrierLeft1",
+                            "Parent": "",
+                            "Properties": {
+                                "StaticMesh": "Models/FacilityProps/SafetyBarrier.obj",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 18,
+                                        "Y": 10,
+                                        "Z": 0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            },
+                            "OverrideMaterials": []
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "EndingRoadBarrierLeft1"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "EndingRoadBarrierRight1",
+                            "Parent": "",
+                            "Properties": {
+                                "StaticMesh": "Models/FacilityProps/SafetyBarrier.obj",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 18,
+                                        "Y": 21,
+                                        "Z": 0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            },
+                            "OverrideMaterials": []
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "EndingRoadBarrierRight1"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "EndingRoadBarrierLeft2",
+                            "Parent": "",
+                            "Properties": {
+                                "StaticMesh": "Models/FacilityProps/SafetyBarrier.obj",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 31,
+                                        "Y": 10,
+                                        "Z": 0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            },
+                            "OverrideMaterials": []
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "EndingRoadBarrierLeft2"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "EndingRoadBarrierRight2",
+                            "Parent": "",
+                            "Properties": {
+                                "StaticMesh": "Models/FacilityProps/SafetyBarrier.obj",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 31,
+                                        "Y": 21,
+                                        "Z": 0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            },
+                            "OverrideMaterials": []
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "EndingRoadBarrierRight2"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "EndingRoadBarrierLeft3",
+                            "Parent": "",
+                            "Properties": {
+                                "StaticMesh": "Models/FacilityProps/SafetyBarrier.obj",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 44,
+                                        "Y": 10,
+                                        "Z": 0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            },
+                            "OverrideMaterials": []
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "EndingRoadBarrierLeft3"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "EndingRoadBarrierRight3",
+                            "Parent": "",
+                            "Properties": {
+                                "StaticMesh": "Models/FacilityProps/SafetyBarrier.obj",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 44,
+                                        "Y": 21,
+                                        "Z": 0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            },
+                            "OverrideMaterials": []
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "EndingRoadBarrierRight3"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "EndingRoadBarrierLeft4",
+                            "Parent": "",
+                            "Properties": {
+                                "StaticMesh": "Models/FacilityProps/SafetyBarrier.obj",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 57,
+                                        "Y": 10,
+                                        "Z": 0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            },
+                            "OverrideMaterials": []
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "EndingRoadBarrierLeft4"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "EndingRoadBarrierRight4",
+                            "Parent": "",
+                            "Properties": {
+                                "StaticMesh": "Models/FacilityProps/SafetyBarrier.obj",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 57,
+                                        "Y": 21,
+                                        "Z": 0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            },
+                            "OverrideMaterials": []
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "EndingRoadBarrierRight4"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "EndingRoadBarrierLeft5",
+                            "Parent": "",
+                            "Properties": {
+                                "StaticMesh": "Models/FacilityProps/SafetyBarrier.obj",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 70,
+                                        "Y": 10,
+                                        "Z": 0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            },
+                            "OverrideMaterials": []
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "EndingRoadBarrierLeft5"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UStaticMeshComponent",
+                            "Name": "EndingRoadBarrierRight5",
+                            "Parent": "",
+                            "Properties": {
+                                "StaticMesh": "Models/FacilityProps/SafetyBarrier.obj",
+                                "Transform": {
+                                    "Location": {
+                                        "X": 70,
+                                        "Y": 21,
+                                        "Z": 0
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
+                                    }
+                                },
+                                "bBlockComponent": false,
+                                "bCastShadow": true,
+                                "bGenerateOverlapEvents": false,
+                                "bReceiveShadow": true,
+                                "bVisible": true
+                            },
+                            "OverrideMaterials": []
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "EndingRoadBarrierRight5"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "USpotLightComponent",
+                            "Name": "EndingExteriorLight0",
+                            "Parent": "",
+                            "Properties": {
+                                "AttenuationRadius": 22,
+                                "InnerConeAngle": 55,
+                                "Intensity": 3,
+                                "LightColor": 4294961895,
+                                "LightFalloffExponent": 3.700000047683716,
+                                "OuterConeAngle": 85,
+                                "ShadowBias": 0.0010000000474974513,
+                                "ShadowMapResolution": 1024,
+                                "ShadowPCFKernelSize": 2,
+                                "SourceRadius": 0.029999999329447746,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 7,
+                                        "Y": 6.5,
+                                        "Z": 6
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 85,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
+                                    }
+                                },
+                                "bCastShadows": true,
+                                "bUsePCSS": false,
+                                "bVisible": true
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "EndingExteriorLight0"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "USpotLightComponent",
+                            "Name": "EndingExteriorLight1",
+                            "Parent": "",
+                            "Properties": {
+                                "AttenuationRadius": 28,
+                                "InnerConeAngle": 55,
+                                "Intensity": 4,
+                                "LightColor": 4294961895,
+                                "LightFalloffExponent": 3.700000047683716,
+                                "OuterConeAngle": 85,
+                                "ShadowBias": 0.0010000000474974513,
+                                "ShadowMapResolution": 1024,
+                                "ShadowPCFKernelSize": 2,
+                                "SourceRadius": 0.029999999329447746,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 9,
+                                        "Y": 15.5,
+                                        "Z": 7
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 85,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
+                                    }
+                                },
+                                "bCastShadows": true,
+                                "bUsePCSS": false,
+                                "bVisible": true
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "EndingExteriorLight1"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "USpotLightComponent",
+                            "Name": "EndingExteriorLight2",
+                            "Parent": "",
+                            "Properties": {
+                                "AttenuationRadius": 38,
+                                "InnerConeAngle": 55,
+                                "Intensity": 5,
+                                "LightColor": 4294961895,
+                                "LightFalloffExponent": 3.700000047683716,
+                                "OuterConeAngle": 85,
+                                "ShadowBias": 0.0010000000474974513,
+                                "ShadowMapResolution": 1024,
+                                "ShadowPCFKernelSize": 2,
+                                "SourceRadius": 0.029999999329447746,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 34,
+                                        "Y": 15.5,
+                                        "Z": 9
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 85,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
+                                    }
+                                },
+                                "bCastShadows": false,
+                                "bUsePCSS": false,
+                                "bVisible": true
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "EndingExteriorLight2"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "USpotLightComponent",
+                            "Name": "EndingExteriorLight3",
+                            "Parent": "",
+                            "Properties": {
+                                "AttenuationRadius": 38,
+                                "InnerConeAngle": 55,
+                                "Intensity": 5,
+                                "LightColor": 4294961895,
+                                "LightFalloffExponent": 3.700000047683716,
+                                "OuterConeAngle": 85,
+                                "ShadowBias": 0.0010000000474974513,
+                                "ShadowMapResolution": 1024,
+                                "ShadowPCFKernelSize": 2,
+                                "SourceRadius": 0.029999999329447746,
+                                "Transform": {
+                                    "Location": {
+                                        "X": 66,
+                                        "Y": 15.5,
+                                        "Z": 9
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 85,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
+                                    }
+                                },
+                                "bCastShadows": false,
+                                "bUsePCSS": false,
+                                "bVisible": true
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "EndingExteriorLight3"
+                },
+                {
+                    "Class": "AActor",
+                    "Components": [
+                        {
+                            "Class": "UCameraComponent",
+                            "Name": "InPlaceEndingCamera",
+                            "Parent": "",
+                            "Properties": {
+                                "Transform": {
+                                    "Location": {
+                                        "X": -10.3,
+                                        "Y": 12.1,
+                                        "Z": 2.2
+                                    },
+                                    "Rotation": {
+                                        "Pitch": 0,
+                                        "Roll": 0,
+                                        "Yaw": 0
+                                    },
+                                    "Scale": {
+                                        "X": 1,
+                                        "Y": 1,
+                                        "Z": 1
+                                    }
+                                },
+                                "mFieldOfView": 58,
+                                "mAspectRatio": 1.7777777777777777,
+                                "mNearClipPlane": 0.05,
+                                "mFarClipPlane": 500,
+                                "mMoveSpeed": 0,
+                                "mMouseSensitivity": 0,
+                                "mWheelSpeed": 0
+                            }
+                        },
+                        {
+                            "Class": "UScriptComponent",
+                            "Name": "EndingDirector",
+                            "Parent": "",
+                            "Properties": {
+                                "ScriptPath": "Assets/Scripts/GameLogic/EndingActor.lua"
+                            }
+                        }
+                    ],
+                    "Properties": {},
+                    "RootComponent": "InPlaceEndingCamera"
                 }
             ],
             "Properties": {}

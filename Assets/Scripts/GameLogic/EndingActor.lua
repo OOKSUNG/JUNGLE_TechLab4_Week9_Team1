@@ -1,4 +1,5 @@
 local EndingCutscene = require("EndingCutscene")
+local GameManager = require("GameManager")
 local Black = "Assets/UI/Title/Black.png"
 local Runtime = { mActionRequested = false, mCreditsTime = 0.0, mCreditsDone = false }
 
@@ -80,8 +81,7 @@ end
 
 local function DrawCutscene(State, Config, Viewport, Scale)
     local Time = State.mElapsed
-    local Shutter = math.max(math.max(0.0, 1.0 - Time / 0.7), math.max(0.0, (Time - Config.Duration + 1.0)))
-    local BarHeight = Viewport.Y * (0.115 + 0.385 * math.min(1.0, Shutter))
+    local BarHeight = Viewport.Y * 0.115
     AddUIImage(Black, V(Viewport.X, BarHeight), V(0, 0), V(0, 0), V(0, 0))
     AddUIImage(Black, V(Viewport.X, BarHeight), V(0, 1), V(0, 1), V(0, 0))
     if Time > 0.7 and Time < 3.0 then
@@ -99,13 +99,22 @@ function BeginPlay()
     Runtime.mActionRequested = false
     Runtime.mCreditsTime = 0.0
     Runtime.mCreditsDone = false
-    EndingCutscene.Start(self, sceneName)
+    EndingCutscene.RegisterView(self)
 end
 
 function Tick(DeltaTime)
     local State = EndingCutscene.GetState()
     if State == nil then
-        return
+        if sceneName == "Ending_Car" or sceneName == "Ending_Door" then
+            EndingCutscene.Start(self, sceneName)
+        elseif GameManager.Phase == GameManager.EPhase.Ending then
+            ResetTimeEffects()
+            EndingCutscene.StartPending()
+        end
+        State = EndingCutscene.GetState()
+        if State == nil then
+            return
+        end
     end
     local WasFinished = State.mFinished
     if not State.mFinished and State.mElapsed > 0.35 and (IsKeyPressed(Key.Space) or IsKeyPressed(Key.Enter)) then
@@ -120,7 +129,7 @@ function Tick(DeltaTime)
     local Config = EndingCutscene.Config[State.mRoute]
     if State.mFinished then
         if not WasFinished then
-            AddUIImage(Black, Viewport, V(0, 0), V(0, 0), V(0, 0))
+            -- 컷신이 끝난 프레임은 비워 두고, 다음 프레임부터 크레딧을 띄운다.
         elseif not Runtime.mCreditsDone then
             DrawCredits(DeltaTime, Viewport, Scale)
         else
@@ -132,5 +141,5 @@ function Tick(DeltaTime)
 end
 
 function EndPlay()
-    EndingCutscene.Stop()
+    EndingCutscene.UnregisterView(self)
 end
