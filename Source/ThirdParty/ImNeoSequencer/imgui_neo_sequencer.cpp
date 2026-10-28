@@ -1105,7 +1105,7 @@ namespace ImGui
                context.SelectedTimeline == openTimeline;
     }
 
-    bool BeginNeoTimelineEx(const char* label, bool* open, ImGuiNeoTimelineFlags flags)
+    bool BeginNeoTimelineEx(const char* label, bool* open, ImGuiNeoTimelineFlags flags, float* value)
     {
         IM_ASSERT(inSequencer && "Not in active sequencer!");
 
@@ -1120,6 +1120,11 @@ namespace ImGui
         labelSize.y += imStyle.FramePadding.y * 2 + style.ItemSpacing.y * 2;
         labelSize.x += imStyle.FramePadding.x * 2 + style.ItemSpacing.x * 2 +
                        (float) currentTimelineDepth * style.DepthItemSpacing;
+
+        const float valueWidth = GetFontSize() * 5.0f;
+        const float labelWidth = labelSize.x;
+        if (value)
+            labelSize.x += imStyle.ItemSpacing.x + valueWidth;
 
 
         bool isGroup = flags & ImGuiNeoTimelineFlags_Group && closable;
@@ -1185,6 +1190,17 @@ namespace ImGui
                                    color,
                                    isGroup,
                                    isGroup && (*open));
+
+            if (value)
+            {
+                const ImVec2 savedCursor = GetCursorScreenPos();
+                SetCursorScreenPos(context.ValuesCursor + ImVec2(labelWidth, style.ItemSpacing.y));
+                PushID(id);
+                SetNextItemWidth(valueWidth);
+                DragFloat("##Value", value, 0.01f, 0.0f, 1.0f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
+                PopID();
+                SetCursorScreenPos(savedCursor);
+            }
 
         }
 

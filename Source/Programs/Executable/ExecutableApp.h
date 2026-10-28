@@ -12,6 +12,7 @@
 #include "Text/TextRenderer.h"
 
 struct FLODViewContext;
+struct FMinimalViewInfo;
 
 class UExecutableEngine : public UGameEngine {
 	DECLARE_CLASS(UExecutableEngine, UGameEngine)
@@ -25,13 +26,13 @@ public:
 	FUIRenderer* GetUIRenderer() override { return &mUIRenderer; }
 
 private:
-	void RenderFrame(UCameraComponent& Camera);
-	void RenderShadows(const UCameraComponent& Camera, const FLODViewContext& View, FViewConstants& ViewConstants);
-	void RenderScene(const UCameraComponent& Camera, const FViewConstants& ViewConstants);
-	void RenderPostProcess(const UCameraComponent& Camera);
+	void RenderFrame(const FMinimalViewInfo& Camera);
+	void RenderShadows(const FMinimalViewInfo& Camera, const FLODViewContext& View, FViewConstants& ViewConstants);
+	void RenderScene(const FMinimalViewInfo& Camera, const FViewConstants& ViewConstants);
+	void RenderPostProcess(const FMinimalViewInfo& Camera);
 	void RenderText(const FMatrix& ViewProjection);
 	static FMatrix BuildBillboardMatrix(const FVector& Position, float Width, float Height, const void* ViewContext);
-	static void AppendShadowFrustumCorners(const UCameraComponent& Camera, float NearDistance, float FarDistance, TArray<FVector>& OutCorners);
+	static void AppendShadowFrustumCorners(const FMinimalViewInfo& Camera, float NearDistance, float FarDistance, TArray<FVector>& OutCorners);
 
 private:
 	UWorld* mWorld{};

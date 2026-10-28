@@ -4,19 +4,10 @@
 #include "Editor/EditorUI/EditorPanel.h"
 #include "ThirdParty/ImNeoSequencer/imgui_neo_sequencer.h"
 
-#include <variant>
+#include "Sequence/SequencePlayer.h"
+#include <functional>
 
-struct CameraKey	// KeyFrame에서의 Camera 정보
-{
-	FVector Location;
-	FRotator Rotation;
-};
-
-struct FadeKey	// KeyFrame 구간 내에서의 Fade 정보
-{
-	float StartAlpha;
-	float EndAlpha;
-};
+class ASequenceActor;
 
 class FSequencePanel : public IEditorPanel
 {
@@ -26,51 +17,26 @@ public:
 	void OnRender() override;
 
 	const char* GetPanelName() const override { return "Sequence"; }
+	void SetViewportCameraProvider(std::function<bool(CameraKey&)> InProvider) { ViewportCameraProvider = std::move(InProvider); }	// 키 기록용 현재 뷰포트 카메라
+	void SetSequenceActorProvider(std::function<ASequenceActor*()> InProvider) { SequenceActorProvider = std::move(InProvider); }
+	void SetCreateSequenceActorCallback(std::function<void()> InCallback) { CreateSequenceActorCallback = std::move(InCallback); }
 
 private:
 
-	struct FCameraSection	// KeyFrame 구간 정보가 같이 담긴 Camera Section
-	{
-		int32 KeyFrames[2] = {};
-		int KeyCount = 0;
-		CameraKey KeyCam[2] = {};
-	};
+	static bool IsFadeLayoutValid(const FFadeTimelineTrack& Track);
+	// EditorEngine에 요청해 편집할 Actor를 얻거나 새 Actor를 만든다. 패널이 Actor를 소유하지 않는다.
+	std::function<ASequenceActor*()> SequenceActorProvider;
+	std::function<void()> CreateSequenceActorCallback;
+	// Add Key용 카메라 스냅샷을 채워주는 함수. 뷰포트 접근은 EditorEngine이 담당한다.
+	std::function<bool(CameraKey&)> ViewportCameraProvider;
 
-	struct FFadeSection		// KeyFrame 구간 정보가 같이 담긴 Fade Section
-	{
-		int32 KeyFrames[2] = {};
-		int KeyCount = 0;
-		FadeKey KeyFade;
-	};
-	struct FCameraTimelineTrack
-	{
-		std::vector<FCameraSection> CamSections;
-	};
-
-	struct FFadeTimelineTrack
-	{
-		std::vector<FFadeSection> FadeSections;
-	};
-
-	struct FTimelineTrack	// 타임라인 한줄에 담긴 정보, Row의 경우 카메라 or Fade 효과냐에 따라 쓸 Row가 다르므로 Variant 사용
-	{
-		const char* Name;
-		ImVec4 Color;
-		std::variant<FCameraTimelineTrack, FFadeTimelineTrack> Rows;
-	};
-
-
-	FTimelineTrack Rows[3] = { // Row 기본세팅
-		{ "Camera", ImVec4(0.31f, 0.59f, 0.90f, 0.30f), FCameraTimelineTrack{} },
-		{ "Fade In", ImVec4(0.59f, 0.43f, 0.82f, 0.30f), FFadeTimelineTrack{} },
-		{ "Fade Out", ImVec4(0.82f, 0.51f, 0.31f, 0.30f), FFadeTimelineTrack{} }
-	};
-
-	int32 StartFrame = 0;
-	int32 EndFrameSecond = 100;
-	int32 EndFrame = 0;
 	int SelectedTrack = 0;
-	float PlaybackFrame = 0;	// Play할때 시작하는 프레임값
-	int PlaybackFPS = 30;	// Play 할때 사용할 FPS
-	bool bIsPlaying = false;
+	// Fade 트랙 옆 입력란의 값. Add Key 시 키에 복사되며, 재생/커서 이동 시 보간값으로 갱신된다.
+	float NewFadeKeyAlpha = 0.0f;
+	// 같은 프레임에서 직접 입력한 값을 보간 결과로 덮어쓰지 않기 위한 상태.
+	float LastFadeValueFrame = 0.0f;
+	bool bFadeValueEdited = false;
+	bool bResetSequenceSelection = false;
+	// Actor 주소를 보관하지 않고 식별자만 비교해 편집 대상 변경을 감지한다.
+	uint32 EditedActorUUID = 0;
 };

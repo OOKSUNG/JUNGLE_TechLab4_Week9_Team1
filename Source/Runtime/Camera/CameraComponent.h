@@ -4,6 +4,7 @@
 #include "../Components/SceneComponent.h"
 #include "../Math/EngineMath.h"
 #include "../Math/Rotator.h"
+#include "Camera/MinimalViewInfo.h"
 
 
 class UCameraComponent : public USceneComponent {
@@ -26,6 +27,7 @@ public:
 public:
 	// 매 프레임 카메라 입력/이동 처리
 	virtual void TickComponent(float DeltaTime) override;
+	void GetCameraView(FMinimalViewInfo& OutView) const;
 
 	// Camera 행렬 계산
 	FMatrix GetViewMatrix() const;

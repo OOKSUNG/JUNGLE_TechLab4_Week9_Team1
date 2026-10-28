@@ -127,7 +127,8 @@ namespace ImGui {
     IMGUI_API void EndNeoTimeLine(); //Call only when BeginNeoTimeline() returns true!!
 
     // Fully customizable timeline with per key callback
-    IMGUI_API bool BeginNeoTimelineEx(const char* label, bool * open = nullptr, ImGuiNeoTimelineFlags flags = ImGuiNeoTimelineFlags_None);
+    // Optional inline 0..1 value editor beside the timeline label.
+    IMGUI_API bool BeginNeoTimelineEx(const char* label, bool * open = nullptr, ImGuiNeoTimelineFlags flags = ImGuiNeoTimelineFlags_None, float* value = nullptr);
     IMGUI_API void NeoKeyframe(int32_t* value);
     IMGUI_API void NeoActiveZone(ImGuiID id, int32_t* from, int32_t* to);
     IMGUI_API void NeoActiveZoneHandle(int32_t* frame, const ImVec4& bb);
