@@ -61,6 +61,14 @@ void UWorld::SetVignette(float Intensity, float Radius, float Softness, const FV
 	};
 }
 
+void UWorld::ResetVignette()
+{
+	// 연출 파라미터만 초기화하고 Settings 패널의 마스터 스위치 상태는 유지한다.
+	const bool bWasEnabled = VignetteSettings.bEnabled;
+	VignetteSettings = FVignetteSettings{};
+	VignetteSettings.bEnabled = bWasEnabled;
+}
+
 bool UWorld::Init()
 {
 	// Spawn Actor로 카메라 생성하고 세팅하기

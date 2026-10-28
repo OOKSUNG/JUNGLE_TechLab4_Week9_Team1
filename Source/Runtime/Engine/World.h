@@ -52,10 +52,14 @@ struct FOverlapInfo
 // Lua가 변경하고 각 View의 ToneMap pass가 읽는 월드 단위 후처리 설정이다.
 struct FVignetteSettings
 {
+	// 렌더링 마스터 스위치다. Intensity가 0이면 활성 상태여도 화면에는 적용되지 않는다.
+	bool bEnabled = true;
 	float Intensity = 0.0f;
 	float Radius = 0.65f;
 	float Softness = 0.25f;
 	FVector Color = FVector::ZeroVector;
+
+	float GetEffectiveIntensity() const { return bEnabled ? Intensity : 0.0f; }
 };
 
 class UWorld : public UObject
@@ -83,7 +87,9 @@ public:
 
 	void ResetTimeEffects();
 	void SetVignette(float Intensity, float Radius, float Softness, const FVector& Color);
-	void ResetVignette() { VignetteSettings = FVignetteSettings{}; }
+	void SetVignetteEnabled(bool bEnabled) { VignetteSettings.bEnabled = bEnabled; }
+	bool IsVignetteEnabled() const { return VignetteSettings.bEnabled; }
+	void ResetVignette();
 	const FVignetteSettings& GetVignetteSettings() const { return VignetteSettings; }
 
 	const FGameTime& GetGameTime() const { return GameTime; }

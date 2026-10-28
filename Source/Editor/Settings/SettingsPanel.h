@@ -76,7 +76,7 @@ private:
     // View별 Transform·투영·표시 설정을 읽어 저장용 스냅샷에 반영한다.
     void ReadViewportSettings(FEditorSettings& Out) const;
     void ApplyViewportSettings();
-    FMultipleViewportsAdapter* ViewportAdapter = nullptr;
-	UWorld* World;
+	FMultipleViewportsAdapter* ViewportAdapter = nullptr;
+	UWorld* World = nullptr;
 	FEditorSettings Settings;
 };

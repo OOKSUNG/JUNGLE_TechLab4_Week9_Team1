@@ -254,7 +254,7 @@ void UExecutableEngine::RenderPostProcess(const FMinimalViewInfo& Camera) {
 	RenderCommand::BeginRenderPass(ToneMapPass);
 	const FVignetteSettings& Vignette = mWorld->GetVignetteSettings();
 	mToneMapRenderer.SetVignette(
-		Vignette.Intensity,
+		Vignette.GetEffectiveIntensity(),
 		Vignette.Radius,
 		Vignette.Softness,
 		Vignette.Color);

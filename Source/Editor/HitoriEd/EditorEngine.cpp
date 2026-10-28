@@ -1285,7 +1285,7 @@ void UEditorEngine::RenderToneMapPass(const int32 ViewIndex, UWorld& ViewWorld, 
 	ToneMapRenderer->SetExposure(SettingsPanel->GetSettings().Exposure);
 	const FVignetteSettings& Vignette = ViewWorld.GetVignetteSettings();
 	ToneMapRenderer->SetVignette(
-		Vignette.Intensity,
+		Vignette.GetEffectiveIntensity(),
 		Vignette.Radius,
 		Vignette.Softness,
 		Vignette.Color);
@@ -1602,6 +1602,7 @@ void UEditorEngine::OnActiveWorldChanged()
 {
 	ResetSceneSelection();
 	OutlinerPanel->SetWorld(GetActiveWorld());
+	SettingsPanel->SetWorld(GetActiveWorld());
 }
 
 void UEditorEngine::EndPlayMap()

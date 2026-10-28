@@ -420,6 +420,11 @@ void UScriptComponent::BindScriptContext(sol::environment& TargetEnvironment)
 			if (UWorld* World = GetOwnerWorld())
 				World->SetVignette(Intensity, Radius, Softness, Color);
 		});
+	TargetEnvironment.set_function("SetVignetteEnabled", [GetOwnerWorld](bool bEnabled)
+	{
+		if (UWorld* World = GetOwnerWorld())
+			World->SetVignetteEnabled(bEnabled);
+	});
 	TargetEnvironment.set_function("ResetVignette", [GetOwnerWorld]()
 	{
 		if (UWorld* World = GetOwnerWorld())

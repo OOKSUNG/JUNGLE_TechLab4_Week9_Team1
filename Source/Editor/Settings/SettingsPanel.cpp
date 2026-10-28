@@ -43,6 +43,28 @@ void FSettingsPanel::OnRender()
 	ImGui::TextDisabled("Fill mode is configured per viewport.");
 	ShowFlagUI::DrawFlags(Settings.ShowFlags, EShowFlagScope::Global, EShowFlagGroup::Rendering);
 	ImGui::SliderFloat("Exposure", &Settings.Exposure, 0.1f, 5.0f, "%.2f");
+	if (World)
+	{
+		const FVignetteSettings& Vignette = World->GetVignetteSettings();
+		bool bVignetteEnabled = Vignette.bEnabled;
+
+		if (ImGui::Checkbox("Vignette", &bVignetteEnabled))
+		{
+			World->SetVignetteEnabled(bVignetteEnabled);
+		}
+
+		float VignetteIntensity = Vignette.Intensity;
+		ImGui::BeginDisabled(!bVignetteEnabled);
+		if (ImGui::SliderFloat("Vignette Intensity", &VignetteIntensity, 0.0f, 1.0f, "%.2f"))
+		{
+			World->SetVignette(
+				VignetteIntensity,
+				Vignette.Radius,
+				Vignette.Softness,
+				Vignette.Color);
+		}
+		ImGui::EndDisabled();
+	}
 	ImGui::SliderFloat("Min Shadow Caster Radius", &GMinScreenRadiusForShadowCaster, 0.0f, 0.05f, "%.4f", ImGuiSliderFlags_AlwaysClamp);
 	ImGui::TextDisabled("0 disables small caster culling.");
 	int ShadowCullMode = static_cast<int>(FShadowSettings::GetCullMode());
