@@ -4,6 +4,7 @@
 #include "Core/EngineString.h"
 #include "Math/EngineMath.h"
 #include "Math/Color.h"
+#include "Serialization/StructuredArchive.h"
 #include <variant>
 #include <vector>
 #include <limits>
@@ -67,6 +68,7 @@ struct FTimeline	// 두 Track 중 하나를 선택한 Sequencer 표시용 Row
 // Sequence UI에서 값을 가져오기 위한 Data
 struct FSequenceData
 {
+	void Serialize(FStructuredArchive::FRecord Record);
 	std::vector<FTimeline> Rows = {
 		{ "Viewport Camera", FLinearColor(0.31f, 0.59f, 0.90f, 0.30f), FCameraTimelineTrack{} },
 		{ "Fade", FLinearColor(0.59f, 0.43f, 0.82f, 0.30f), FFadeTimelineTrack{} }

@@ -30,6 +30,7 @@
 #include "Render/RenderCommand.h"
 #include "Editor/Outliner/OutlinerPanel.h"
 #include "Editor/Sequence/SequencePanel.h"
+#include "Sequence/SequenceActor.h"
 #include "Editor/HitoriEd/EditorFileUtils.h"
 #include "Editor/HitoriEd/EditorResourcePaths.h"
 #include "Core/ResourcePaths.h"
@@ -184,6 +185,17 @@ bool UEditorEngine::Init()
 	ViewportsPanel = EditorUI->AddEditorPanel<FViewportsPanel>();
 	ContentDrawerPanel = EditorUI->AddEditorPanel<FContentDrawerPanel>();
 	FSequencePanel* SequencePanel = EditorUI->AddEditorPanel<FSequencePanel>();
+	SequencePanel->SetSequenceActorProvider([this]() -> ASequenceActor*
+	{
+		ASequenceActor* Actor = Cast<ASequenceActor>(OutlinerPanel->GetSelectedActor());
+		return Actor && Actor->GetWorld() == EditorWorld && !Actor->IsActorBeingDestroyed() ? Actor : nullptr;
+	});
+	SequencePanel->SetCreateSequenceActorCallback([this]()
+	{
+		if (IsPlaying() || !EditorWorld) return;
+		if (ASequenceActor* Actor = EditorWorld->SpawnActor<ASequenceActor>())
+			OutlinerPanel->SelectActor(Actor);
+	});
 	SequencePanel->SetViewportCameraProvider([this](CameraKey& OutKey)
 	{
 		int32 ViewIndex = MultipleViewportsAdapter.GetActiveViewIndex();

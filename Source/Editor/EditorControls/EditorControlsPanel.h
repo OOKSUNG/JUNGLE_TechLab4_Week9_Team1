@@ -17,6 +17,7 @@
 #include "GameFramework/Actor/BoxActor.h"
 #include "GameFramework/Actor/SphereActor.h"
 #include "GameFramework/Actor/CapsuleActor.h"
+#include "Sequence/SequenceActor.h"
 
 class FMultipleViewportsAdapter;
 
@@ -39,7 +40,7 @@ public:
 
 	int32 SelectedIndex = 0;
 
-	const char* Items[14] ={
+	const char* Items[15] ={
 		"Actor",
 		"Box",
 		"Capsule",
@@ -49,6 +50,7 @@ public:
 		"Player",
 		"PointLight",
 		"RectLight",
+		"Sequence",
 		"SkyLight",
 		"Sphere",
 		"SpotLight",
@@ -73,6 +75,7 @@ public:
 		APlayerActor::StaticClass(),
 		APointLightActor::StaticClass(),
 		ARectLightActor::StaticClass(),
+		ASequenceActor::StaticClass(),
 		ASkyLightActor::StaticClass(),
 		ASphereActor::StaticClass(),
 		ASpotLightActor::StaticClass(),
