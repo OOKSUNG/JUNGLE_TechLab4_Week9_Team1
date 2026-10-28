@@ -1220,7 +1220,7 @@ void UEditorEngine::RenderFXAAPass(const int32 ViewIndex, const FRenderingInfo& 
 	RenderCommand::CopyTexture(SceneColor, FxaaTarget);
 }
 
-void UEditorEngine::RenderToneMapPass(const int32 ViewIndex, const FRenderingInfo& ViewRenderingInfo)
+void UEditorEngine::RenderToneMapPass(const int32 ViewIndex, UWorld& ViewWorld, const FRenderingInfo& ViewRenderingInfo)
 {
 	FTexture2D* LDRColor = ViewRenderingInfo.ColorRenderTargets[0].Texture;
 	FTexture2D* HDRColor = GetHDRTargetForView(ViewIndex);   // 뷰별 임시 텍스처
@@ -1251,6 +1251,12 @@ void UEditorEngine::RenderToneMapPass(const int32 ViewIndex, const FRenderingInf
 	//HDR 장면 텍스처를 읽어서 LDR 뷰 텍스처에 ToneMap 결과를 그린다
 	RenderCommand::BeginRenderPass(PassInfo);
 	ToneMapRenderer->SetExposure(SettingsPanel->GetSettings().Exposure);
+	const FVignetteSettings& Vignette = ViewWorld.GetVignetteSettings();
+	ToneMapRenderer->SetVignette(
+		Vignette.Intensity,
+		Vignette.Radius,
+		Vignette.Softness,
+		Vignette.Color);
 	ToneMapRenderer->OnRender(HDRColor, ToneMapMode);
 	RenderCommand::EndRenderPass(PassInfo);
 
@@ -1415,7 +1421,7 @@ void UEditorEngine::RenderFrame(const int32 ViewIndex, UWorld& ViewWorld, const 
 			RenderFogPass(ViewIndex, ViewWorld, ViewRenderingInfo, ViewCameraLocation, ViewProjection, RenderQueue);
 
 		// 3. ToneMap(HDR) Pass
-		RenderToneMapPass(ViewIndex, ViewRenderingInfo);
+		RenderToneMapPass(ViewIndex, ViewWorld, ViewRenderingInfo);
 
 		// 3. FXAA Pass
 		if (ShowFlags.IsEnabled(EEngineShowFlag::FXAA))

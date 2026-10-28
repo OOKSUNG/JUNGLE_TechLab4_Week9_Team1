@@ -4,7 +4,6 @@ local Inventory = require("Inventory")
 local ItemData = require("ItemData")
 local Stamina = require("Stamina")
 local Minimap = require("Minimap")
-local JumpScare = require("JumpScare")
 
 local SMALL = 30
 local MEDIUM = 40
@@ -132,7 +131,7 @@ local function DrawResult()
 end
 
 function Tick(dt)
-    if JumpScare.IsBlackout() then
+    if GameManager.Phase == GameManager.EPhase.GameOver then
         AddUIImage("Assets/UI/Title/Black.png", GetViewportSize(), V(0.5, 0.5), V(0.5, 0.5), V(0.0, 0.0))
     end
     if GameManager.IsPlaying() then

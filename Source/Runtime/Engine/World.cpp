@@ -51,6 +51,18 @@ UWorld::~UWorld()
 
 }
 
+void UWorld::SetVignette(float Intensity, float Radius, float Softness, const FVector& Color)
+{
+	VignetteSettings.Intensity = std::clamp(Intensity, 0.0f, 1.0f);
+	VignetteSettings.Radius = std::max(Radius, 0.0f);
+	VignetteSettings.Softness = std::max(Softness, 0.001f);
+	VignetteSettings.Color = FVector{
+		std::clamp(Color.X, 0.0f, 1.0f),
+		std::clamp(Color.Y, 0.0f, 1.0f),
+		std::clamp(Color.Z, 0.0f, 1.0f)
+	};
+}
+
 bool UWorld::Init()
 {
 	// Spawn Actor로 카메라 생성하고 세팅하기
@@ -1146,6 +1158,7 @@ void UWorld::EndPlay()
 
 	// 장면 전환이나 PIE 재시작에 이전 장면의 슬로모가 남지 않게 한다.
 	ResetTimeEffects();
+	ResetVignette();
 	GameTime = FGameTime{};
 
 }
