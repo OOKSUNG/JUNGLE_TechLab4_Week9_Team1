@@ -23,6 +23,25 @@ local function DrawTime()
     AddUIText(string.format("시간 %.1f", GameManager.ElapsedTime), MEDIUM, V(1, 0), V(1, 0), V(-MARGIN, MARGIN))
 end
 
+local CONTROL_GUIDE = {
+    "WASD: 이동",
+    "Shift: 달리기",
+    "마우스: 시점 회전",
+    "F: 손전등 On/Off",
+    "E: 줍기 / 상호작용",
+    "Tab: 인벤토리 On/Off",
+}
+
+local function DrawControlGuide()
+    local size = SMALL * 0.8
+    local lineHeight = size * 1.3
+    local y = MARGIN + MEDIUM + 10
+    for _, text in ipairs(CONTROL_GUIDE) do
+        AddUIText(text, size, V(1, 0), V(1, 0), V(-MARGIN, y))
+        y = y + lineHeight
+    end
+end
+
 local function DrawBattery()
     AddUIImage("Assets/UI/BatteryFill.png", BATTERY_SIZE, V(1, 1), V(1, 1), V(-MARGIN, -MARGIN), Flashlight.GetBatteryRatio())
     AddUIImage("Assets/UI/BatteryFrame.png", BATTERY_SIZE, V(1, 1), V(1, 1), V(-MARGIN, -MARGIN))
@@ -137,6 +156,7 @@ function Tick(dt)
     if GameManager.IsPlaying() then
         Minimap.Draw()
         DrawTime()
+        DrawControlGuide()
         DrawBattery()
         DrawStamina()
         DrawPickupPrompt()
