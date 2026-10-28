@@ -3,6 +3,7 @@ local EnemyNavigation = {}
 EnemyNavigation.__index = EnemyNavigation
 
 local Directions = { { X = 0, Y = -1 }, { X = 1, Y = 0 }, { X = 0, Y = 1 }, { X = -1, Y = 0 } }
+local MaximumPatrolAttempts = 8
 
 local function PositionKey(Floor, X, Y)
     return (Floor * 4096 + Y) * 4096 + X
@@ -42,7 +43,7 @@ function EnemyNavigation.New(Map, Extent, Margin)
     end
     local HalfLength = Extent.X + Margin
     local HalfWidth = Extent.Y + Margin
-    return setmetatable({ mMap = Map, mHalfLength = HalfLength, mHalfWidth = HalfWidth, mTurnRadius = math.sqrt(HalfLength * HalfLength + HalfWidth * HalfWidth), mSpacing = Map.CellSize * 0.5, mFloorVersions = FloorVersions, mClearance = {}, mTurns = {}, mSearchMaps = {} }, EnemyNavigation)
+    return setmetatable({ mMap = Map, mHalfLength = HalfLength, mHalfWidth = HalfWidth, mTurnRadius = math.sqrt(HalfLength * HalfLength + HalfWidth * HalfWidth), mSpacing = Map.CellSize * 0.5, mFloorVersions = FloorVersions, mClearance = {}, mTurns = {}, mSearchMaps = {}, mFailedChase = nil }, EnemyNavigation)
 end
 
 function EnemyNavigation.IsCurrent(Navigation, Map)
@@ -242,13 +243,13 @@ local function FindRoute(Navigation, Start, X, Y, ChangeDirection, TargetLocatio
     SearchMap.IsWalkableAt = IsSearchNodeClear
     local StartCell = ToSearchCell(Start.X, Start.Y, Start.Heading)
     SearchMap:IsWalkable(StartCell)
-    local Options = { bAllowDiagonal = false, MaxNodes = (FloorData.Width * 2 - 1) * (FloorData.Height * 2 - 1) * 4 + 1 }
-    local Cells, Reason = SearchMap:FindPath(StartCell, SearchMap.mGoal, Options)
-    if Cells == nil and Reason == "Unreachable" and TargetLocation ~= nil and SearchMap.mClosestCell ~= nil then
-        Cells = SearchMap:FindPath(StartCell, SearchMap.mClosestCell, Options)
+    local function GetFallbackCell()
+        return SearchMap.mClosestCell
     end
+    local Options = { bAllowDiagonal = false, MaxNodes = (FloorData.Width * 2 - 1) * (FloorData.Height * 2 - 1) * 4 + 1, GetFallbackCell = TargetLocation ~= nil and GetFallbackCell or nil }
+    local Cells, Result, Reason = SearchMap:FindPath(StartCell, SearchMap.mGoal, Options)
     if Cells == nil then
-        return nil
+        return nil, Result
     end
 
     local Path = {}
@@ -263,7 +264,7 @@ local function FindRoute(Navigation, Start, X, Y, ChangeDirection, TargetLocatio
             end
         end
     end
-    return Path
+    return Path, Reason
 end
 
 local function TrimPath(Path, Location)
@@ -274,6 +275,17 @@ local function TrimPath(Path, Location)
         table.remove(Path, 1)
     end
     return Path
+end
+
+local function CopyPath(Path)
+    if Path == nil then
+        return nil
+    end
+    local Copy = {}
+    for Index, Point in ipairs(Path) do
+        Copy[Index] = Point
+    end
+    return Copy
 end
 
 function EnemyNavigation.FindPatrolPath(Navigation, Location, Yaw, MinimumDistance, ChangeDirection)
@@ -307,16 +319,23 @@ function EnemyNavigation.FindPatrolPath(Navigation, Location, Yaw, MinimumDistan
             end
         end
     end
-    local Candidates = { ChangeDirection and SideGoals or Goals, ChangeDirection and NearbySideGoals or NearbyGoals, Goals, NearbyGoals }
+    local Candidates = ChangeDirection and { SideGoals, NearbySideGoals, Goals, NearbyGoals } or { Goals, NearbyGoals }
+    local AttemptedGoals = {}
+    local AttemptsPerList = MaximumPatrolAttempts / #Candidates
     for _, List in ipairs(Candidates) do
-        for Attempt = 1, math.min(#List, 8) do
+        local Attempts = 0
+        while #List > 0 and Attempts < AttemptsPerList do
             local Index = math.random(1, #List)
             local Goal = List[Index]
             List[Index] = List[#List]
             List[#List] = nil
-            local Path = FindRoute(Navigation, Start, Goal.X, Goal.Y, ChangeDirection, nil)
-            if Path ~= nil then
-                return TrimPath(Path, Location)
+            if not AttemptedGoals[Goal] then
+                AttemptedGoals[Goal] = true
+                Attempts = Attempts + 1
+                local Path = FindRoute(Navigation, Start, Goal.X, Goal.Y, ChangeDirection, nil)
+                if Path ~= nil then
+                    return TrimPath(Path, Location)
+                end
             end
         end
     end
@@ -331,6 +350,13 @@ function EnemyNavigation.FindChasePath(Navigation, Location, Yaw, TargetLocation
     end
     local X = math.floor((TargetLocation.Y - Navigation.mMap.Origin.Y) / Navigation.mSpacing + 0.5)
     local Y = math.floor((Navigation.mMap.Origin.X - TargetLocation.X) / Navigation.mSpacing + 0.5)
+    local StartKey = PositionKey(Start.Floor, Start.X, Start.Y) * 4 + Start.Heading
+    local FailedChase = Navigation.mFailedChase
+    if FailedChase ~= nil and FailedChase.mStartKey == StartKey and FailedChase.mTargetX == X and FailedChase.mTargetY == Y then
+        return TrimPath(CopyPath(FailedChase.mPath), Location)
+    end
+    Navigation.mFailedChase = nil
+    local FailedRequest = { mStartKey = StartKey, mTargetX = X, mTargetY = Y, mPath = nil }
     local FloorData = Navigation.mMap.Floors[Start.Floor]
     X = math.max(0, math.min((FloorData.Width - 1) * 2, X))
     Y = math.max(0, math.min((FloorData.Height - 1) * 2, Y))
@@ -348,12 +374,18 @@ function EnemyNavigation.FindChasePath(Navigation, Location, Yaw, TargetLocation
             end
         end
         if Goal == nil then
+            Navigation.mFailedChase = FailedRequest
             return nil
         end
         X = Goal.X
         Y = Goal.Y
     end
-    return TrimPath(FindRoute(Navigation, Start, X, Y, false, TargetLocation), Location)
+    local Path, Reason = FindRoute(Navigation, Start, X, Y, false, TargetLocation)
+    if Reason == "Unreachable" then
+        FailedRequest.mPath = CopyPath(Path)
+        Navigation.mFailedChase = FailedRequest
+    end
+    return TrimPath(Path, Location)
 end
 
 return EnemyNavigation
