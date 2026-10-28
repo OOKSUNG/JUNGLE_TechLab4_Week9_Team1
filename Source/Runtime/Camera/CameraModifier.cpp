@@ -3,6 +3,9 @@
 
 #include <algorithm>
 
+void UCameraModifier::Initialize() {
+}
+
 bool UCameraModifier::ModifyCamera(float DeltaTime, FMinimalViewInfo& InOutView) {
 	return false;
 }

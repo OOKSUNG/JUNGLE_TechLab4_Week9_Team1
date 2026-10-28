@@ -19,6 +19,7 @@ public:
 	UCameraModifier& operator=(UCameraModifier&& Other) = delete;
 
 public:
+	virtual void Initialize();
 	virtual bool ModifyCamera(float DeltaTime, FMinimalViewInfo& InOutView);
 	void EnableModifier();
 	void DisableModifier(bool Immediate = false);

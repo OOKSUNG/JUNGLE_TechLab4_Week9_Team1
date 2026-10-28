@@ -5,6 +5,7 @@
 #include "Engine/Engine.h"
 #include "Engine/SceneTransitionManager.h"
 #include "Scripting/LuaVM.h"
+#include "Scripting/CameraManagerBindings.h"
 #include "Components/ShapeComponent.h"
 #include "GameFramework/Actor.h"
 
@@ -339,6 +340,7 @@ bool UScriptComponent::LoadScript()
 void UScriptComponent::BindScriptContext(sol::environment& TargetEnvironment)
 {
 	AActor* Owner = GetOwner();
+	BindPlayerCameraManagerEnvironment(TargetEnvironment, Owner);
 
 	TargetEnvironment["self"] = Owner;
     TargetEnvironment["scriptPath"] = ScriptPath;

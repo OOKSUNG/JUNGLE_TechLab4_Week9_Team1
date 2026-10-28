@@ -69,6 +69,10 @@ void ULevel::Serialize(FStructuredArchive::FRecord Record)
 			FStructuredArchive::FRecord ActorRecord = ActorArray.EnterElement().EnterRecord();
 			FString ClassName = Actor->GetClass()->Name;
 			ActorRecord << SA_VALUE("Class", ClassName);
+			if (TOptional<FStructuredArchive::FSlot> NameSlot{ ActorRecord.TryEnterField("Name", true) }) {
+				FString ActorName{ Actor->GetName() };
+				NameSlot.GetValue() << ActorName;
+			}
 			Actor->Serialize(ActorRecord);
 
 			USceneComponent* Root = Actor->GetRootComponent();
@@ -106,6 +110,10 @@ void ULevel::Serialize(FStructuredArchive::FRecord Record)
 
 		FString ClassName;
 		ActorRecord << SA_VALUE("Class", ClassName);
+		FString ActorName{};
+		if (TOptional<FStructuredArchive::FSlot> NameSlot{ ActorRecord.TryEnterField("Name", false) }) {
+			NameSlot.GetValue() << ActorName;
+		}
 
 		UClass* Class = FindClass(ClassName);
 		if (!Class || !Class->IsChildOf(AActor::StaticClass()))
@@ -114,8 +122,7 @@ void ULevel::Serialize(FStructuredArchive::FRecord Record)
 			continue;
 		}
 
-		if (AActor* Actor = OwningWorld->SpawnActor(Class))
-		{
+		if (AActor* Actor{ OwningWorld->SpawnActor(Class, FName{ ActorName }) }) {
 			Actor->Serialize(ActorRecord);
 			LoadedActors[i] = Actor;
 

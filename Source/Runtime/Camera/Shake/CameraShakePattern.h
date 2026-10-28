@@ -90,14 +90,11 @@ private:
 // 자식 패턴들의 결과를 합산하는 패턴 (UCompositeCameraShakePattern 대응)
 class FCompositeCameraShakePattern : public FCameraShakePattern {
 public:
+	FCameraShakePattern* AddChildPattern(std::unique_ptr<FCameraShakePattern> Pattern);
+
 	// 소유권을 넘겨받는다. 추가한 패턴을 가리키는 포인터를 반환한다.
 	template <typename TPattern>
-	TPattern* AddChildPattern() {
-		auto Pattern{ std::make_unique<TPattern>() };
-		TPattern* Raw{ Pattern.get() };
-		mChildPatterns.Emplace(std::move(Pattern));
-		return Raw;
-	}
+	TPattern* AddChildPattern();
 
 	void StartShakePattern() override;
 	void UpdateShakePattern(const FCameraShakeUpdateParams& Params, FCameraShakeUpdateResult& OutResult) override;
@@ -107,3 +104,9 @@ public:
 private:
 	TArray<std::unique_ptr<FCameraShakePattern>> mChildPatterns;
 };
+
+template <typename TPattern>
+TPattern* FCompositeCameraShakePattern::AddChildPattern() {
+	auto Pattern{ std::make_unique<TPattern>() };
+	return static_cast<TPattern*>(AddChildPattern(std::move(Pattern)));
+}

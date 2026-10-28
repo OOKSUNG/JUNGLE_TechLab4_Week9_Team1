@@ -1,12 +1,36 @@
 #include "EnginePCH.h"
 #include "Camera/PlayerCameraManager.h"
 #include "Camera/CameraComponent.h"
+#include "Engine/Level.h"
+#include "Engine/World.h"
 
 #include <algorithm>
 
 APlayerCameraManager::~APlayerCameraManager() {
 	RemoveAllCameraModifiers();
 	FlushRemovedModifiers();
+}
+
+void APlayerCameraManager::Serialize(FStructuredArchive::FRecord Record) {
+	FArchive& Archive{ Record.GetUnderlyingArchive() };
+	if (Archive.IsLoading()) {
+		if (mApplyingModifiers) {
+			Archive.SetError();
+			return;
+		}
+		ResetRuntimeState();
+	}
+	Super::Serialize(Record);
+	if (!Archive.IsError()) {
+		SerializeViewTarget(Record.EnterRecord("ViewTarget"));
+	}
+}
+
+void APlayerCameraManager::PostDuplicate(bool DuplicateForPIE) {
+	Super::PostDuplicate(DuplicateForPIE);
+	UCameraComponent* Camera{ mViewTargetCamera };
+	mViewTargetCamera = nullptr;
+	SetViewTargetCamera(Camera);
 }
 
 bool APlayerCameraManager::SetViewTarget(AActor* Target) {
@@ -91,15 +115,17 @@ const FMinimalViewInfo& APlayerCameraManager::GetCameraView() const {
 	return mCameraView;
 }
 
+const TArray<UCameraModifier*>& APlayerCameraManager::GetCameraModifiers() const {
+	return mModifiers;
+}
+
 UCameraModifier* APlayerCameraManager::AddCameraModifier(UClass* ModifierClass) {
-	if (!ModifierClass || !ModifierClass->IsChildOf(UCameraModifier::StaticClass()) || !ModifierClass->Constructor) {
+	UCameraModifier* Modifier{ CreateCameraModifier(ModifierClass) };
+	if (!Modifier) {
 		return nullptr;
 	}
-	UCameraModifier* Modifier{ NewObject<UCameraModifier>(this, ModifierClass, NAME_None, EObjectFlags::RF_Transient) };
-	if (Modifier) {
-		Modifier->mCameraOwner = this;
-		mModifiers.Add(Modifier);
-	}
+	Modifier->Initialize();
+	mModifiers.Add(Modifier);
 	return Modifier;
 }
 
@@ -150,6 +176,76 @@ UCameraComponent* APlayerCameraManager::FindCameraComponent(AActor* Target) {
 
 bool APlayerCameraManager::CompareModifierPriority(const UCameraModifier* Left, const UCameraModifier* Right) {
 	return Left->GetPriority() < Right->GetPriority();
+}
+
+UCameraModifier* APlayerCameraManager::CreateCameraModifier(UClass* ModifierClass) {
+	if (!ModifierClass || !ModifierClass->IsChildOf(UCameraModifier::StaticClass()) || !ModifierClass->Constructor) {
+		return nullptr;
+	}
+	UCameraModifier* Modifier{ NewObject<UCameraModifier>(this, ModifierClass, NAME_None, EObjectFlags::RF_Transient) };
+	if (Modifier) {
+		Modifier->mCameraOwner = this;
+	}
+	return Modifier;
+}
+
+void APlayerCameraManager::SerializeViewTarget(FStructuredArchive::FRecord Record) {
+	FArchive& Archive{ Record.GetUnderlyingArchive() };
+	if (Archive.HasAnyPortFlags(EPropertyPortFlags::PPF_Duplicate)) {
+		UObject* Camera{ mViewTargetCamera };
+		Record << SA_VALUE("Camera", Camera);
+		if (Archive.IsLoading()) {
+			mViewTargetCamera = Cast<UCameraComponent>(Camera);
+		}
+		return;
+	}
+
+	FString ActorName{};
+	FString CameraName{};
+	if (Archive.IsSaving() && mViewTargetCamera) {
+		AActor* Owner{ mViewTargetCamera->GetOwner() };
+		if (Owner && Owner->GetLevel() && !Owner->HasAnyFlags(EObjectFlags::RF_Transient)) {
+			ActorName = Owner->GetName();
+			CameraName = mViewTargetCamera->GetName();
+		}
+	}
+	Record << SA_VALUE("Actor", ActorName) << SA_VALUE("Component", CameraName);
+	if (Archive.IsLoading() && !Archive.IsError()) {
+		mPendingViewTargetActorName = ActorName;
+		mPendingViewTargetCameraName = CameraName;
+		ResolveViewTarget();
+	}
+}
+
+void APlayerCameraManager::ResolveViewTarget() {
+	if (mPendingViewTargetActorName.empty() || !GetWorld() || !GetWorld()->GetPersistentLevel()) {
+		return;
+	}
+	for (AActor* Actor : GetWorld()->GetPersistentLevel()->GetActors()) {
+		if (Actor && Actor->GetName() == mPendingViewTargetActorName) {
+			UCameraComponent* Camera{ Cast<UCameraComponent>(Actor->FindComponentByName(FName{ mPendingViewTargetCameraName })) };
+			if (Camera && SetViewTargetCamera(Camera)) {
+				mPendingViewTargetActorName.clear();
+				mPendingViewTargetCameraName.clear();
+			}
+			return;
+		}
+	}
+}
+
+void APlayerCameraManager::ResetRuntimeState() {
+	RemoveAllCameraModifiers();
+	FlushRemovedModifiers();
+	mViewTargetCamera = nullptr;
+	mPendingViewTargetActorName.clear();
+	mPendingViewTargetCameraName.clear();
+	mBaseCameraView = FMinimalViewInfo{};
+	mCameraView = FMinimalViewInfo{};
+	mBlendSourceView = FMinimalViewInfo{};
+	mBlendDuration = 0.0f;
+	mBlendElapsed = 0.0f;
+	mHasValidCameraView = false;
+	mApplyingModifiers = false;
 }
 
 void APlayerCameraManager::ApplyCameraModifiers(float DeltaTime, FMinimalViewInfo& InOutView) {

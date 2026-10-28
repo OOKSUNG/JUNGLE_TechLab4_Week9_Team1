@@ -47,9 +47,7 @@ DECLARE_CYCLE_STAT("Gather Elements", STAT_GatherElements);
 DECLARE_CYCLE_STAT("Gather - LOD", STAT_GatherLOD);
 DECLARE_CYCLE_STAT("Gather - Submit", STAT_GatherSubmit);
 
-UWorld::~UWorld() {
-	delete mPlayerCameraManager;
-}
+UWorld::~UWorld() = default;
 
 void UWorld::SetVignette(float Intensity, float Radius, float Softness, const FVector& Color)
 {
@@ -198,7 +196,10 @@ void UWorld::UpdateGameTime(float DeltaTime) {
 }
 
 void UWorld::ClearWorld() {
-	delete mPlayerCameraManager;
+	if (mPlayerCameraManager) {
+		mPlayerCameraManager->RemoveAllCameraModifiers();
+		mPlayerCameraManager->SetViewTarget(nullptr);
+	}
 	mPlayerCameraManager = nullptr;
 	mPlayCameraComponent = nullptr;
 
@@ -896,12 +897,23 @@ APlayerCameraManager* UWorld::GetPlayerCameraManager() {
 	if (WorldType != EWorldType::PIE && WorldType != EWorldType::Game) {
 		return nullptr;
 	}
+	if (mPlayerCameraManager && mPlayerCameraManager->IsActorBeingDestroyed()) {
+		mPlayerCameraManager = nullptr;
+	}
 	if (!mPlayerCameraManager) {
-		mPlayerCameraManager = NewObject<APlayerCameraManager>(this, NAME_None, EObjectFlags::RF_Transient);
+		for (AActor* Actor : PersistentLevel->GetActors()) {
+			if (APlayerCameraManager* CameraManager{ Cast<APlayerCameraManager>(Actor) }; CameraManager && !CameraManager->IsActorBeingDestroyed()) {
+				mPlayerCameraManager = CameraManager;
+				break;
+			}
+		}
+	}
+	if (!mPlayerCameraManager) {
+		mPlayerCameraManager = SpawnActor<APlayerCameraManager>();
 		if (!mPlayerCameraManager) {
 			return nullptr;
 		}
-		mPlayerCameraManager->World = this;
+		mPlayerCameraManager->SetFlags(EObjectFlags::RF_Transient);
 	}
 	if (!mPlayerCameraManager->GetViewTargetCamera()) {
 		mPlayerCameraManager->SetViewTargetCamera(GetMainCameraComponent());
@@ -990,9 +1002,11 @@ void UWorld::FlushPendingDestroyActors()
 		DestroyActorNow(Actor);
 }
 
-bool UWorld::DestroyActorNow(AActor* Actor)
-{
-	ULevel* Level = Actor->GetLevel();
+bool UWorld::DestroyActorNow(AActor* Actor) {
+	ULevel* Level{ Actor->GetLevel() };
+	if (Actor == mPlayerCameraManager) {
+		mPlayerCameraManager = nullptr;
+	}
 
 	// 게임 중이던 액터면 EndPlay부터 알린다. 이 시점엔 아직 월드와 컴포넌트에 접근할 수 있다.
 	Actor->EndPlay();
@@ -1254,15 +1268,52 @@ void UWorld::PostDuplicate(bool bDuplicateForPIE)
 	Scene.BuildBVH();
 }
 
-void UWorld::Serialize(FStructuredArchive::FRecord Record)
-{
+void UWorld::Serialize(FStructuredArchive::FRecord Record) {
 	Super::Serialize(Record);   // "Properties"
 
-	FArchive& Ar = Record.GetUnderlyingArchive();
+	FArchive& Ar{ Record.GetUnderlyingArchive() };
 	PersistentLevel->Serialize(Record.EnterRecord("PersistentLevel"));
 
-	// (선택) 메인 카메라는 레벨에 속하지 않아 따로 쓴다. PIE 시작 시점이나 에디터 시점을 복원할 때 쓸 수 있다.
-	// MainCamera->GetCameraComponent()->Serialize(Record.EnterRecord("MainCamera"));
+	if (Ar.HasAnyPortFlags(EPropertyPortFlags::PPF_Duplicate)) {
+		UObject* CameraManager{ mPlayerCameraManager };
+		Record << SA_VALUE("PlayerCameraManager", CameraManager);
+		if (Ar.IsLoading()) {
+			mPlayerCameraManager = Cast<APlayerCameraManager>(CameraManager);
+		}
+		return;
+	}
+
+	if (Ar.IsLoading()) {
+		for (AActor* Actor : PersistentLevel->GetActors()) {
+			if (APlayerCameraManager* CameraManager{ Cast<APlayerCameraManager>(Actor) }) {
+				CameraManager->ResolveViewTarget();
+			}
+		}
+	}
+
+	if (TOptional<FStructuredArchive::FSlot> CameraManagerSlot{ Record.TryEnterField("PlayerCameraManager", Ar.IsSaving() && mPlayerCameraManager && mPlayerCameraManager->HasAnyFlags(EObjectFlags::RF_Transient)) }) {
+		FStructuredArchive::FRecord CameraManagerRecord{ CameraManagerSlot.GetValue().EnterRecord() };
+		FString ClassName{ mPlayerCameraManager ? mPlayerCameraManager->GetClass()->Name : FString{} };
+		FString ManagerName{ mPlayerCameraManager ? mPlayerCameraManager->GetName() : FString{} };
+		CameraManagerRecord << SA_VALUE("Class", ClassName) << SA_VALUE("Name", ManagerName);
+		if (Ar.IsLoading()) {
+			UClass* ManagerClass{ FindClass(ClassName) };
+			if (!ManagerClass || !ManagerClass->IsChildOf(APlayerCameraManager::StaticClass()) || !ManagerClass->Constructor) {
+				Ar.SetError();
+				return;
+			}
+			if (mPlayerCameraManager) {
+				DestroyActor(mPlayerCameraManager);
+			}
+			mPlayerCameraManager = Cast<APlayerCameraManager>(SpawnActor(ManagerClass, FName{ ManagerName }));
+			if (!mPlayerCameraManager) {
+				Ar.SetError();
+				return;
+			}
+			mPlayerCameraManager->SetFlags(EObjectFlags::RF_Transient);
+		}
+		mPlayerCameraManager->Serialize(CameraManagerRecord);
+	}
 }
 
 // 광원 종류와 무관한 Receiver 후보 검사이며, GPU 가림 결과는 사용하지 않는다.

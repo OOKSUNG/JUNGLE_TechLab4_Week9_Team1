@@ -15,6 +15,9 @@
 #include "Components/RectLightComponent.h"
 #include "Components/SkyLightComponent.h"
 #include "Components/ScriptComponent.h"
+#include "Camera/CameraComponent.h"
+#include "Camera/CameraModifier_CameraShake.h"
+#include "Camera/PlayerCameraManager.h"
 #include "Editor/MapTools/MapWallGenerator.h"
 
 #include "Components/RotatingMovementComponent.h"
@@ -955,6 +958,79 @@ namespace
 		}
 	}
 
+	void DrawCameraDetailRow(const char* Label, const FString& Value) {
+		ImGui::TableNextRow();
+		ImGui::TableSetColumnIndex(0);
+		ImGui::TextUnformatted(Label);
+		ImGui::TableSetColumnIndex(1);
+		ImGui::TextWrapped("%s", Value.c_str());
+	}
+
+	const char* GetCameraShakePatternName(const FCameraShakePattern* Pattern) {
+		if (!Pattern) {
+			return "None";
+		}
+		if (dynamic_cast<const FWaveOscillatorCameraShakePattern*>(Pattern)) {
+			return "Wave";
+		}
+		if (dynamic_cast<const FPerlinNoiseCameraShakePattern*>(Pattern)) {
+			return "Perlin";
+		}
+		if (dynamic_cast<const FCompositeCameraShakePattern*>(Pattern)) {
+			return "Composite";
+		}
+		return "Custom";
+	}
+
+	void DrawPlayerCameraManagerDetails(const APlayerCameraManager& CameraManager) {
+		if (ImGui::CollapsingHeader("View Target", ImGuiTreeNodeFlags_DefaultOpen)) {
+			const AActor* ViewTarget{ CameraManager.GetViewTarget() };
+			const UCameraComponent* Camera{ CameraManager.GetViewTargetCamera() };
+			if (ImGui::BeginTable("ViewTargetDetails", 2, ImGuiTableFlags_SizingStretchProp | ImGuiTableFlags_RowBg)) {
+				ImGui::TableSetupColumn("Property", ImGuiTableColumnFlags_WidthFixed, 110.0f);
+				ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
+				DrawCameraDetailRow("Actor", ViewTarget ? ViewTarget->GetName() : "None");
+				DrawCameraDetailRow("Class", ViewTarget ? ViewTarget->GetClass()->Name : "None");
+				DrawCameraDetailRow("Camera", Camera ? Camera->GetName() : "None");
+				DrawCameraDetailRow("Valid View", CameraManager.HasValidCameraView() ? "Yes" : "No");
+				ImGui::EndTable();
+			}
+		}
+		if (!ImGui::CollapsingHeader("Camera Modifiers", ImGuiTreeNodeFlags_DefaultOpen)) {
+			return;
+		}
+		TArray<UCameraModifier*> Modifiers{ CameraManager.GetCameraModifiers() };
+		ImGui::Text("Count: %d", static_cast<int32>(Modifiers.Num()));
+		if (Modifiers.IsEmpty()) {
+			ImGui::TextDisabled("No camera modifiers");
+			return;
+		}
+		std::stable_sort(Modifiers.begin(), Modifiers.end(), [](const UCameraModifier* Left, const UCameraModifier* Right) {
+			return Left->GetPriority() < Right->GetPriority();
+		});
+		for (UCameraModifier* Modifier : Modifiers) {
+			if (!ImGui::TreeNodeEx(Modifier, ImGuiTreeNodeFlags_DefaultOpen, "%s", Modifier->GetName().c_str())) {
+				continue;
+			}
+			if (ImGui::BeginTable("ModifierDetails", 2, ImGuiTableFlags_SizingStretchProp | ImGuiTableFlags_RowBg)) {
+				ImGui::TableSetupColumn("Property", ImGuiTableColumnFlags_WidthFixed, 110.0f);
+				ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
+				const char* State{ Modifier->IsDisabled() ? "Disabled" : Modifier->IsPendingDisable() ? "Blending out" : "Enabled" };
+				DrawCameraDetailRow("Class", Modifier->GetClass()->Name);
+				DrawCameraDetailRow("Priority", std::format("{}", Modifier->GetPriority()));
+				DrawCameraDetailRow("Alpha", std::format("{:.3f}", Modifier->GetAlpha()));
+				DrawCameraDetailRow("State", State);
+				if (const UCameraModifier_CameraShake* Shake{ Cast<UCameraModifier_CameraShake>(Modifier) }) {
+					DrawCameraDetailRow("Pattern", GetCameraShakePatternName(Shake->GetRootPattern()));
+					DrawCameraDetailRow("Shake Scale", std::format("{:.3f}", Shake->GetShakeScale()));
+					DrawCameraDetailRow("Finished", Shake->IsFinished() ? "Yes" : "No");
+				}
+				ImGui::EndTable();
+			}
+			ImGui::TreePop();
+		}
+	}
+
 	void DrawActorHeader(AActor* Actor, UActorComponent*& OutSelectedComponent, UActorComponent*& OutAddedComponent)
 	{
 		if (!Actor) { return; }
@@ -1264,6 +1340,9 @@ void FDetailsPanel::OnRender()
 		// 액터 -> 컴포넌트 순으로, 클래스별 프로퍼티 표시
 		ImGui::PushID(TargetActor);
 		DrawProperties(TargetActor, CustomFont);
+		if (const APlayerCameraManager* CameraManager{ Cast<APlayerCameraManager>(TargetActor) }) {
+			DrawPlayerCameraManagerDetails(*CameraManager);
+		}
 		ImGui::PopID();
 
 		if (TargetComponent)

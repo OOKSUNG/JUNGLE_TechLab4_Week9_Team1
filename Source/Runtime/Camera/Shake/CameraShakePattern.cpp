@@ -90,6 +90,15 @@ void FPerlinNoiseCameraShakePattern::UpdateShakePatternImpl(const FCameraShakeUp
 // ---------------------------------------------------------------------------
 // FCompositeCameraShakePattern
 
+FCameraShakePattern* FCompositeCameraShakePattern::AddChildPattern(std::unique_ptr<FCameraShakePattern> Pattern) {
+	if (!Pattern) {
+		return nullptr;
+	}
+	FCameraShakePattern* Raw{ Pattern.get() };
+	mChildPatterns.Emplace(std::move(Pattern));
+	return Raw;
+}
+
 void FCompositeCameraShakePattern::StartShakePattern() {
 	for (auto& Child : mChildPatterns) {
 		Child->StartShakePattern();

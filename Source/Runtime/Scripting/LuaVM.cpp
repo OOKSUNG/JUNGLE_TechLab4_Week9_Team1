@@ -1,5 +1,6 @@
 #include "EnginePCH.h"
 #include "Scripting/LuaVM.h"
+#include "Scripting/CameraManagerBindings.h"
 
 #include "GameFramework/Actor.h"
 #include "Components/SceneComponent.h"
@@ -802,6 +803,7 @@ void FLuaVM::BindEngineAPI()
 	BindLightAPI(*State);
 	BindCameraAPI(*State);
 	BindActorAPI(*State);
+	BindPlayerCameraManagerAPI(*State);
 	BindAudioAPI(*State);
 }
 
