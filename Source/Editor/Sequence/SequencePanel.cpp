@@ -54,6 +54,13 @@ void FSequencePanel::OnRender()
 	if (!bOpen)
 		return;
 
+	// Follow evaluated values until the user edits the value at this frame.
+	if (PreviewPlayer.IsPlaying() || PlaybackFrame != LastFadeValueFrame)
+		bFadeValueEdited = false;
+	if (!bFadeValueEdited)
+		PreviewPlayer.GetCurrentFadeAlpha(NewFadeKeyAlpha);
+	LastFadeValueFrame = PlaybackFrame;
+
 	ImGui::SetNextWindowSize(ImVec2(900.0f, 300.0f), ImGuiCond_FirstUseEver);
 	if (ImGui::Begin(GetPanelName(), &bOpen))
 	{
@@ -154,40 +161,6 @@ void FSequencePanel::OnRender()
 		ImGui::Text("Keys: %d", TotalKeys);
 		if (bFadeOverlap)
 			ImGui::TextDisabled("Fade sections cannot overlap");
-		if (SelectedFadeTrack)
-		{
-			ImGui::SetNextItemWidth(140.0f);
-			ImGui::SliderFloat("New Key Alpha", &NewFadeKeyAlpha, 0.0f, 1.0f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
-			if (!SelectedFadeTrack->FadeSections.empty())
-			{
-				SelectedFadeSection = FMath::Clamp(SelectedFadeSection, 0,
-					static_cast<int>(SelectedFadeTrack->FadeSections.size()) - 1);
-				const FString Preview = "Section " + std::to_string(SelectedFadeSection + 1);
-				ImGui::SameLine();
-				ImGui::SetNextItemWidth(120.0f);
-				if (ImGui::BeginCombo("Fade Section", Preview.c_str()))
-				{
-					for (int Index = 0; Index < static_cast<int>(SelectedFadeTrack->FadeSections.size()); ++Index)
-					{
-						const FString Label = "Section " + std::to_string(Index + 1);
-						if (ImGui::Selectable(Label.c_str(), SelectedFadeSection == Index))
-							SelectedFadeSection = Index;
-					}
-					ImGui::EndCombo();
-				}
-				auto& Section = SelectedFadeTrack->FadeSections[SelectedFadeSection];
-				ImGui::SetNextItemWidth(140.0f);
-				bool bAlphaChanged = ImGui::SliderFloat("Key 1 Alpha", &Section.KeyFade.StartAlpha, 0.0f, 1.0f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
-				if (Section.KeyCount == 2)
-				{
-					ImGui::SameLine();
-					ImGui::SetNextItemWidth(140.0f);
-					bAlphaChanged |= ImGui::SliderFloat("Key 2 Alpha", &Section.KeyFade.EndAlpha, 0.0f, 1.0f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
-				}
-				if (bAlphaChanged)
-					PreviewPlayer.Pause();
-			}
-		}
 		if (SelectedCameraTrack && !bHasCameraSnapshot)
 			ImGui::TextDisabled("No active viewport camera");
 
@@ -227,20 +200,28 @@ void FSequencePanel::OnRender()
 								{
 									float& Alpha = KeyIndex == 0 ? Section.KeyFade.StartAlpha : Section.KeyFade.EndAlpha;
 									Alpha = NewFadeKeyAlpha;
-									SelectedFadeSection = static_cast<int>(Sections.size()) - 1;
 								}
 								++Section.KeyCount;
 							}
 						});
 						PreviewPlayer.Pause();
+						bFadeValueEdited = false;
 					}
 					for (FTimeline& Row : Rows)
 					{
 						auto* FadeTrack = std::get_if<FFadeTimelineTrack>(&Row.Rows);
 						// 드래그 중 여러 키가 함께 이동해도 트랙 전체를 검증한 뒤 승인한다.
 						const auto PreviousFadeSections = FadeTrack ? FadeTrack->FadeSections : std::vector<FFadeSection>{};
-						if (ImGui::BeginNeoTimelineEx(Row.Name.c_str()))
+						const float PreviousFadeAlpha = NewFadeKeyAlpha;
+						if (ImGui::BeginNeoTimelineEx(Row.Name.c_str(), nullptr, ImGuiNeoTimelineFlags_None,
+							FadeTrack ? &NewFadeKeyAlpha : nullptr))
 						{
+							if (FadeTrack && NewFadeKeyAlpha != PreviousFadeAlpha)
+							{
+								bFadeValueEdited = true;
+								SelectedTrack = static_cast<int>(&Row - Rows.data());
+								PreviewPlayer.Pause();
+							}
 							WithSections(Row, [&](auto& Sections)
 							{
 								for (auto& Section : Sections)
@@ -277,7 +258,11 @@ void FSequencePanel::OnRender()
 										}
 										Section.KeyFrames[Index] = FMath::Clamp(Section.KeyFrames[Index], StartFrame, EndFrame);
 										if (Section.KeyFrames[Index] != PreviousKeyFrame)
+										{
+											if (FadeTrack)
+												bFadeValueEdited = false;
 											PreviewPlayer.Pause();
+										}
 									}
 									if (ImGui::BeginPopup("SectionCurve"))
 									{
@@ -290,6 +275,8 @@ void FSequencePanel::OnRender()
 											if (ImGui::MenuItem(Labels[CurveIndex], nullptr, Section.Curve == Types[CurveIndex]))
 											{
 												Section.Curve = Types[CurveIndex];
+												if (FadeTrack)
+													bFadeValueEdited = false;
 												PreviewPlayer.Pause();
 											}
 										}
@@ -298,7 +285,11 @@ void FSequencePanel::OnRender()
 											ImGui::Separator();
 											ImGui::SetNextItemWidth(120.0f);
 											if (ImGui::DragFloat("Ease Exp", &Section.EaseExp, 0.05f, 1.0f, 10.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp))
+											{
+												if (FadeTrack)
+													bFadeValueEdited = false;
 												PreviewPlayer.Pause();
+											}
 										}
 										ImGui::EndPopup();
 									}

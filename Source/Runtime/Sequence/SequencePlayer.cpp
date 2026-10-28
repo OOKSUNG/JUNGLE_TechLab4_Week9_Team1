@@ -127,7 +127,6 @@ bool FSequencePlayer::GetCurrentCameraKey(CameraKey& OutCamera) const
 
 bool FSequencePlayer::GetCurrentFadeAlpha(float& OutAlpha) const
 {
-	(void)OutAlpha; // TODO 구현 전에는 출력값을 변경하지 않는다.
 	const FFadeTimelineTrack* Track = nullptr;
 	for (const auto& Row : SequenceData.Rows)
 	{
@@ -149,31 +148,27 @@ bool FSequencePlayer::GetCurrentFadeAlpha(float& OutAlpha) const
 		{
 			ActiveSection = &*Section;
 		}
-
-		float Playratio = (PlaybackFrame - Section->KeyFrames[0]) / (static_cast<float>(Section->KeyFrames[1]) - Section->KeyFrames[0]);
-		if (Section->Curve == CurveType::Linear)
-		{
-			OutAlpha = std::lerp(Section->KeyFade.StartAlpha, Section->KeyFade.EndAlpha, Playratio);
-			return true;
-		}
-
-		if (Section->Curve == CurveType::EaseIn || Section->Curve == CurveType::EaseOut)
-		{
-			Playratio = Section->Curve == CurveType::EaseIn
-				? InterpEaseIn(0.0f, 1.0f, Playratio, Section->EaseExp)
-				: InterpEaseOut(0.0f, 1.0f, Playratio, Section->EaseExp);
-			OutAlpha = std::lerp(Section->KeyFade.StartAlpha, Section->KeyFade.EndAlpha, Playratio);
-			return true;
-		}
-
-		if (Section->Curve == CurveType::Bezier)
-		{
-			OutAlpha = std::lerp(Section->KeyFade.StartAlpha, Section->KeyFade.EndAlpha, Playratio);
-			return true;
-		}
 	}
 	if (!ActiveSection)
-	return false;
-	return false;
+		return false;
+
+	float Playratio = (PlaybackFrame - ActiveSection->KeyFrames[0]) /
+		(static_cast<float>(ActiveSection->KeyFrames[1]) - ActiveSection->KeyFrames[0]);
+	switch (ActiveSection->Curve)
+	{
+	case CurveType::Linear:
+	case CurveType::Bezier:
+		break;
+	case CurveType::EaseIn:
+		Playratio = InterpEaseIn(0.0f, 1.0f, Playratio, ActiveSection->EaseExp);
+		break;
+	case CurveType::EaseOut:
+		Playratio = InterpEaseOut(0.0f, 1.0f, Playratio, ActiveSection->EaseExp);
+		break;
+	default:
+		return false;
+	}
+	OutAlpha = std::lerp(ActiveSection->KeyFade.StartAlpha, ActiveSection->KeyFade.EndAlpha, Playratio);
+	return true;
 }
 

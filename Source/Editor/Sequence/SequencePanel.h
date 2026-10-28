@@ -28,6 +28,7 @@ private:
 	std::function<bool(CameraKey&)> ViewportCameraProvider;
 
 	int SelectedTrack = 0;
-	int SelectedFadeSection = 0;
 	float NewFadeKeyAlpha = 0.0f;
+	float LastFadeValueFrame = 0.0f;
+	bool bFadeValueEdited = false;
 };
