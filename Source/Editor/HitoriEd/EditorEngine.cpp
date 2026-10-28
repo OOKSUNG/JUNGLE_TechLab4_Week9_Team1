@@ -18,6 +18,7 @@
 
 #include "Camera/CameraActor.h"
 #include "Camera/CameraComponent.h"
+#include "Camera/PlayerCameraManager.h"
 // 피킹 결과와 View별 Billboard 행렬 공급에 사용한다.
 #include "Collision/HitResult.h"
 #include "Components/BillboardComponent.h"
@@ -833,8 +834,9 @@ void UEditorEngine::UpdatePIEViewCamera() {
 		return;
 	}
 
-	UCameraComponent* GameCamera{ PlayWorld->GetMainCameraComponent() };
-	if (!GameCamera) {
+	APlayerCameraManager* CameraManager{ PlayWorld->GetPlayerCameraManager() };
+	UCameraComponent* GameCamera{ CameraManager ? CameraManager->GetViewTargetCamera() : nullptr };
+	if (!GameCamera || !CameraManager->HasValidCameraView()) {
 		MultipleViewportsAdapter.ClearViewCameraOverride(PIEViewIndex);
 		return;
 	}
@@ -849,12 +851,16 @@ void UEditorEngine::UpdatePIEViewCamera() {
 	}
 
 	// 엔진 View 행렬에서 깊이축(View X)을 꺼내면 회전 규약과 무관하게 실제 렌더 방향과 같다.
-	const FMatrix View{ GameCamera->GetViewMatrix() };
+	FMinimalViewInfo CameraView{ CameraManager->GetCameraView() };
+	if (Rect.Width > 0.0f && Rect.Height > 0.0f) {
+		CameraView.SetAspectRatio(Rect.Width / Rect.Height);
+	}
+	const FMatrix View{ CameraView.GetViewMatrix() };
 	const FVector Forward{ View.M[0][0], View.M[1][0], View.M[2][0] };
-	const FQuat Rotation{ GameCamera->GetWorldRotation().Quaternion() };
+	const FQuat Rotation{ CameraView.GetRotation().Quaternion() };
 
-	const FCameraProjection Projection{ GameCamera->GetIsOrthogonal() ? EProjectionMode::Orthographic : EProjectionMode::Perspective, GameCamera->GetFieldOfView(), GameCamera->GetOrthoWidth(), GameCamera->GetNearZ(), GameCamera->GetFarZ() };
-	MultipleViewportsAdapter.SetViewCameraOverride(PIEViewIndex, GameCamera->GetWorldLocation(), Forward, Projection, &Rotation);
+	const FCameraProjection Projection{ CameraView.GetIsOrthogonal() ? EProjectionMode::Orthographic : EProjectionMode::Perspective, CameraView.GetFieldOfView(), CameraView.GetOrthoWidth(), CameraView.GetNearZ(), CameraView.GetFarZ() };
+	MultipleViewportsAdapter.SetViewCameraOverride(PIEViewIndex, CameraView.GetLocation(), Forward, Projection, &Rotation);
 }
 
 // 화면을 표시하고 UI 변경 후 View 설정을 보관한다.

@@ -5,6 +5,7 @@
 
 #include "Asset/LOD/StaticMeshLODSelector.h"
 #include "Camera/CameraComponent.h"
+#include "Camera/PlayerCameraManager.h"
 #include "Components/DirectionalLightComponent.h"
 #include "Components/TextRenderComponent.h"
 #include "Core/ResourcePaths.h"
@@ -75,10 +76,14 @@ void UExecutableEngine::Tick(float DeltaTime) {
 		SceneTransitions->ProcessPendingTransition();
 	}
 
-	UCameraComponent* Camera{ mWorld->GetMainCameraComponent() };
-	if (Camera) {
-		Camera->SetAspectRatio(static_cast<float>(GetEngineLoop().GetViewportWidth()) / static_cast<float>(GetEngineLoop().GetViewportHeight()));
-		RenderFrame(*Camera);
+	APlayerCameraManager* CameraManager{ mWorld->GetPlayerCameraManager() };
+	const uint32 Width{ GetEngineLoop().GetViewportWidth() };
+	const uint32 Height{ GetEngineLoop().GetViewportHeight() };
+	if (CameraManager && CameraManager->HasValidCameraView() && Width > 0 && Height > 0) {
+		FMinimalViewInfo Camera{ CameraManager->GetCameraView() };
+		Camera.SetAspectRatio(static_cast<float>(Width) / static_cast<float>(Height));
+		CameraManager->GetViewTargetCamera()->SetAspectRatio(Camera.GetAspectRatio());
+		RenderFrame(Camera);
 	}
 	FStatRegistry::EndFrame();
 }
@@ -132,15 +137,15 @@ void UExecutableEngine::PreExit() {
 	Super::PreExit();
 }
 
-void UExecutableEngine::RenderFrame(UCameraComponent& Camera) {
+void UExecutableEngine::RenderFrame(const FMinimalViewInfo& Camera) {
 	const FMatrix ViewProjection{ Camera.GetViewProjectionMatrix() };
 	const FMatrix Projection{ Camera.GetProjectionMatrix() };
 	const FFrustumPlanes Frustum{ ExtractFrustumPlanes(ViewProjection) };
 	FRenderer* Renderer{ GetEngineLoop().GetRenderer() };
 	FLODViewContext View{ GetEngineLoop().GetViewportWidth(), GetEngineLoop().GetViewportHeight() };
 	View.ViewProjection = ViewProjection;
-	View.CameraPosition = Camera.GetWorldLocation();
-	View.CameraForward = Camera.GetTransform().GetForward().Normalized();
+	View.CameraPosition = Camera.GetLocation();
+	View.CameraForward = Camera.GetForwardVector();
 	View.ProjectionScaleSquared = std::max(Projection.M[1][0] * Projection.M[1][0], Projection.M[2][1] * Projection.M[2][1]);
 	View.NearZ = Camera.GetNearZ();
 	View.bOrthographic = Camera.GetIsOrthogonal();
@@ -163,7 +168,7 @@ void UExecutableEngine::RenderFrame(UCameraComponent& Camera) {
 	RenderText(ViewProjection);
 }
 
-void UExecutableEngine::RenderShadows(const UCameraComponent& Camera, const FLODViewContext& View, FViewConstants& ViewConstants) {
+void UExecutableEngine::RenderShadows(const FMinimalViewInfo& Camera, const FLODViewContext& View, FViewConstants& ViewConstants) {
 	FRenderer* Renderer{ GetEngineLoop().GetRenderer() };
 	TArray<FProjectedShadowInfo> Shadows{};
 	TArray<FFrustumPlanes> Frustums{};
@@ -210,7 +215,7 @@ void UExecutableEngine::RenderShadows(const UCameraComponent& Camera, const FLOD
 	}
 }
 
-void UExecutableEngine::RenderScene(const UCameraComponent& Camera, const FViewConstants& ViewConstants) {
+void UExecutableEngine::RenderScene(const FMinimalViewInfo& Camera, const FViewConstants& ViewConstants) {
 	FRenderer* Renderer{ GetEngineLoop().GetRenderer() };
 	RenderCommand::BeginRenderPass(mRenderingInfo);
 	if (!Camera.GetIsOrthogonal()) {
@@ -228,14 +233,14 @@ void UExecutableEngine::RenderScene(const UCameraComponent& Camera, const FViewC
 	RenderCommand::EndRenderPass(mRenderingInfo);
 }
 
-void UExecutableEngine::RenderPostProcess(const UCameraComponent& Camera) {
+void UExecutableEngine::RenderPostProcess(const FMinimalViewInfo& Camera) {
 	const TArray<FExponentialHeightFogSceneInfo>& FogInfos{ mWorld->GetScene().FogInfos };
 	if (!Camera.GetIsOrthogonal() && !FogInfos.IsEmpty()) {
 		FRenderingInfo FogPass{ mRenderingInfo };
 		FogPass.ColorRenderTargets[0].LoadOp = ERenderTargetLoadOp::Load;
 		FogPass.DepthStencil.Texture = nullptr;
 		RenderCommand::BeginRenderPass(FogPass);
-		mFogRenderer.OnRender(mDepthTarget.get(), Camera.GetViewProjectionMatrix(), Camera.GetWorldLocation(), FogInfos[0].FogInfo);
+		mFogRenderer.OnRender(mDepthTarget.get(), Camera.GetViewProjectionMatrix(), Camera.GetLocation(), FogInfos[0].FogInfo);
 		RenderCommand::EndRenderPass(FogPass);
 	}
 
@@ -275,13 +280,13 @@ void UExecutableEngine::RenderText(const FMatrix& ViewProjection) {
 }
 
 FMatrix UExecutableEngine::BuildBillboardMatrix(const FVector& Position, float Width, float Height, const void* ViewContext) {
-	const UCameraComponent& Camera{ *static_cast<const UCameraComponent*>(ViewContext) };
-	const FQuat CameraRotation{ Camera.GetWorldRotation().Quaternion() };
+	const FMinimalViewInfo& Camera{ *static_cast<const FMinimalViewInfo*>(ViewContext) };
+	const FQuat CameraRotation{ Camera.GetRotation().Quaternion() };
 	FVector Forward{ CameraRotation.RotateVector(FVector{ -1.0f, 0.0f, 0.0f }) };
 	FVector Right{ CameraRotation.RotateVector(FVector{ 0.0f, 1.0f, 0.0f }) };
 	FVector Up{ CameraRotation.RotateVector(FVector{ 0.0f, 0.0f, 1.0f }) };
 	if (!Camera.GetIsOrthogonal()) {
-		const FVector ToCamera{ Camera.GetWorldLocation() - Position };
+		const FVector ToCamera{ Camera.GetLocation() - Position };
 		if (ToCamera.SizeSquared() > 1.0e-12f) {
 			Forward = ToCamera.Normalized();
 		}
@@ -300,14 +305,14 @@ FMatrix UExecutableEngine::BuildBillboardMatrix(const FVector& Position, float W
 	};
 }
 
-void UExecutableEngine::AppendShadowFrustumCorners(const UCameraComponent& Camera, float NearDistance, float FarDistance, TArray<FVector>& OutCorners) {
-	const FQuat CameraRotation{ Camera.GetWorldRotation().Quaternion() };
+void UExecutableEngine::AppendShadowFrustumCorners(const FMinimalViewInfo& Camera, float NearDistance, float FarDistance, TArray<FVector>& OutCorners) {
+	const FQuat CameraRotation{ Camera.GetRotation().Quaternion() };
 	const FVector Forward{ CameraRotation.RotateVector(FVector{ 1.0f, 0.0f, 0.0f }).Normalized() };
 	const FVector Right{ CameraRotation.RotateVector(FVector{ 0.0f, 1.0f, 0.0f }).Normalized() };
 	const FVector Up{ CameraRotation.RotateVector(FVector{ 0.0f, 0.0f, 1.0f }).Normalized() };
 	const float TanHalfFov{ std::tan(FMath::DegreesToRadians(Camera.GetFieldOfView()) * 0.5f) };
 	for (const float Distance : { NearDistance, FarDistance }) {
-		const FVector Center{ Camera.GetWorldLocation() + Forward * Distance };
+		const FVector Center{ Camera.GetLocation() + Forward * Distance };
 		const float HalfWidth{ Camera.GetIsOrthogonal() ? Camera.GetOrthoWidth() * 0.5f : Distance * TanHalfFov * Camera.GetAspectRatio() };
 		const float HalfHeight{ HalfWidth / Camera.GetAspectRatio() };
 		for (const float Horizontal : { -1.0f, 1.0f }) {

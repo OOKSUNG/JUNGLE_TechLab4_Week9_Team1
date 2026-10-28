@@ -66,6 +66,17 @@ UCameraComponent::UCameraComponent() {
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
+void UCameraComponent::GetCameraView(FMinimalViewInfo& OutView) const {
+	OutView.SetLocation(GetWorldLocation());
+	OutView.SetRotation(GetWorldRotation());
+	OutView.SetFieldOfView(mFieldOfView);
+	OutView.SetAspectRatio(mAspectRatio);
+	OutView.SetNearZ(mNearClipPlane);
+	OutView.SetFarZ(mFarClipPlane);
+	OutView.SetIsOrthogonal(mIsOrthogonal);
+	OutView.SetOrthoWidth(mOrthoWidth);
+}
+
 float UCameraComponent::GetFieldOfView() const {
 	return mFieldOfView;
 }
@@ -258,54 +269,25 @@ FRay UCameraComponent::DeProjection(FVector2 MousePos, float ScreenW, float Scre
 FMatrix UCameraComponent::GetViewMatrix() const {
 	//return GetWorldMatrix().Inverse();
 
-	FVector WorldLocation{ GetWorldLocation() };
-	FRotator WorldRotation{ GetWorldRotation() };
-
-	FQuat WorldQuat{ WorldRotation.Quaternion() };
-	FMatrix RotationMatrix{ WorldQuat.ToFMatrix() };
-
-	FMatrix InverseTranslation{ FMatrix::MakeTranslation(WorldLocation * -1.0f) };
-	FMatrix InverseRotation{ RotationMatrix.GetTransposed() };
-
-	return InverseTranslation * InverseRotation;
+	FMinimalViewInfo View{};
+	GetCameraView(View);
+	return View.GetViewMatrix();
 }
 
 // 시야각·종횡비·클리핑 거리로 원근 행렬을 만든다.
 FMatrix UCameraComponent::GetPerspectiveMatrix() const {
-	const float HalfFOV{ FMath::DegreesToRadians(mFieldOfView) * 0.5f };
-
-	const float YScale{ 1.0f / tan(HalfFOV) };
-	const float XScale{ YScale / mAspectRatio };
-
-	const float ZScale{ mFarClipPlane / (mFarClipPlane - mNearClipPlane) };
-	const float ZOffset{ -mNearClipPlane * mFarClipPlane /(mFarClipPlane - mNearClipPlane) };
+	FMinimalViewInfo View{};
+	GetCameraView(View);
 
 	//Forward가 X인 좌표
-	return FMatrix{
-		0.0f, 0.0f, ZScale, 1.0f,
-		XScale, 0.0f, 0.0f, 0.0f,
-		0.0f, YScale, 0.0f, 0.0f,
-		0.0f, 0.0f, ZOffset, 0.0f
-	};
+	return View.GetPerspectiveMatrix();
 }
 
 // 직교 폭·종횡비·클리핑 거리로 직교 행렬을 만든다.
 FMatrix UCameraComponent::GetOrthogonalMatrix() const {
-	const float Width{ mOrthoWidth };
-	const float Height{ Width / mAspectRatio };
-
-	const float XScale{ 2.0f / Width };
-	const float YScale{ 2.0f / Height };
-
-	const float ZScale{ 1.0f / (mFarClipPlane - mNearClipPlane) };
-	const float ZOffset{ -mNearClipPlane / (mFarClipPlane - mNearClipPlane) };
-
-	return FMatrix{
-		0.0f, 0.0f, ZScale, 0.0f,
-		XScale, 0.0f, 0.0f, 0.0f,
-		0.0f, YScale, 0.0f, 0.0f,
-		0.0f, 0.0f, ZOffset, 1.0f
-	};
+	FMinimalViewInfo View{};
+	GetCameraView(View);
+	return View.GetOrthogonalMatrix();
 }
 
 // 투영 모드에 대응하는 행렬을 선택한다.

@@ -19,6 +19,7 @@
 
 //class ACameraActor;
 class ULevel;
+class APlayerCameraManager;
 class UShapeComponent;
 class UBillboardComponent;
 class FProjectedShadowInfo;
@@ -118,6 +119,7 @@ public:
 	ACameraActor* GetMainCamera() const { return MainCamera; }
 	UCameraComponent* GetMainCameraComponent();
 	void ResetMainCameraComponent(UCameraComponent* Camera);
+	APlayerCameraManager* GetPlayerCameraManager();
 
 	// Level
 	ULevel* GetPersistentLevel() const { return PersistentLevel; }
@@ -224,6 +226,7 @@ private:
 	//메인 카메라 
 	ACameraActor* MainCamera = nullptr;
 	UCameraComponent* mPlayCameraComponent{};
+	APlayerCameraManager* mPlayerCameraManager{};
 
 
 	ULevel* PersistentLevel = nullptr;

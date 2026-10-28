@@ -9,6 +9,7 @@
 
 #include "Camera/CameraActor.h"
 #include "Camera/CameraComponent.h"
+#include "Camera/PlayerCameraManager.h"
 #include "Input/InputSystem.h"
 
 #include "UObject/UObjectIterator.h"
@@ -46,9 +47,8 @@ DECLARE_CYCLE_STAT("Gather Elements", STAT_GatherElements);
 DECLARE_CYCLE_STAT("Gather - LOD", STAT_GatherLOD);
 DECLARE_CYCLE_STAT("Gather - Submit", STAT_GatherSubmit);
 
-UWorld::~UWorld()
-{
-
+UWorld::~UWorld() {
+	delete mPlayerCameraManager;
 }
 
 bool UWorld::Init()
@@ -113,8 +113,7 @@ AActor* UWorld::SpawnActor(UClass* Class, FName InName, const FTransform* Transf
 	return NewActor;
 }
 
-void UWorld::Tick(float DeltaTime)
-{
+void UWorld::Tick(float DeltaTime) {
 	{
 		SCOPE_CYCLE_COUNTER(STAT_UpdateAllTransforms);
 		Scene.UpdateAllTransforms();
@@ -149,15 +148,20 @@ void UWorld::Tick(float DeltaTime)
 		bInGameTick = false;
 
 		FlushPendingDestroyActors();
+
+		if (WorldType == EWorldType::PIE || WorldType == EWorldType::Game) {
+			APlayerCameraManager* CameraManager{ GetPlayerCameraManager() };
+			if (CameraManager) {
+				CameraManager->UpdateCamera(DeltaTime);
+			}
+		}
 	}
 
 
 }
 
-void UWorld::SetTimeScale(float InTimeScale)
-{
-	if (!std::isfinite(InTimeScale))
-	{
+void UWorld::SetTimeScale(float InTimeScale) {
+	if (!std::isfinite(InTimeScale)) {
 		HTR_LOG(Warning, "[Time] Ignored non-finite time scale");
 		return;
 	}
@@ -165,17 +169,14 @@ void UWorld::SetTimeScale(float InTimeScale)
 	TimeScale = std::clamp(InTimeScale, 0.0f, 10.0f);
 }
 
-void UWorld::ResetTimeEffects()
-{
+void UWorld::ResetTimeEffects() {
 	TimeScale = 1.0f;
 }
 
-void UWorld::UpdateGameTime(float DeltaTime)
-{
-	const float DeltaRealTimeSeconds =
-		std::isfinite(DeltaTime) ? std::max(0.0f, DeltaTime) : 0.0f;
+void UWorld::UpdateGameTime(float DeltaTime) {
+	const float DeltaRealTimeSeconds{ std::isfinite(DeltaTime) ? std::max(0.0f, DeltaTime) : 0.0f };
 
-	const float DeltaWorldTimeSeconds = DeltaRealTimeSeconds * TimeScale;
+	const float DeltaWorldTimeSeconds{ DeltaRealTimeSeconds * TimeScale };
 
 	GameTime.DeltaRealTimeSeconds = DeltaRealTimeSeconds;
 	GameTime.DeltaWorldTimeSeconds = DeltaWorldTimeSeconds;
@@ -184,8 +185,9 @@ void UWorld::UpdateGameTime(float DeltaTime)
 	GameTime.TimeDilation = TimeScale;
 }
 
-void UWorld::ClearWorld()
-{
+void UWorld::ClearWorld() {
+	delete mPlayerCameraManager;
+	mPlayerCameraManager = nullptr;
 	mPlayCameraComponent = nullptr;
 
 	// BeginPlay 대기 중인 Actor 제거
@@ -870,9 +872,29 @@ UCameraComponent* UWorld::GetMainCameraComponent() {
 }
 
 void UWorld::ResetMainCameraComponent(UCameraComponent* Camera) {
+	if (mPlayerCameraManager) {
+		mPlayerCameraManager->ResetViewTarget(Camera);
+	}
 	if (mPlayCameraComponent == Camera) {
 		mPlayCameraComponent = nullptr;
 	}
+}
+
+APlayerCameraManager* UWorld::GetPlayerCameraManager() {
+	if (WorldType != EWorldType::PIE && WorldType != EWorldType::Game) {
+		return nullptr;
+	}
+	if (!mPlayerCameraManager) {
+		mPlayerCameraManager = NewObject<APlayerCameraManager>(this, NAME_None, EObjectFlags::RF_Transient);
+		if (!mPlayerCameraManager) {
+			return nullptr;
+		}
+		mPlayerCameraManager->World = this;
+	}
+	if (!mPlayerCameraManager->GetViewTargetCamera()) {
+		mPlayerCameraManager->SetViewTargetCamera(GetMainCameraComponent());
+	}
+	return mPlayerCameraManager;
 }
 
 void UWorld::InitializePlayCamera() {
@@ -1119,8 +1141,7 @@ void UWorld::BeginPlay()
 {
 }
 
-void UWorld::EndPlay()
-{
+void UWorld::EndPlay() {
 	for (ULevel* Level : Levels)
 	{
 		// EndPlay에서 액터가 지워질 수 있으므로 목록을 복사해서 돈다.
@@ -1148,6 +1169,10 @@ void UWorld::EndPlay()
 	ResetTimeEffects();
 	GameTime = FGameTime{};
 
+	if (mPlayerCameraManager) {
+		mPlayerCameraManager->RemoveAllCameraModifiers();
+		mPlayerCameraManager->SetViewTarget(nullptr);
+	}
 }
 
 UWorld* UWorld::CreateWorld(const EWorldType InWorldType, bool bInformEngineOfWorld, FName WorldName)
