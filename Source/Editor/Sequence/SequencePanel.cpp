@@ -104,13 +104,13 @@ void FSequencePanel::OnRender()
 			}
 			ImGui::EndCombo();
 		}
-		FTimelineTrack& SelectedRow = Rows[SelectedTrack];
+		FTimeline& SelectedRow = Rows[SelectedTrack];
 		auto* SelectedFadeTrack = std::get_if<FFadeTimelineTrack>(&SelectedRow.Rows);
 		const auto* SelectedCameraTrack = std::get_if<FCameraTimelineTrack>(&SelectedRow.Rows);
 		CameraKey CameraSnapshot{};
 		const bool bHasCameraSnapshot = SelectedCameraTrack && ViewportCameraProvider &&
 			ViewportCameraProvider(CameraSnapshot);
-		auto WithSections = [](FTimelineTrack& Row, auto&& Action)
+		auto WithSections = [](FTimeline& Row, auto&& Action)
 		{
 			if (auto* CameraRow = std::get_if<FCameraTimelineTrack>(&Row.Rows))
 				Action(CameraRow->CamSections);
@@ -234,7 +234,7 @@ void FSequencePanel::OnRender()
 						});
 						PreviewPlayer.Pause();
 					}
-					for (FTimelineTrack& Row : Rows)
+					for (FTimeline& Row : Rows)
 					{
 						auto* FadeTrack = std::get_if<FFadeTimelineTrack>(&Row.Rows);
 						// 드래그 중 여러 키가 함께 이동해도 트랙 전체를 검증한 뒤 승인한다.
@@ -245,6 +245,7 @@ void FSequencePanel::OnRender()
 							{
 								for (auto& Section : Sections)
 								{
+									ImGui::PushID(&Section);
 									if (Section.KeyCount == 2)
 									{
 										const int32 From = FMath::Min(Section.KeyFrames[0], Section.KeyFrames[1]);
@@ -255,6 +256,8 @@ void FSequencePanel::OnRender()
 									{
 										const int32 PreviousKeyFrame = Section.KeyFrames[Index];
 										ImGui::NeoKeyframe(&Section.KeyFrames[Index]);
+										if (ImGui::IsNeoKeyframeRightClicked())
+											ImGui::OpenPopup("SectionCurve");
 										if (ImGui::IsNeoKeyframeHovered())
 										{
 											ImGui::BeginTooltip();
@@ -276,6 +279,30 @@ void FSequencePanel::OnRender()
 										if (Section.KeyFrames[Index] != PreviousKeyFrame)
 											PreviewPlayer.Pause();
 									}
+									if (ImGui::BeginPopup("SectionCurve"))
+									{
+										ImGui::TextUnformatted("Section Curve");
+										ImGui::Separator();
+										const CurveType Types[] = { CurveType::Linear, CurveType::EaseIn, CurveType::EaseOut, CurveType::Bezier };
+										const char* Labels[] = { "Linear", "Ease In", "Ease Out", "Bezier" };
+										for (int CurveIndex = 0; CurveIndex < IM_ARRAYSIZE(Types); ++CurveIndex)
+										{
+											if (ImGui::MenuItem(Labels[CurveIndex], nullptr, Section.Curve == Types[CurveIndex]))
+											{
+												Section.Curve = Types[CurveIndex];
+												PreviewPlayer.Pause();
+											}
+										}
+										if (Section.Curve == CurveType::EaseIn || Section.Curve == CurveType::EaseOut)
+										{
+											ImGui::Separator();
+											ImGui::SetNextItemWidth(120.0f);
+											if (ImGui::DragFloat("Ease Exp", &Section.EaseExp, 0.05f, 1.0f, 10.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp))
+												PreviewPlayer.Pause();
+										}
+										ImGui::EndPopup();
+									}
+									ImGui::PopID();
 								}
 							});
 							ImGui::EndNeoTimeLine();

@@ -1,5 +1,6 @@
 #include "EnginePCH.h"
 #include "SequencePlayer.h"
+#include "Math/FInterpEaseInOut.h"
 #include <cmath>
 #include <limits>
 
@@ -82,10 +83,43 @@ bool FSequencePlayer::GetCurrentCameraKey(CameraKey& OutCamera) const
 	{
 		if (!IsSectionActive(PlaybackFrame, Section->KeyFrames, Section->KeyCount))
 			continue;
+		float Playratio = (PlaybackFrame - Section->KeyFrames[0]) / (static_cast<float>(Section->KeyFrames[1]) - Section->KeyFrames[0]);
+		if (Section->Curve == CurveType::Linear)
+		{
+			OutCamera.Location.X = std::lerp(Section->KeyCam[0].Location.X, Section->KeyCam[1].Location.X, Playratio);
+			OutCamera.Location.Y = std::lerp(Section->KeyCam[0].Location.Y, Section->KeyCam[1].Location.Y, Playratio);
+			OutCamera.Location.Z = std::lerp(Section->KeyCam[0].Location.Z, Section->KeyCam[1].Location.Z, Playratio);
+			OutCamera.Rotation.Pitch = std::lerp(Section->KeyCam[0].Rotation.Pitch, Section->KeyCam[1].Rotation.Pitch, Playratio);
+			OutCamera.Rotation.Yaw = std::lerp(Section->KeyCam[0].Rotation.Yaw, Section->KeyCam[1].Rotation.Yaw, Playratio);
+			OutCamera.Rotation.Roll = std::lerp(Section->KeyCam[0].Rotation.Roll, Section->KeyCam[1].Rotation.Roll, Playratio);
+			OutCamera.FieldOfView = std::lerp(Section->KeyCam[0].FieldOfView, Section->KeyCam[1].FieldOfView, Playratio);
+			return true;
+		}
 
-		// TODO: Section->KeyFrames와 PlaybackFrame으로 구간 내 현재 시점을 계산한다.
-		// TODO: 선택할 보간 방식으로 Section->KeyCam[0], [1]의 위치/회전/FOV를 계산해 OutCamera에 넣는다.
-		// TODO: OutCamera 계산이 완료되면 true를 반환한다.
+		if (Section->Curve == CurveType::EaseIn || Section->Curve == CurveType::EaseOut)
+		{
+			Playratio = Section->Curve == CurveType::EaseIn ? InterpEaseIn(0.0f, 1.0f, Playratio, Section->EaseExp): InterpEaseOut(0.0f, 1.0f, Playratio, Section->EaseExp);
+			OutCamera.Location.X = std::lerp(Section->KeyCam[0].Location.X, Section->KeyCam[1].Location.X, Playratio);
+			OutCamera.Location.Y = std::lerp(Section->KeyCam[0].Location.Y, Section->KeyCam[1].Location.Y, Playratio);
+			OutCamera.Location.Z = std::lerp(Section->KeyCam[0].Location.Z, Section->KeyCam[1].Location.Z, Playratio);
+			OutCamera.Rotation.Pitch = std::lerp(Section->KeyCam[0].Rotation.Pitch, Section->KeyCam[1].Rotation.Pitch, Playratio);
+			OutCamera.Rotation.Yaw = std::lerp(Section->KeyCam[0].Rotation.Yaw, Section->KeyCam[1].Rotation.Yaw, Playratio);
+			OutCamera.Rotation.Roll = std::lerp(Section->KeyCam[0].Rotation.Roll, Section->KeyCam[1].Rotation.Roll, Playratio);
+			OutCamera.FieldOfView = std::lerp(Section->KeyCam[0].FieldOfView, Section->KeyCam[1].FieldOfView, Playratio);
+			return true;
+		}
+
+		if (Section->Curve == CurveType::Bezier)
+		{
+			OutCamera.Location.X = std::lerp(Section->KeyCam[0].Location.X, Section->KeyCam[1].Location.X, Playratio);
+			OutCamera.Location.Y = std::lerp(Section->KeyCam[0].Location.Y, Section->KeyCam[1].Location.Y, Playratio);
+			OutCamera.Location.Z = std::lerp(Section->KeyCam[0].Location.Z, Section->KeyCam[1].Location.Z, Playratio);
+			OutCamera.Rotation.Pitch = std::lerp(Section->KeyCam[0].Rotation.Pitch, Section->KeyCam[1].Rotation.Pitch, Playratio);
+			OutCamera.Rotation.Yaw = std::lerp(Section->KeyCam[0].Rotation.Yaw, Section->KeyCam[1].Rotation.Yaw, Playratio);
+			OutCamera.Rotation.Roll = std::lerp(Section->KeyCam[0].Rotation.Roll, Section->KeyCam[1].Rotation.Roll, Playratio);
+			OutCamera.FieldOfView = std::lerp(Section->KeyCam[0].FieldOfView, Section->KeyCam[1].FieldOfView, Playratio);
+			return true;
+		}
 		return false;
 	}
 	return false;
@@ -115,12 +149,31 @@ bool FSequencePlayer::GetCurrentFadeAlpha(float& OutAlpha) const
 		{
 			ActiveSection = &*Section;
 		}
+
+		float Playratio = (PlaybackFrame - Section->KeyFrames[0]) / (static_cast<float>(Section->KeyFrames[1]) - Section->KeyFrames[0]);
+		if (Section->Curve == CurveType::Linear)
+		{
+			OutAlpha = std::lerp(Section->KeyFade.StartAlpha, Section->KeyFade.EndAlpha, Playratio);
+			return true;
+		}
+
+		if (Section->Curve == CurveType::EaseIn || Section->Curve == CurveType::EaseOut)
+		{
+			Playratio = Section->Curve == CurveType::EaseIn
+				? InterpEaseIn(0.0f, 1.0f, Playratio, Section->EaseExp)
+				: InterpEaseOut(0.0f, 1.0f, Playratio, Section->EaseExp);
+			OutAlpha = std::lerp(Section->KeyFade.StartAlpha, Section->KeyFade.EndAlpha, Playratio);
+			return true;
+		}
+
+		if (Section->Curve == CurveType::Bezier)
+		{
+			OutAlpha = std::lerp(Section->KeyFade.StartAlpha, Section->KeyFade.EndAlpha, Playratio);
+			return true;
+		}
 	}
 	if (!ActiveSection)
-		return false;
-	// TODO: ActiveSection->KeyFrames와 PlaybackFrame으로 구간 내 현재 시점을 계산한다.
-	// TODO: 선택할 보간 방식으로 KeyFade.StartAlpha/EndAlpha의 현재 값을 계산해 OutAlpha에 넣는다.
-	// TODO: OutAlpha 계산이 완료되면 true를 반환한다.
+	return false;
 	return false;
 }
 

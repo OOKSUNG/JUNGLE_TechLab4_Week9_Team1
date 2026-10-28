@@ -8,6 +8,14 @@
 #include <vector>
 #include <limits>
 
+enum CurveType
+{
+	Linear,
+	EaseIn,
+	EaseOut,
+	Bezier
+};
+
 struct CameraKey // KeyFrame에서의 Camera 정보
 {
 	FVector Location;
@@ -21,31 +29,35 @@ struct FadeKey // 첫 번째 키와 두 번째 키의 Alpha
 	float EndAlpha = 0.0f;
 };
 
-struct FCameraSection
+struct FCameraSection	// 한 Track 내에서 생긴 Camera 구간의 정보
 {
 	int32 KeyFrames[2] = {};
 	int KeyCount = 0;
 	CameraKey KeyCam[2] = {};
+	CurveType Curve = CurveType::Linear;
+	float EaseExp = 2.0f;
 };
 
-struct FFadeSection
+struct FFadeSection		// 한 Track 내에서 생긴 Fade 구간의 정보
 {
 	int32 KeyFrames[2] = {};
 	int KeyCount = 0;
 	FadeKey KeyFade;
+	CurveType Curve = CurveType::Linear;
+	float EaseExp = 2.0f;
 };
 
-struct FCameraTimelineTrack
+struct FCameraTimelineTrack	// Camera Section 모음, 한 Row의 정보
 {
 	std::vector<FCameraSection> CamSections;
 };
 
-struct FFadeTimelineTrack
+struct FFadeTimelineTrack	// Fade Section 모음, 한 Row의 정보
 {
 	std::vector<FFadeSection> FadeSections;
 };
 
-struct FTimelineTrack
+struct FTimeline	// 두 Track 중 하나를 선택한 Sequencer 표시용 Row
 {
 	FString Name;
 	FLinearColor Color;
@@ -55,7 +67,7 @@ struct FTimelineTrack
 // Sequence UI에서 값을 가져오기 위한 Data
 struct FSequenceData
 {
-	std::vector<FTimelineTrack> Rows = {
+	std::vector<FTimeline> Rows = {
 		{ "Viewport Camera", FLinearColor(0.31f, 0.59f, 0.90f, 0.30f), FCameraTimelineTrack{} },
 		{ "Fade", FLinearColor(0.59f, 0.43f, 0.82f, 0.30f), FFadeTimelineTrack{} }
 	};
